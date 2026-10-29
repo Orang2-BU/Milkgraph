@@ -1,0 +1,31 @@
+{
+  "brand": "MilkGraph",
+  "tagline": "Context graph operasional pabrik susu",
+  "brief": "Dashboard untuk supervisor produksi dan QA pabrik susu: melihat gangguan, menelusuri rantai bukti, dan menyetujui jadwal pemulihan. Logo harus tegas, ramah, dan cerdas, tanpa klise sapi atau gelas susu.",
+  "adjectives": ["tegas", "ramah", "cerdas", "terhubung"],
+  "criteria": "Terbaca di 16 px, bekerja satu warna, berbeda dari logo susu konsumen, menyatukan huruf M dan ide graph.",
+  "mockups": ["website", "app-icon", "favicon-tab", "badge", "business-card", "signage"],
+  "nav": ["Monitor", "Telusuri", "Jadwal"],
+  "brand_color": "#00782A",
+  "greyscale": false,
+  "designer": "Tim MilkGraph",
+  "round": 2,
+  "concepts": [
+    {
+      "name": "m-node",
+      "symbol": "milkgraph-symbol-color.svg",
+      "lockup": "milkgraph-horizontal-color.svg",
+      "symbol_on_tile": "milkgraph-symbol-white.svg",
+      "lockup_on_dark": "milkgraph-horizontal-on-dark.svg",
+      "tile_color": "#00782A",
+      "idea": "Huruf m yang kaki kirinya lepas menjadi node graph.",
+      "rationale": [
+        "Satu bentuk menyatukan inisial M dan ide data yang terhubung",
+        "Lengkung tebal dan titik membulat terasa ramah, bukan dingin",
+        "Dibangun dari satu grid: lengkung r56, stem 40, node r20"
+      ]
+    }
+  ],
+  "recommendation": "m-node: paling khas, kuat di ukuran kecil, dan titiknya bisa dipakai sebagai motif node di seluruh UI.",
+  "next_steps": ["Pasang logo dan favicon di mockup MilkGraph", "Pakai titik node sebagai motif di graph dan status"]
+}
