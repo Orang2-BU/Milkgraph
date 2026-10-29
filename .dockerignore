@@ -1,0 +1,13 @@
+.git
+.claude
+node_modules
+.next
+.env
+.env.*
+*.log
+*.tsbuildinfo
+next-env.d.ts
+artifacts
+coverage
+docs
+mockup
