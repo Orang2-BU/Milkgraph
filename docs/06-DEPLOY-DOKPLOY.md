@@ -38,7 +38,7 @@ Repo masih mempunyai lockfile pnpm untuk pengembangan. Jalur Docker sengaja meng
 4. Environment/Build Arguments: **boleh kosong**. Image sudah menetapkan `NODE_ENV=production`, `NEXT_TELEMETRY_DISABLED=1`, `HOSTNAME=0.0.0.0`, `PORT=3000`. `.env.example` hanya referensi, tidak berisi secret. Jangan mengganti port tanpa menyesuaikan domain dan healthcheck.
 5. Domains: isi domain frontend, Path `/`, Container Port `3000`. Arahkan DNS A ke IP VPS; hapus/perbaiki AAAA yang menunjuk server lain. Aktifkan HTTPS dengan Let's Encrypt setelah DNS benar. Traefik Dokploy menangani TLS; tidak perlu membuka port 3000 langsung ke internet.
 6. Volumes, database, Redis, port mapping host: **tidak perlu**. Jangan mount direktori yang menimpa `/app` atau `.next`.
-7. Untuk rilis pertama, nonaktifkan Auto Deploy, lalu klik **Deploy** manual. Tidak ada workflow GitHub Actions/webhook tambahan; Dokploy menjadi satu-satunya pemilik release. Jika nanti Auto Deploy diaktifkan, batasi ke branch rilis yang sama. Test/lint/build wajib lolos di Dockerfile sebelum image selesai dibuat.
+7. Untuk rilis pertama, nonaktifkan Auto Deploy, lalu klik **Deploy** manual. Workflow GitHub Actions hanya menjalankan CI tanpa webhook/deploy; Dokploy tetap menjadi satu-satunya pemilik release. Jika nanti Auto Deploy diaktifkan, batasi ke branch rilis yang sama. Test/lint/build wajib lolos di Dockerfile sebelum image selesai dibuat.
 8. Tunggu build dan container berjalan, cek Logs/Monitoring. Build memerlukan unduhan registry npm/Docker serta Google Fonts (`next/font/google`); runtime memakai font yang sudah dibundel. Sediakan headroom RAM saat build; kapasitas pengguna belum di-load-test.
 
 ## Verifikasi lokal / sebelum rilis
@@ -73,6 +73,14 @@ BASE_URL=https://<domain-frontend> node tests/deployment.mjs
 ```
 
 Buka `/`, `/rencana`, `/trace`, `/simulasi`; coba ganti peran dan satu aksi demo, reload, periksa state tetap tersimpan di browser yang sama. HTTP smoke bukan pengganti tes interaksi browser. `tests/browser.mjs` lama masih mengasumsikan halaman placeholder dan jam tetap, sehingga bukan release gate yang valid untuk UI sekarang.
+
+## GitHub Actions CI
+
+`.github/workflows/ci.yml` berjalan pada push semua branch, pull request, dan manual dispatch. Job `Test & Build` memakai Ubuntu + Node 22, cache npm, `npm ci`, lint, typecheck, 9 unit test, build Next.js, build Docker, lalu smoke test image yang berjalan.
+
+CI menunggu healthcheck container (maksimum sekitar 60 detik), menguji 14 halaman/aset/404, dan memeriksa runtime non-root. Kegagalan menampilkan log container; cleanup selalu dijalankan. Run lama pada ref yang sama dibatalkan otomatis. Tidak perlu secret; tidak push image atau memicu deploy Dokploy. Tes browser interaktif belum dimasukkan ke CI karena skrip lama masih usang.
+
+Setelah workflow dipush dan run pertamanya muncul, pilih `Test & Build` sebagai required status check di ruleset/branch protection GitHub bila merge harus menunggu CI. Dokploy manual tidak otomatis diblokir status check ini; periksa CI sebelum rilis.
 
 ## Gangguan umum / rollback
 
