@@ -9,6 +9,7 @@ Index dokumen. Diperbarui 29 Okt 2026.
 | `03-ARCHITECTURE.md` | Komponen sistem, peta modul FE, model data Neo4j + PostgreSQL, alur utama, keamanan, Q&A keputusan | FE + BE |
 | `04-API-CONTRACT.md` | Kontrak REST `/api/v1` + SSE: setiap endpoint, tipe, izin, validasi, event, algoritma rules | BE (wajib), FE |
 | `05-INTEGRASI-FE-BE.md` | Inventaris semua data statis FE → endpoint, pemetaan per halaman, migrasi FE, urutan kerja BE M0-M8, tes kontrak, skrip uji demo, catatan BE, pertanyaan terbuka | BE (wajib), FE |
+| `06-DEPLOY-DOKPLOY.md` | Analisis frontend-only, Dockerfile, pengaturan Dokploy, environment, smoke test, rollback | FE / deploy |
 | `08-DESIGN.md` | Design system (token, komponen, kaca lembut, layout) | FE |
 | `RANGKUMAN-LENGKAP-MILKGRAPH.md` | Rangkuman ide dan riset awal | Konteks |
 | `PROMPT-CODEX.md` | Arsip prompt build awal (usang) | Arsip |
