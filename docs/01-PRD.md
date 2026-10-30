@@ -77,6 +77,16 @@ Pengguna demo: Rina Wulandari (Planner PPIC), Dimas Prasetyo (Koordinator receiv
 
 ### 5.3 Isi per halaman
 
+**Shell (tampil di semua halaman)**
+- **Sidebar:** 14 halaman dalam 5 grup, menempel saat halaman di-scroll, bisa diciutkan jadi ikon saja; di HP menjadi drawer.
+- **Kartu akun (bawah sidebar) dan avatar:** membuka panel "Masuk sebagai" untuk berganti peran (Planner PPIC, Koordinator receiving, Supervisor produksi, QA/Lab). Peran menentukan tombol keputusan yang aktif di semua halaman.
+- **Chip "Data simulasi":** penanda bahwa semua angka adalah data simulasi.
+- **Pilih shift:** menampilkan shift aktif (Shift Siang, Rab 14 Okt, 14.00 - 22.00, snapshot 14.42); shift lain belum tersedia di mockup.
+- **Notifikasi (angka 3):** rencana shift tidak layak (jumlah pelanggaran mengikuti Constraint), RT-26 mendekati batas holding time, QC FG out-of-spec FG-1013-07; klik membuka buktinya.
+- **Panduan demo:** urutan demo dua skenario proposal dan tombol "Atur ulang demo" yang menghapus semua keputusan, hold, konfirmasi, dan perubahan batas di browser.
+- **Bukti (`SourceModal`):** setiap chip sumber di halaman mana pun membuka detail bukti (ID, waktu, isi catatan).
+- **Footer:** "Snapshot 14.42 WIB".
+
 **Receiving Flow (`/`)**
 - 4 metrik: throughput receiving vs target 13,3 t/jam, waktu putar RT, tunggu lab test, bay aktif.
 - State machine RT 7 tahap (Farms, On the way, Sampling, Lab test, Released, Unloading, Stored); lab test tampil sebagai gerbang antrean.
@@ -161,7 +171,132 @@ Materi bertanda tidak untuk disebarluaskan; hanya keputusan yang dicatat di sini
 | Visibility gap storage/transfer tank | Rantai serah-terima batch dan laporan genealogi |
 | Trace back, trace forward, hold/recall, quality genealogy | Traceability, Daftar Hold |
 
-### 5.5 Di luar scope mockup
+### 5.5 Peta fungsi dan pengaruh fitur
+
+Setiap fitur punya satu fungsi, mengambil data dari fitur lain, dan memengaruhi fitur lain. Status: **Jalan** = sudah saling memengaruhi di mockup; **Rencana** = tautan dirancang untuk backend (`04`, `05`) dan belum jalan di mockup.
+
+#### Alur besar
+
+```text
+1. DATA        Sumber Data (SCADA, LIMS, weighbridge, CIP, MES, ERP)
+                 │ mengisi
+2. FAKTA       Context Graph  ·  Hasil Lab  ·  snapshot Receiving / Bay & Tangki / Filling / Pasokan
+                 │ diuji oleh
+3. ATURAN      Constraint (batas 6 constraint)
+                 │ menentukan kelayakan
+4. KEPUTUSAN   Rencana & What-if (planner)      Traceability → Daftar Hold (QA)      Hasil Lab (QA)      Pasokan (planner)
+                 │ menerbitkan                     │ menahan / menarik lot              │ merilis RT          │ mengirim kebutuhan
+5. EKSEKUSI    Bay & Tangki (receiving) · Lini Filling (supervisor) · gudang/distribusi (di luar sistem) · farm
+                 │ semua tercatat
+6. JEJAK       Riwayat Persetujuan
+   TAMPILAN    Receiving Flow dan Simulasi 3D merangkum keadaan dari langkah 2-5
+   KENDALI     Pengguna & Peran menentukan siapa boleh melakukan langkah 4-5
+```
+
+#### Per fitur
+
+| Fitur | Fungsi | Mengambil dari | Memengaruhi | Status |
+|---|---|---|---|---|
+| Receiving Flow | Memantau antrean RT, gerbang lab test, bay, buffer; menandai rencana tidak layak | Snapshot RT/bay/buffer, Constraint (batas holding → sisa holding RT-26; jumlah pelanggaran), Rencana (sudah disetujui atau belum) | Mengarahkan ke Rencana dan Bay & Tangki | Jalan |
+| | | Hasil Lab (RT dirilis pindah ke tahap Released, RT ditolak keluar antrean) | | Rencana |
+| Simulasi 3D | Menunjukkan lokasi bottleneck di tata letak nyata, sebelum vs sesudah rekomendasi | Snapshot bay/yard/silo, Lini Filling (status UHT, AT, filler), Bay & Tangki (tangki tengah) | (tampilan) | Jalan |
+| | | Rencana (otomatis tampil "Rekomendasi" setelah disetujui) | | Rencana |
+| Bay & Tangki | Status bay, CIP, buffer, tangki tengah; tempat receiving mengonfirmasi instruksi | Rencana (setelah disetujui: jadwal rekomendasi + 5 instruksi pindah bay), log CIP | Riwayat (konfirmasi instruksi) | Jalan |
+| Lini Filling | Pasokan aseptic tank, 10 filler, changeover; tempat supervisor mengonfirmasi instruksi | Rencana (setelah disetujui: laju masuk AT-2 naik, F2/F4 tidak berhenti, instruksi F2), konfigurasi unit | Riwayat; Pasokan (jumlah filler yang jalan) | Jalan |
+| Rencana & What-if | Menguji rencana FIFO vs rekomendasi solver; planner menyetujui atau menolak | Constraint (batas), snapshot rencana | Receiving (judul kartu), Bay & Tangki dan Filling (instruksi + jadwal aktif), notifikasi, Riwayat | Jalan |
+| | | | Simulasi 3D (tampilan aktif) | Rencana |
+| Pasokan & Permintaan | Menerjemahkan rencana produksi ke kebutuhan susu, membandingkan dengan rencana kirim farm dan kapasitas; planner mengirim kebutuhan | Rencana produksi per SKU, farm, Lini Filling (filler jalan) | Riwayat | Jalan |
+| | | | Farm → rencana kirim → RT "On the way" di Receiving | Rencana |
+| Constraint | Menetapkan batas 6 constraint dan melihat dampaknya sebelum disimpan | Definisi constraint, rencana | Rencana (pelanggaran), Receiving (kartu sorotan, sisa holding), notifikasi, Riwayat | Jalan |
+| Riwayat Persetujuan | Jejak audit semua keputusan dengan peran dan waktu | Semua aksi tulis | (dibaca; unduh CSV) | Jalan |
+| Traceability | Menelusuri asal lot (mundur) dan lot terdampak (maju), rantai serah-terima batch; mengajukan hold/recall | Hasil Lab (QC FG out-of-spec sebagai pemicu), Context Graph, lokasi lot (gudang/terkirim) | Daftar Hold (pengajuan baru), Riwayat | Jalan |
+| | | | Context Graph (menyorot jalur yang sedang ditelusuri) | Rencana |
+| Hasil Lab | Parameter lab RT dan QC FG; QA merilis atau menolak RT | LIMS | Traceability (tautan "Telusuri lot ini" dari QC out-of-spec), Riwayat | Jalan |
+| | | | Receiving (tahap RT), Simulasi 3D (antrean yard) | Rencana |
+| Daftar Hold | QA menyetujui, menolak, atau melepas hold; membedakan hold dan recall; laporan genealogi | Traceability (pengajuan, lot, proporsi), lokasi lot | Traceability (status pengajuan), Riwayat | Jalan |
+| Context Graph | Menjelajah seluruh fakta dan hubungan (farm sampai lot) | Graph (sama dengan Traceability) | (tampilan) | Jalan |
+| Sumber Data | Status konektor read-only dan pemetaannya ke graph | Sistem pabrik | Mengisi semua data di langkah 2 | Rencana (di mockup uji koneksi dan sinkron disimulasikan lokal) |
+| Pengguna & Peran | Menentukan peran aktif dan hak keputusan | Matriks izin | Semua tombol keputusan di setiap halaman, nama dan peran di Riwayat | Jalan |
+
+#### Dua alur yang saling memengaruhi
+
+**Issue 01: Receiving flow dan rencana dinamis**
+1. Receiving Flow menunjukkan antrean menumpuk (lab 52 menit, Bay 2 CIP, RT-26 mendekati batas).
+2. Constraint menentukan batas; Rencana menguji FIFO: 3 dilanggar.
+3. Planner menyetujui rekomendasi → Receiving berganti status, Bay & Tangki menerima 5 instruksi pindah bay, Lini Filling menerima instruksi F2/F4.
+4. Receiving dan supervisor mengonfirmasi → Riwayat.
+5. Simulasi 3D membandingkan bottleneck sebelum dan sesudah.
+6. Pasokan & Permintaan menyelaraskan kebutuhan susu dengan rencana kirim farm (hulu dari antrean RT berikutnya).
+
+**Issue 02: Traceability end-to-end**
+1. Hasil Lab mencatat QC FG out-of-spec (FG-1013-07).
+2. Traceability menelusuri mundur ke RT-04 (12%) dan maju ke 5 lot; rantai serah-terima batch menutup celah di transfer tank.
+3. Pengajuan hold/recall masuk ke Daftar Hold.
+4. QA memutuskan; status kembali ke Traceability; semua tercatat di Riwayat.
+5. Hasil Lab penerimaan RT berikutnya menentukan RT mana yang boleh masuk antrean (kembali ke Issue 01).
+
+#### Tautan yang belum jalan di mockup
+
+| Tautan | Dampak saat demo | Dikerjakan di |
+|---|---|---|
+| Hasil Lab rilis/tolak → tahap RT di Receiving dan antrean yard 3D | Rilis RT-27 belum memindahkan RT-27 ke Released | Backend `04` §9 (efek samping wajib) |
+| Rencana disetujui → tampilan aktif Simulasi 3D | 3D tetap memakai toggle manual | Backend `04` §15 (`/site/status` mengikuti rencana aktif) |
+| Pasokan → farm → RT "On the way" | Kebutuhan terkirim hanya tercatat di Riwayat | Backend (rencana kirim farm), `04` §7 |
+| Traceability → sorotan Context Graph | Context Graph menampilkan seluruh graph tanpa sorotan | FE saat integrasi |
+| Sumber Data → semua data | Uji koneksi dan sinkron masih simulasi | Backend M8, `04` §13 |
+
+### 5.6 Asal fitur (untuk tanya jawab juri)
+
+Kode sumber: **M** = materi Ideation Bootcamp mitra (problem statement dan slide konfigurasi; jangan diperlihatkan karena tidak untuk disebarluaskan), **P** = proposal dan tambahan dosen (`RANGKUMAN-LENGKAP-MILKGRAPH.md`), **T** = keputusan tim sebagai pelengkap alur.
+
+| Fitur | Asal | Dasar |
+|---|---|---|
+| Receiving Flow | M + P | Issue 01 "Track RT queue & activity"; slide alur susu masuk 7 tahap; proposal §5.1 antrean truk dan pemeriksaan QC yang lama |
+| Simulasi 3D | P + M + T | Proposal: Digital Twin dan tampilan Simulasi 3D; isi gedung dari slide konfigurasi proses mitra; tata letak luar ditelusuri tim dari citra satelit |
+| Bay & Tangki | M + P | Issue 01 "Show bay / asset / CIP status"; titik "Tank not ready, CIP/occupied"; proposal §5.2 tangki sedang CIP dan pertanyaan "tangki mana yang siap menerima" |
+| Lini Filling | M + P | Slide konfigurasi: satu aseptic tank melayani dua lini filling, "filling trouble risk", changeover paper/size/flavor; proposal §5.3 jalur pengemasan kehabisan pasokan |
+| Rencana & What-if | M + P | Issue 01 "Support dynamic plan adjustment"; slide "Can the plan run as scheduled?"; proposal §11 penjadwalan dinamis |
+| Pasokan & Permintaan | M | Slide "Multi Department Dependent" (Farms, PPIC, Production) dan slide tren permintaan serta rencana susu masuk; tidak ada di proposal |
+| Constraint | M + P | Slide enam configuration constraint; proposal §11.3 batasan penjadwalan |
+| Riwayat Persetujuan | T (+P) | Turunan prinsip "manusia yang memutuskan"; proposal hanya menyebut auditor sebagai calon pengguna (§7) dan kewenangan operator belum ditetapkan |
+| Traceability | M + P | Issue 02 "End-to-End Milk Traceability"; slide trace back/forward dan visibility gap di transfer tank; proposal §9 Graph RAG backward/forward |
+| Hasil Lab | M + P | Lab test sebagai gerbang di alur susu masuk; proposal §4.2 data QC (sampel, hasil uji, lolos/tertahan) dan LIMS di arsitektur |
+| Daftar Hold | M + P + T | Slide traceability: "Support hold / recall" dan "Quality genealogy … for available / hold"; proposal §5.6 respons recall lambat; alur persetujuan QA dan pemisahan hold/recall dari tim |
+| Context Graph | P | Proposal §8.2 Context Graph dan visualisasi graph (§14.2, §19.3) |
+| Sumber Data | P | Arsitektur proposal §14: data sensor, ERP, LIMS, MES, YMS masuk ke knowledge graph |
+| Pengguna & Peran | P + T | Persona proposal §7.1; matriks izin dari tim karena proposal belum menetapkan kewenangan |
+| Shell: notifikasi, shift, Panduan demo | T | Pelengkap demo dan penanda kondisi shift |
+
+Jawaban singkat bila ditanya asal Daftar Hold: "Hold dan recall diminta mitra sebagai tindak lanjut traceability. Kami menuangkannya sebagai daftar hold yang diputuskan QA, supaya keputusan tetap di tangan manusia dan didukung genealogi batch lengkap."
+
+### 5.7 Penjelasan sederhana per fitur
+
+Untuk orang yang belum paham istilah pabrik atau teknologi. Bayangkan MilkGraph sebagai ruang kendali pabrik susu: susu datang dari peternakan, diperiksa, disimpan, diolah, dikemas, lalu dikirim.
+
+| Fitur | Buat apa | Contoh | Dipakai | Pengaruhnya |
+|---|---|---|---|---|
+| Receiving Flow | Melihat truk susu yang antre masuk dan bagian yang macet | Lab memeriksa 52 menit, satu tempat bongkar sedang dibersihkan, susu di truk RT-26 hampir kedaluwarsa | Petugas penerimaan | Mengarahkan ke Rencana untuk dicari solusinya |
+| Simulasi 3D | Melihat pabrik dalam 3D supaya kelihatan di mana masalahnya | Mesin pengemas F2 dan F4 merah karena kehabisan susu; bentuk pabrik meniru aslinya dari foto satelit | Supervisor, juri | Hanya tampilan |
+| Bay & Tangki | Melihat tempat bongkar dan tangki: siap, penuh, atau sedang dibersihkan | Perintah "RT-26 bongkar di Bay 1 jam 15.15" lalu ditekan Konfirmasi | Petugas penerimaan | Konfirmasi tercatat di Riwayat |
+| Lini Filling | Menjaga mesin pengemas tidak berhenti karena kehabisan susu | Tangki AT-2 mengisi dua mesin; kalau kosong jam 15.50, dua mesin berhenti | Supervisor | Konfirmasi tercatat di Riwayat |
+| Rencana & What-if | Mengecek jadwal hari ini bisa jalan atau tidak, lalu memilih jadwal yang lebih baik | Jadwal biasa melanggar 3 aturan, usulan sistem 0 dengan memindahkan RT-26 ke Bay 1 | Planner | Setelah disetujui, perintah muncul di Bay & Tangki dan Lini Filling |
+| Pasokan & Permintaan | Menghitung susu yang dibutuhkan dari target produksi dan membandingkan dengan kiriman peternakan | Butuh 278.659 L, peternakan mengirim 310.800 L, cukup | Planner | Pengiriman kebutuhan tercatat di Riwayat |
+| Constraint | Mengatur aturan main pabrik: batas waktu tunggu susu, isi tangki, waktu bersih-bersih | Batas tunggu diturunkan, usulan jadwal jadi melanggar 1 aturan | Planner | Hasil di Rencana dan halaman awal ikut berubah |
+| Riwayat Persetujuan | Buku catatan semua keputusan: siapa, apa, kapan, kenapa | "Rekomendasi disetujui oleh Rina, 14.43" | Semua, auditor | Hanya mencatat; bisa diunduh |
+| Traceability | Saat ada produk bermasalah, mencari asal susunya dan produk lain yang tercampur | Susu cokelat mengandung antibiotik; 12% susunya dari truk RT-04; 5 lot lain ikut terkena | Petugas lab | Pengajuan penahanan masuk Daftar Hold |
+| Hasil Lab | Melihat hasil pemeriksaan susu tiap truk dan produk jadi | Susu RT-27 lolos semua pemeriksaan, boleh dibongkar | Petugas lab | Produk bermasalah bisa langsung dilacak di Traceability |
+| Daftar Hold | Memutuskan produk mana yang ditahan di gudang dan mana yang ditarik dari pasar | 4 lot masih di gudang ditahan, 1 lot sudah ke Sidoarjo ditarik | Petugas lab | Status kembali ke Traceability, tercatat di Riwayat |
+| Context Graph | Peta hubungan semua data: peternakan ke truk ke tangki sampai produk | Garis dari Farm Ngadirejo ke RT-04 ke tangki RMT-2 | Semua, juri | Hanya tampilan |
+| Sumber Data | Menunjukkan dari sistem pabrik mana data diambil | Alat ukur tangki, lab, timbangan truk, mesin, gudang; aplikasi hanya membaca | Tim IT, juri | Menjadi sumber semua data setelah ada backend |
+| Pengguna & Peran | Mengatur siapa boleh memutuskan apa | Hanya planner menyetujui jadwal, hanya petugas lab menahan produk | Semua | Tombol keputusan di semua halaman aktif/nonaktif sesuai peran |
+
+Dua alur besar dalam bahasa sederhana:
+1. **Truk antre:** halaman awal menunjukkan truk menumpuk → Constraint berisi aturannya → Rencana mencarikan jadwal yang lebih baik → planner setuju → petugas Bay & Tangki dan Lini Filling menjalankan → tercatat di Riwayat.
+2. **Produk bermasalah:** Hasil Lab menemukan produk bermasalah → Traceability melacak asal dan produk lain yang tercampur → diajukan ke Daftar Hold → petugas lab memutuskan ditahan atau ditarik → tercatat di Riwayat.
+
+Prinsipnya: sistem memberi saran dan bukti, manusia yang memutuskan.
+
+### 5.8 Di luar scope mockup
 
 Backend nyata (Neo4j, CP-SAT, LLM), login, integrasi SCADA/LIMS/weighbridge/MES/ERP, sensor, notifikasi push, ROI. Semua dirancang di `03`-`05`.
 
