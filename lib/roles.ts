@@ -8,6 +8,7 @@ export const ROLES: Record<RoleId, { label: string; user: string; initials: stri
   qa: { label: "QA/Lab", user: "Sri Lestari", initials: "SL", focus: "Hasil lab, lot terdampak beserta proporsi volume, dan daftar hold." },
 };
 export const ROLE_IDS = Object.keys(ROLES) as RoleId[];
+export type Role = (typeof ROLES)[RoleId];
 
 export const PERMISSIONS: Record<Permission, { label: string; roles: RoleId[] }> = {
   "demand.send": { label: "Mengirim kebutuhan susu ke farm", roles: ["planner"] },

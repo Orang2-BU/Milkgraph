@@ -2,10 +2,13 @@ import { ArrowDown, ArrowUpRight, Clock3, FlaskConical, Truck, Warehouse } from 
 import { scenario } from "@/lib/data";
 import { Card, Icon } from "@/components/ui";
 
+import type { Scenario } from "@/mock/types";
+
 const metricIcons = [Truck, Clock3, FlaskConical, Warehouse];
 /** Empat KPI receiving dengan sparkline tren [simulasi]; dipakai di Beranda dan Receiving. */
-export function MetricGrid({ onSource }: { onSource: (id: string) => void }) {
-  return <div className="metrics-grid">{scenario.metrics.map((metric, i) => {
+export function MetricGrid({ metrics = scenario.metrics, onSource }: { metrics?: Scenario["metrics"]; onSource: (id: string) => void }) {
+  const items = metrics ?? scenario.metrics;
+  return <div className="metrics-grid">{items.map((metric, i) => {
     const min = Math.min(...metric.trend) - 1;
     const range = Math.max(...metric.trend) - min || 1;
     const points = metric.trend.map((v, j) => `${j * 10},${36 - (v - min) / range * 29}`).join(" ");
