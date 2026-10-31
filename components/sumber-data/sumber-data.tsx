@@ -34,6 +34,6 @@ export function SumberData() {
       {check && <p className={`small with-icon ${check.state === "done" ? check.ok ? "ok-text" : "warn-text" : "muted"}`} role="status">{check.state === "running" ? "Menguji koneksi..." : check.text}</p>}
       <div className="page-actions"><button className="button secondary" disabled={check?.state === "running"} onClick={() => test(s.id)}><Icon icon={PlugZap} size={16} />Uji koneksi</button><button className="button secondary" disabled={s.status !== "terhubung"} onClick={() => setSynced(v => ({ ...v, [s.id]: demoClock() }))}><Icon icon={RefreshCw} size={16} />Sinkron sekarang</button></div>
     </Card>; })}</div>
-    <Card><SectionTitle title="Pemetaan ke context graph" subtitle="Setiap node dan relasi punya satu sumber utama." /><div className="table-wrap"><table><thead><tr><th>Sumber</th><th>Node dan relasi</th><th>Interval</th></tr></thead><tbody>{dataSources.map(s => <tr key={s.id}><td><strong>{s.name}</strong></td><td data-label="Node dan relasi"><span className="mono">{s.feeds}</span></td><td data-label="Interval">{s.interval}</td></tr>)}</tbody></table></div></Card>
+    <Card><SectionTitle title="Pemetaan ke context graph" /><div className="table-wrap"><table><thead><tr><th>Sumber</th><th>Node dan relasi</th><th>Interval</th></tr></thead><tbody>{dataSources.map(s => <tr key={s.id}><td><strong>{s.name}</strong></td><td data-label="Node dan relasi"><span className="mono">{s.feeds}</span></td><td data-label="Interval">{s.interval}</td></tr>)}</tbody></table></div></Card>
   </div>;
 }
