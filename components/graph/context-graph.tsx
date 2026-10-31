@@ -3,6 +3,9 @@
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Pin } from "lucide-react";
 import { scenario } from "@/lib/data";
+import type { Scenario } from "@/mock/types";
+import { API_MODE } from "@/lib/api/client";
+import { useResource } from "@/lib/api/resource";
 import { buildGraph, connections, layoutStep, settle, type Graph, type GraphNode, type NodeKind } from "@/lib/graph";
 import { Badge, Icon, SourceButton, SourceModal } from "@/components/ui";
 
@@ -146,10 +149,26 @@ function GraphCanvas({ graph, hidden, picked, onPick }: { graph: Graph; hidden: 
 
 /** Context graph gaya graphify: farm, RT, hasil lab, aset proses, dan lot yang saling terhubung. */
 export function ContextGraph() {
-  const graph = useMemo(() => buildGraph(scenario.graph), []);
+  const graphRes = useResource<Scenario["graph"]>(API_MODE ? "/graph" : null);
+  const rawGraph = API_MODE ? graphRes.data : scenario.graph;
+  const graph = useMemo(() => (rawGraph ? buildGraph(rawGraph) : null), [rawGraph]);
   const [hidden, setHidden] = useState<Set<NodeKind>>(new Set());
   const [picked, setPicked] = useState<string | null>(null);
   const [source, setSource] = useState<string | null>(null);
+
+  if (API_MODE && !graphRes.data) {
+    if (graphRes.error) {
+      return (
+        <div className="page-enter" role="status">
+          <p className="crit-text">Gagal memuat Context Graph: {graphRes.error.message}</p>
+        </div>
+      );
+    }
+    return <div className="page-enter" role="status"><p className="muted">Memuat Context Graph…</p></div>;
+  }
+
+  if (!graph) return null;
+
   const sel = picked ? graph.nodes.find(n => n.id === picked) : undefined;
   const list = picked ? connections(graph, picked) : [];
 
