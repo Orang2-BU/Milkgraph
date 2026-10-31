@@ -284,7 +284,7 @@ export function Filling() {
       <Card>
         <SectionTitle
           title="Matriks changeover (SOP)"
-          subtitle="Waktu minimum ganti produk dalam menit [asumsi]. Changeover yang lebih pendek dari matriks melanggar constraint SOP."
+          subtitle="Menit minimum [asumsi]."
           action={<Link className="text-link" href="/constraint">Batas changeover<Icon icon={ArrowRight} size={14} /></Link>}
         />
         <div className="table-wrap">

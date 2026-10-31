@@ -198,7 +198,7 @@ export function SumberData() {
         })}
       </div>
       <Card>
-        <SectionTitle title="Pemetaan ke context graph" subtitle="Setiap node dan relasi punya satu sumber utama." />
+        <SectionTitle title="Pemetaan ke context graph" />
         <div className="table-wrap">
           <table>
             <thead>

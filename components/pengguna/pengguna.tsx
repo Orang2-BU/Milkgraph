@@ -99,7 +99,7 @@ export function Pengguna() {
         })}
       </div>
       <Card>
-        <SectionTitle title="Hak akses" subtitle="Semua peran bisa melihat semua halaman. Keputusan dibatasi per peran." />
+        <SectionTitle title="Hak akses" />
         <div className="table-wrap">
           <table className="matrix-table">
             <thead>

@@ -366,7 +366,6 @@ export function Tangki() {
       <Card>
         <SectionTitle
           title="Storage, cream, premix, dan mixing"
-          subtitle="Tangki tengah proses tempat serah-terima batch. Tangki yang CIP atau tertahan tidak bisa menerima batch baru."
           action={<Badge tone={notReady ? "warn" : "ok"}>{notReady} tidak siap menerima</Badge>}
         />
         <div className="mid-grid">
