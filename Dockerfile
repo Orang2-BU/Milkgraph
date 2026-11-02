@@ -5,6 +5,10 @@ RUN npm ci
 
 FROM dependencies AS builder
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_DATA_MODE
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_DATA_MODE=${NEXT_PUBLIC_DATA_MODE}
 COPY . .
 RUN npm test && npm run lint && npm run build && mkdir -p public
 
