@@ -10,7 +10,7 @@ export const navigation: NavItem[] = [
   { label: "Pabrik", hint: "RT, tangki, filling", icon: Factory, tabs: [{ label: "Receiving", href: "/receiving" }, { label: "Bay & Tangki", href: "/tangki" }, { label: "Lini Filling", href: "/filling" }] },
   { label: "Rencana", hint: "Kelayakan dan solver", icon: CalendarClock, tabs: [{ label: "Rencana & What-if", href: "/rencana" }, { label: "Pasokan", href: "/pasokan" }, { label: "Constraint", href: "/constraint" }, { label: "Riwayat", href: "/persetujuan" }] },
   { label: "Traceability", hint: "Lot, lab, dan hold", icon: GitBranch, tabs: [{ label: "Telusur", href: "/trace" }, { label: "Context Graph", href: "/graph" }, { label: "Hasil Lab", href: "/lab" }, { label: "Hold", href: "/hold" }] },
-  { label: "Pengaturan", hint: "Data dan peran", icon: Settings, tabs: [{ label: "Sumber Data", href: "/sumber-data" }, { label: "Pengguna & Peran", href: "/pengguna" }] },
+  { label: "Pengaturan", hint: "Data dan peran", icon: Settings, tabs: [{ label: "Sumber Data", href: "/sumber-data" }, { label: "Katalog Master", href: "/master-data" }, { label: "Pengguna & Peran", href: "/pengguna" }] },
 ];
 
 /** Menu dan tab yang cocok dengan path; jatuh ke Beranda bila tidak ada. */

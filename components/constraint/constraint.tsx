@@ -78,6 +78,23 @@ const STATIC_CONSTRAINTS: { id: ConstraintId; what: string; params: Param[] }[] 
   ] },
 ];
 
+const STATIC_MASTER_CONSTRAINTS = [
+  { constraint_id: "MAX_TRANSFER_RATE", category: "THROUGHPUT", scope: "Pipes", description: "Laju transfer maksimum antar aset", parameter_unit: "L/hour", default_value: "X", is_hard_constraint: "Y" },
+  { constraint_id: "HOLDING_TIME_LIMIT", category: "QUALITY", scope: "Tanks", description: "Batas waktu simpan susu per tahapan proses", parameter_unit: "hours", default_value: "X", is_hard_constraint: "Y" },
+  { constraint_id: "LINE_FILL_SPEED", category: "THROUGHPUT", scope: "Filling_Lines", description: "Kecepatan pengisian kemasan per lini", parameter_unit: "packs/hour", default_value: "X", is_hard_constraint: "Y" },
+  { constraint_id: "CIP_DURATION", category: "HYGIENE", scope: "All_Assets", description: "Durasi proses cleaning in place", parameter_unit: "minutes", default_value: "X", is_hard_constraint: "Y" },
+  { constraint_id: "CIP_DEDUP_RULE", category: "HYGIENE", scope: "Assets", description: "Penggabungan trigger CIP dalam satu cycle pembersihan", parameter_unit: "boolean", default_value: "TRUE", is_hard_constraint: "Y" },
+  { constraint_id: "AT_SAME_PRODUCT", category: "QUALITY", scope: "Aseptic_Tanks", description: "Satu AT hanya boleh melayani produk yang sama pada satu waktu", parameter_unit: "boolean", default_value: "TRUE", is_hard_constraint: "Y" },
+  { constraint_id: "FLAVOUR_ISOLATION", category: "QUALITY", scope: "Pipes_Tanks", description: "Isolasi jalur flavour untuk mencegah kontaminasi silang", parameter_unit: "boolean", default_value: "TRUE", is_hard_constraint: "Y" },
+  { constraint_id: "MAINTENANCE_WINDOW", category: "OPERATIONAL", scope: "All_Assets", description: "Jendela waktu perawatan preventif mesin", parameter_unit: "hours", default_value: "X", is_hard_constraint: "Y" },
+  { constraint_id: "BREAKDOWN_HANDLING", category: "OPERATIONAL", scope: "All_Assets", description: "Prosedur mitigasi saat terjadi unplanned breakdown", parameter_unit: "boolean", default_value: "TRUE", is_hard_constraint: "Y" },
+  { constraint_id: "DRAIN_TIME", category: "HYGIENE", scope: "Tanks", description: "Waktu pengurasan sisa produk sebelum CIP", parameter_unit: "minutes", default_value: "X", is_hard_constraint: "Y" },
+  { constraint_id: "STERILIZATION_TIME", category: "HYGIENE", scope: "Sterilizers_AT", description: "Waktu sterilisasi sebelum produksi aseptik", parameter_unit: "minutes", default_value: "X", is_hard_constraint: "Y" },
+  { constraint_id: "MIN_BATCH_SIZE", category: "PLANNING", scope: "Mixing_Tanks", description: "Ukuran batch minimum untuk proses mixing", parameter_unit: "L", default_value: "X", is_hard_constraint: "N" },
+  { constraint_id: "MAX_STORAGE_TIME_RAW", category: "QUALITY", scope: "Raw_Milk_Tanks", description: "Batas waktu simpan susu mentah sebelum termisasi", parameter_unit: "hours", default_value: "X", is_hard_constraint: "Y" },
+  { constraint_id: "PASTEURIZATION_TEMP", category: "QUALITY", scope: "Thermizers", description: "Suhu termisasi susu mentah", parameter_unit: "Celsius", default_value: "X", is_hard_constraint: "Y" },
+];
+
 function formatValue(key: keyof Limits, unit: string | undefined, v: number): string {
   if (key === "holdingMin" || key === "bufferMaxMin") return hm(v);
   if (key === "maxTransfer") return `${number(v)} L/jam`;
@@ -93,6 +110,7 @@ export function Constraint() {
 
   const schemaResource = useResource<SchemaItem[]>(API_MODE ? "/limits/schema" : null);
   const plansResource = useResource<PlanItem[]>(API_MODE ? "/plans" : null);
+  const masterRules = useResource<{ constraints: Array<{ constraint_id: string; category: string; scope: string; description: string; parameter_unit: string; default_value: string; is_hard_constraint: string }> }>(API_MODE ? "/master/rules" : null);
 
   const limits = draft ?? demo.limits;
   const allowed = can(demo.role, "constraint.edit");
@@ -321,6 +339,46 @@ export function Constraint() {
           Lihat dampaknya di Rencana & What-if<Icon icon={ArrowRight} size={12} />
         </Link>
       </p>
+
+      <Card style={{ marginTop: "24px" }}>
+        <SectionTitle
+          title="Katalog 14 Aturan Pembatas Pabrik (Greenfields v2.1)"
+          subtitle="Daftar aturan operasional resmi dari constraint_catalog.csv"
+        />
+        <div className="table-wrap" style={{ maxHeight: "380px", overflowY: "auto", marginTop: "12px" }}>
+          <table>
+            <thead>
+              <tr>
+                <th>ID Aturan</th>
+                <th>Kategori</th>
+                <th>Cakupan Aset</th>
+                <th>Deskripsi Aturan</th>
+                <th>Satuan</th>
+                <th>Nilai Bawaan</th>
+                <th>Tipe Pembatas</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(masterRules.data?.constraints ?? STATIC_MASTER_CONSTRAINTS).map(c => (
+                <tr key={c.constraint_id}>
+                  <td><span className="mono"><strong>{c.constraint_id}</strong></span></td>
+                  <td><Badge>{c.category}</Badge></td>
+                  <td className="small muted">{c.scope}</td>
+                  <td>{c.description}</td>
+                  <td className="mono small">{c.parameter_unit}</td>
+                  <td><span className="mono">{c.default_value}</span></td>
+                  <td>
+                    <Badge tone={c.is_hard_constraint === "Y" ? "crit" : "ok"}>
+                      {c.is_hard_constraint === "Y" ? "Hard Constraint" : "Soft Constraint"}
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
       <SourceModal id={source} onClose={() => setSource(null)} />
     </div>
   );
