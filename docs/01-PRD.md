@@ -73,7 +73,7 @@ Semua halaman berbagi satu state (sekarang `lib/demo.ts` di browser; nanti backe
 | Setujui/tolak/lepas hold | | | | ya |
 | Rilis/tolak hasil lab RT | | | | ya |
 
-Pengguna demo: Rina Wulandari (Planner PPIC), Dimas Prasetyo (Koordinator receiving), Hendra Kusuma (Supervisor produksi), Sri Lestari (QA/Lab).
+Pengguna demo: Rino Akbar Hanif (Planner PPIC), Dimas Prasetyo (Koordinator receiving), Hendra Kusuma (Supervisor produksi), Sri Lestari (QA/Lab).
 
 ### 5.3 Isi per halaman
 

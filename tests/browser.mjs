@@ -41,7 +41,7 @@ try {
   await page.getByRole("button", { name: "Setujui rekomendasi", exact: true }).click();
   await page.getByLabel("Catatan (opsional)").fill("Informasikan koordinator receiving.");
   await page.getByRole("button", { name: "Konfirmasi persetujuan" }).click();
-  await page.getByText(/^Disetujui oleh Rina Wulandari, 14\.\d\d$/).waitFor();
+  await page.getByText(/^Disetujui oleh Rino Akbar Hanif, 14\.\d\d$/).waitFor();
   await page.getByRole("button", { name: "Panduan demo" }).click();
   await page.getByRole("button", { name: "Atur ulang demo" }).click();
   await page.getByRole("button", { name: "What-if: CIP Bay 2 molor 40 menit" }).click();
@@ -50,7 +50,7 @@ try {
   assert.ok(await page.getByRole("button", { name: "Konfirmasi penolakan" }).isDisabled());
   await page.getByLabel("Catatan (wajib)").fill("Tunggu konfirmasi durasi CIP dari supervisor.");
   await page.getByRole("button", { name: "Konfirmasi penolakan" }).click();
-  await page.getByText(/^Ditolak oleh Rina Wulandari, 14\.\d\d$/).waitFor();
+  await page.getByText(/^Ditolak oleh Rino Akbar Hanif, 14\.\d\d$/).waitFor();
   report.push("Rencana: filter RT, 3 constraint violations, solver view clean, approve, reset, what-if, reject: PASS");
   await page.goto(root + "/trace");
   await page.getByRole("button", { name: "Trace mundur" }).click();

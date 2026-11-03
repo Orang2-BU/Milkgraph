@@ -151,7 +151,7 @@ export const dataSources: DataSource[] = [
 /** Riwayat sebelum sesi demo (13 Okt), supaya Riwayat Persetujuan dan Daftar Hold tidak kosong. */
 export const pastLog: LogEntry[] = [
   { id: 4, kind: "hold", title: "Hold dilepas", detail: "HOLD-2610 · FG-1012-03", note: "Uji ulang sampel retensi negatif, lot dilepas ke gudang kirim.", by: "Sri Lestari", role: "QA/Lab", at: "13 Okt 16.20", tone: "ok" },
-  { id: 3, kind: "rencana", title: "Rekomendasi disetujui", detail: "Rencana shift pagi: RT-11 dipindah ke Bay 3", note: "Bay 1 maintenance seal pompa, koordinasi dengan receiving.", by: "Rina Wulandari", role: "Planner PPIC", at: "13 Okt 07.15", tone: "ok" },
+  { id: 3, kind: "rencana", title: "Rekomendasi disetujui", detail: "Rencana shift pagi: RT-11 dipindah ke Bay 3", note: "Bay 1 maintenance seal pompa, koordinasi dengan receiving.", by: "Rino Akbar Hanif", role: "Planner PPIC", at: "13 Okt 07.15", tone: "ok" },
   { id: 2, kind: "lab", title: "Hasil lab RT-09 dirilis", detail: "LAB-8790", note: "", by: "Sri Lestari", role: "QA/Lab", at: "13 Okt 06.32", tone: "ok" },
   { id: 1, kind: "lab", title: "Hasil lab RT-07 ditolak", detail: "LAB-8786", note: "Alcohol test positif dua kali, RT dikembalikan ke farm.", by: "Sri Lestari", role: "QA/Lab", at: "13 Okt 05.48", tone: "crit" },
 ];
