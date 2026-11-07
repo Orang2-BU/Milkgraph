@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { CalendarClock, ClipboardCheck, Download, FlaskConical, PackageX, SlidersHorizontal } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useDemo, type LogKind } from "@/lib/demo";
+import { useDemo, type LogEntry, type LogKind } from "@/lib/demo";
 import { pastLog } from "@/mock/ops";
+import { API_MODE, API_URL } from "@/lib/api/client";
+import { useResource } from "@/lib/api/resource";
 import { Badge, Card, Icon, PageHeading, Toggle } from "@/components/ui";
 
 const KINDS: Record<LogKind, { label: string; icon: LucideIcon }> = {
@@ -20,12 +22,40 @@ const csvCell = (v: string) => `"${v.replace(/"/g, '""')}"`;
 export function Persetujuan() {
   const demo = useDemo();
   const [filter, setFilter] = useState<Filter>("semua");
-  const all = [...demo.log, ...pastLog];
+  const auditRes = useResource<LogEntry[]>(API_MODE ? "/audit" : null);
+
+  if (API_MODE && !auditRes.data) {
+    if (auditRes.error) {
+      return (
+        <div className="page-enter" role="status">
+          <p className="crit-text">Gagal memuat Riwayat Persetujuan: {auditRes.error.message}</p>
+        </div>
+      );
+    }
+    return <div className="page-enter" role="status"><p className="muted">Memuat Riwayat Persetujuan…</p></div>;
+  }
+
+  const all = API_MODE ? (auditRes.data ?? []) : [...demo.log, ...pastLog];
   const rows = all.filter(e => filter === "semua" || e.kind === filter);
 
-  function exportCsv() {
+  async function exportCsv() {
+    if (API_MODE) {
+      try {
+        const path = `${API_URL}/api/v1/audit.csv${filter === "semua" ? "" : `?kind=${filter}`}`;
+        const res = await fetch(path, { headers: { "X-Demo-Role": demo.role } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = Object.assign(document.createElement("a"), { href: url, download: "milkgraph-riwayat-persetujuan.csv" });
+        a.click();
+        URL.revokeObjectURL(url);
+        return;
+      } catch {
+        // fallback to generating lines below if network issue
+      }
+    }
     const lines = [["Waktu", "Jenis", "Keputusan", "Objek", "Catatan", "Oleh", "Peran"], ...rows.map(e => [e.at, KINDS[e.kind].label, e.title, e.detail, e.note, e.by, e.role])];
-    const url = URL.createObjectURL(new Blob(["﻿" + lines.map(l => l.map(csvCell).join(",")).join("\n")], { type: "text/csv;charset=utf-8" }));
+    const url = URL.createObjectURL(new Blob(["\ufeff" + lines.map(l => l.map(csvCell).join(",")).join("\n")], { type: "text/csv;charset=utf-8" }));
     const a = Object.assign(document.createElement("a"), { href: url, download: "milkgraph-riwayat-persetujuan.csv" });
     a.click();
     URL.revokeObjectURL(url);

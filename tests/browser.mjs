@@ -13,7 +13,7 @@ await mkdir("artifacts", { recursive: true });
 try {
   for (const width of [1440, 768, 375]) {
     await page.setViewportSize({ width, height: width === 375 ? 812 : 1000 });
-    for (const [name, route] of [["receiving", "/"], ["rencana", "/rencana"], ["trace", "/trace"], ["simulasi", "/simulasi"]]) {
+    for (const [name, route] of [["beranda", "/"], ["receiving", "/receiving"], ["rencana", "/rencana"], ["trace", "/trace"], ["simulasi", "/simulasi"]]) {
       await page.goto(root + route);
       await page.getByRole("heading", { level: 1 }).waitFor();
       await page.evaluate(() => document.fonts.ready);
@@ -26,6 +26,10 @@ try {
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(root);
+  assert.ok(await page.locator(".attention-item").count() >= 3, "Beranda attention list");
+  assert.equal(await page.locator(".module-card").count(), 5);
+  assert.equal(await page.locator(".metric-card").count(), 4);
+  await page.goto(root + "/receiving");
   await page.getByLabel("Filter tahap RT").selectOption("Lab test");
   assert.equal(await page.locator("#antrean-rt tbody tr").count(), 3);
   await page.getByRole("link", { name: "Periksa kelayakan rencana" }).click();
@@ -37,7 +41,8 @@ try {
   await page.getByRole("button", { name: "Setujui rekomendasi", exact: true }).click();
   await page.getByLabel("Catatan (opsional)").fill("Informasikan koordinator receiving.");
   await page.getByRole("button", { name: "Konfirmasi persetujuan" }).click();
-  await page.getByText("Disetujui oleh Rina Wulandari, 14.47", { exact: true }).waitFor();
+  await page.getByText(/^Disetujui oleh Rina Wulandari, 14\.\d\d$/).waitFor();
+  await page.getByRole("button", { name: "Panduan demo" }).click();
   await page.getByRole("button", { name: "Atur ulang demo" }).click();
   await page.getByRole("button", { name: "What-if: CIP Bay 2 molor 40 menit" }).click();
   assert.equal(await page.locator(".gantt-block.violation").count(), 2);
@@ -45,7 +50,7 @@ try {
   assert.ok(await page.getByRole("button", { name: "Konfirmasi penolakan" }).isDisabled());
   await page.getByLabel("Catatan (wajib)").fill("Tunggu konfirmasi durasi CIP dari supervisor.");
   await page.getByRole("button", { name: "Konfirmasi penolakan" }).click();
-  await page.getByText("Ditolak oleh Rina Wulandari, 14.47", { exact: true }).waitFor();
+  await page.getByText(/^Ditolak oleh Rina Wulandari, 14\.\d\d$/).waitFor();
   report.push("Rencana: filter RT, 3 constraint violations, solver view clean, approve, reset, what-if, reject: PASS");
   await page.goto(root + "/trace");
   await page.getByRole("button", { name: "Trace mundur" }).click();
@@ -54,29 +59,39 @@ try {
   await page.getByRole("button", { name: "Lihat sumber LAB-4471", exact: true }).click();
   await page.getByRole("dialog", { name: "Bukti operasional" }).waitFor();
   await page.keyboard.press("Escape");
-  await page.getByRole("button", { name: "Maju: RT ke lot", exact: true }).click();
+  await page.getByRole("region", { name: "Detail FG-1013-07" }).waitFor();
+  await page.getByRole("button", { name: "Mass Balance", exact: true }).click();
+  assert.equal(await page.locator(".mass-rows li").count(), 6);
+  await page.getByRole("button", { name: "Trace maju", exact: true }).click();
   await page.getByRole("heading", { name: "Susu RT-04 masuk ke 5 lot barang jadi" }).waitFor();
+  await page.getByRole("button", { name: "Tabel", exact: true }).click();
   assert.equal(await page.locator(".lot-results tbody tr").count(), 5);
-  await page.getByRole("textbox", { name: "Pertanyaan tentang genealogi atau rencana" }).fill("Cuaca besok?");
+  await page.getByRole("button", { name: "Graf", exact: true }).click();
+  await page.getByRole("button", { name: "Separator SP-1, lihat detail" }).click();
+  await page.getByRole("region", { name: "Detail SP-1" }).waitFor();
+  await page.getByLabel("Pertanyaan tentang genealogi atau rencana").fill("Cuaca besok?");
   await page.getByRole("button", { name: "Kirim pertanyaan" }).click();
   await page.getByRole("heading", { name: "Tidak ada query template yang cocok" }).waitFor();
   await page.getByRole("button", { name: "Ajukan daftar hold" }).click();
   await page.getByRole("button", { name: "Ajukan ke QA" }).click();
-  await page.getByText(/Daftar hold diajukan ke QA\/Lab/).waitFor();
-  report.push("Trace: backward with template + source modal, forward 5 lots, unknown question abstains, hold submitted: PASS");
+  await page.getByText(/diajukan ke QA\/Lab oleh/).waitFor();
+  report.push("Trace: backward with template + source modal + node detail, mass balance 6 steps, forward 5 lots, equipment detail, unknown question abstains, hold submitted: PASS");
   await page.goto(root + "/simulasi");
   await page.locator(".scene-tag.crit").first().waitFor();
   await page.getByRole("button", { name: "Rekomendasi · proyeksi 15.30" }).click();
   await page.getByText("RT-27 masuk tepat setelah CIP selesai 15.20.").waitFor();
   assert.equal(await page.locator(".scene-tag.crit").count(), 0);
   report.push("Simulasi 3D: bottlenecks before, none critical after recommendation: PASS");
-  const routes = ["tangki", "filling", "constraint", "persetujuan", "lab", "hold", "graph", "sumber-data", "pengguna"];
-  for (const route of routes) {
+  assert.equal(await page.locator("#desktop-navigation .nav-list a").count(), 6);
+  const tabbed = { receiving: "Pabrik", tangki: "Pabrik", filling: "Pabrik", pasokan: "Rencana", constraint: "Rencana", persetujuan: "Rencana", lab: "Traceability", hold: "Traceability", graph: "Traceability", "sumber-data": "Pengaturan", pengguna: "Pengaturan" };
+  for (const [route, menu] of Object.entries(tabbed)) {
     const response = await page.goto(`${root}/${route}`);
     assert.equal(response.status(), 200, route);
-    await page.getByText("Belum tersedia di mockup", { exact: true }).waitFor();
+    await page.getByRole("heading", { level: 1 }).waitFor();
+    assert.equal(await page.locator(".section-tabs a[aria-current=page]").getAttribute("href"), `/${route}`, route);
+    assert.equal(await page.locator("#desktop-navigation .nav-item.active").getAttribute("aria-label"), menu, route);
   }
-  report.push(`All ${routes.length} placeholder routes: PASS`);
+  report.push(`Sidebar 6 menus; ${Object.keys(tabbed).length} tabbed routes show the right menu and tab: PASS`);
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto(root);
   const menu = page.getByRole("button", { name: "Buka menu", exact: true });
@@ -92,7 +107,7 @@ try {
   await page.getByRole("dialog").getByRole("link", { name: "Traceability", exact: true }).click();
   assert.equal(await page.locator("dialog[open]").count(), 0);
   await page.getByRole("button", { name: "Trace mundur" }).click();
-  await page.getByRole("button", { name: "Graph", exact: true }).click();
+  await page.getByRole("button", { name: "Graf", exact: true }).click();
   await page.locator(".react-flow__node").first().waitFor();
   report.push("Mobile drawer: focus never reaches page content, Escape restores focus, route closes drawer; graph tab: PASS");
   assert.deepEqual(errors, []);

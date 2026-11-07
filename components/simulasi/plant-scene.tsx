@@ -7,12 +7,16 @@ import { MapControls } from "three/examples/jsm/controls/MapControls.js";
 import { CSS2DObject, CSS2DRenderer } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { asepticTanks, fillers, midTanks, type UnitState } from "@/mock/ops";
+import { asepticTanks, fillers, midTanks, type UnitState, type AsepticTank, type Filler, type MidTank } from "@/mock/ops";
 import { SITE, SITE_STATUS, type Focus } from "@/mock/site";
 import type { Tone } from "@/mock/types";
+import { API_MODE } from "@/lib/api/client";
+import { useResource } from "@/lib/api/resource";
 
 export type SceneState = "before" | "after";
 export type { Focus };
+export type SiteLayout = typeof SITE;
+export type SiteStatus = (typeof SITE_STATUS)["before"] & { viewLabel?: string };
 type Status = Tone | "milk";
 const token = (name: string) => new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue(`--color-${name}`).trim());
 
@@ -37,7 +41,28 @@ const FOOTPRINT = new THREE.Box3(new THREE.Vector3(...SITE.footprint.min), new T
 const UNIT: Record<UnitState, Status> = { jalan: "milk", cip: "warn", siaga: "neutral", breakdown: "crit", "ganti-format": "warn" };
 
 
-export function PlantScene({ state, focus, roof, label }: { state: SceneState; focus: Focus; roof: boolean; label: string }) {
+export function PlantScene({
+  state,
+  focus,
+  roof,
+  label,
+  layout,
+  status: propStatus,
+  asepticTanks: propAseptic,
+  fillers: propFillers,
+  midTanks: propMidTanks,
+}: {
+  state: SceneState;
+  focus: Focus;
+  roof: boolean;
+  label: string;
+  layout?: SiteLayout | null;
+  status?: SiteStatus | null;
+  asepticTanks?: AsepticTank[] | null;
+  fillers?: Filler[] | null;
+  midTanks?: MidTank[] | null;
+}) {
+  void layout;
   const host = useRef<HTMLDivElement>(null);
   const view = useRef<{ position: THREE.Vector3; target: THREE.Vector3; zoom: number } | null>(null);
   const goal = useRef<{ target: THREE.Vector3; zoom: number; jump: boolean } | null>(null);
@@ -50,6 +75,17 @@ export function PlantScene({ state, focus, roof, label }: { state: SceneState; f
   const controlsRef = useRef<MapControls | null>(null);
   const spin = useRef(0);
   const prefs = useRef({ mode, auto });
+
+  const layoutRes = useResource<SiteLayout>(API_MODE ? "/site/layout" : null);
+  const statusRes = useResource<SiteStatus>(API_MODE && !propStatus ? `/site/status?view=${state}` : null);
+  const asepticRes = useResource<AsepticTank[]>(API_MODE && !propAseptic ? "/production/aseptic-tanks" : null);
+  const fillersRes = useResource<Filler[]>(API_MODE && !propFillers ? "/production/fillers" : null);
+  const midTanksRes = useResource<MidTank[]>(API_MODE && !propMidTanks ? "/assets/mid-tanks" : null);
+
+  const activeStatus = API_MODE ? (propStatus ?? statusRes.data) : SITE_STATUS[state];
+  const activeAseptic = API_MODE ? (propAseptic ?? asepticRes.data) : asepticTanks;
+  const activeFillers = API_MODE ? (propFillers ?? fillersRes.data) : fillers;
+  const activeMidTanks = API_MODE ? (propMidTanks ?? midTanksRes.data) : midTanks;
   /** Seret kiri memutar (mode putar) atau menggeser (mode geser); tombol kanan selalu kebalikannya. */
   const applyPrefs = (c: MapControls) => {
     const rotate = prefs.current.mode === "putar";
@@ -70,9 +106,10 @@ export function PlantScene({ state, focus, roof, label }: { state: SceneState; f
     return () => document.removeEventListener("fullscreenchange", sync);
   }, []);
   useEffect(() => {
-    const el = host.current!;
+    if (!host.current || !activeStatus || !activeAseptic || !activeFillers || !activeMidTanks) return;
+    const el = host.current;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const s = SITE_STATUS[state];
+    const s = activeStatus;
     const P = SITE.pois;
 
     // Palet dari token desain: gedung putih matte, tanah hijau lembut, aksen hijau brand.
@@ -341,8 +378,10 @@ export function PlantScene({ state, focus, roof, label }: { state: SceneState; f
     for (const t of pr.thermal) put(box(4, 3, 6, 0.2), M.steel, t, 1.7, pr.s, hall);
     for (const t of pr.separator) { put(cyl(0.9, 2, 20), M.steel, t, 1.2, pr.s, hall); put(new THREE.ConeGeometry(1.3, 1.6, 20), M.steel, t, 3, pr.s, hall); }
     tag("Degassing · Thermal · Separator", "neutral", -1, 7.5, pr.s, hall);
-    midTanks.forEach(tank => {
-      const { t, s: sz, r, h } = HALL.midTanks[tank.id];
+    activeMidTanks.forEach(tank => {
+      const cfg = HALL.midTanks[tank.id];
+      if (!cfg) return;
+      const { t, s: sz, r, h } = cfg;
       const st: Status = tank.state === "cip" ? "warn" : tank.state === "tertahan" ? "crit" : "neutral";
       vessel(t, sz, r, h, st === "neutral" ? M.steel : status(st), hall);
     });
@@ -351,11 +390,12 @@ export function PlantScene({ state, focus, roof, label }: { state: SceneState; f
 
     // Lima jalur: UHT-n → AT-n → dua mesin filling → conveyor → palet.
     const cartons: { mesh: THREE.Mesh; from: number }[] = [];
-    asepticTanks.forEach(at => {
+    activeAseptic.forEach(at => {
       const t = LANE[at.id];
+      if (t === undefined) return;
       const at2 = at.id === "AT-2";
       const starved = at2 && s.at2Starved;
-      put(box(6, 3.2, 7, 0.2), status(UNIT[at.sterilizerState], 1), t, 1.8, ST.uhtS, hall);
+      put(box(6, 3.2, 7, 0.2), status(UNIT[at.sterilizerState] ?? "neutral", 1), t, 1.8, ST.uhtS, hall);
       put(box(5.4, 1, 6.4, 0.1), M.steel, t, 3.9, ST.uhtS, hall);
       const atStatus: Status = starved ? "crit" : at.level ? "milk" : "neutral";
       const fill = starved ? 0.06 : at.level / at.capacity || 0.02;
@@ -364,10 +404,11 @@ export function PlantScene({ state, focus, roof, label }: { state: SceneState; f
       tag(`${at.sterilizer} → ${at.id}`, starved ? "crit" : UNIT[at.sterilizerState] === "milk" ? "neutral" : "warn", t, 11, ST.atS - 10, hall);
       if (starved) pin(t, 10, ST.atS, "crit", hall);
       at.fillers.forEach((id, k) => {
-        const f = fillers.find(x => x.id === id)!;
+        const f = activeFillers.find(x => x.id === id);
+        if (!f) return;
         const ft = t + (k ? ST.fillerOffset : -ST.fillerOffset);
         const starving = starved && f.state === "jalan";
-        const fs: Status = starving ? "crit" : UNIT[f.state];
+        const fs: Status = starving ? "crit" : (UNIT[f.state] ?? "neutral");
         const belt = ST.conveyorTo - ST.conveyorFrom;
         put(box(3.4, 3, 4, 0.25), M.wall, ft, 1.7, ST.fillerS, hall);
         put(box(3.45, 0.35, 4.05), status(fs), ft, 0.4, ST.fillerS, hall);
@@ -376,7 +417,7 @@ export function PlantScene({ state, focus, roof, label }: { state: SceneState; f
         put(box(2.4, 2, 2.4, 0.15), M.wrap, ft, 1.6, ST.palletS, hall);
         if (f.state === "jalan" && !starving) for (let c = 0; c < 6; c++) { const mesh = put(box(0.5, 0.6, 0.5, 0.05), M.carton, ft, 1.6, ST.conveyorFrom, hall); cartons.push({ mesh, from: c * 9 }); }
         if (fs === "crit") pin(ft, 6, ST.fillerS, "crit", hall);
-        if (id === "F2" || id === "F4" || f.state === "breakdown") tag(starving ? `${id} · starvation ${s.starvationAt}` : `${id} · ${f.state === "breakdown" ? "breakdown" : f.product.replace("UHT ", "")}`, fs === "milk" ? "neutral" : fs, ft, 7, ST.fillerS - 4, hall);
+        if (id === "F2" || id === "F4" || f.state === "breakdown") tag(starving ? `${id} · starvation ${s.starvationAt}` : `${id} · ${f.state === "breakdown" ? "breakdown" : (f.product || "").replace("UHT ", "")}`, fs === "milk" ? "neutral" : fs, ft, 7, ST.fillerS - 4, hall);
       });
     });
 
@@ -469,7 +510,30 @@ export function PlantScene({ state, focus, roof, label }: { state: SceneState; f
       renderer.dispose();
       el.replaceChildren();
     };
-  }, [state, roof]);
+  }, [state, roof, activeStatus, activeAseptic, activeFillers, activeMidTanks]);
+
+  if (API_MODE) {
+    const error = layoutRes.error ?? statusRes.error ?? asepticRes.error ?? fillersRes.error ?? midTanksRes.error;
+    if (error) {
+      return (
+        <div ref={wrap} className={`plant-scene-wrap ${full ? "full" : ""}`}>
+          <div className="plant-scene" role="alert" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "360px" }}>
+            <p className="crit-text">Gagal memuat visualisasi 3D: {error.message}</p>
+          </div>
+        </div>
+      );
+    }
+    if (!activeStatus || !activeAseptic || !activeFillers || !activeMidTanks) {
+      return (
+        <div ref={wrap} className={`plant-scene-wrap ${full ? "full" : ""}`}>
+          <div className="plant-scene" role="status" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "360px" }}>
+            <p className="muted">Memuat visualisasi 3D…</p>
+          </div>
+        </div>
+      );
+    }
+  }
+
   return <div ref={wrap} className={`plant-scene-wrap ${full ? "full" : ""}`}>
     <div ref={host} className="plant-scene" role="img" aria-label={`${label} Tombol panah menggeser, Q dan E memutar.`} tabIndex={0} />
     <div className="scene-controls" role="group" aria-label="Kontrol tampilan 3D">

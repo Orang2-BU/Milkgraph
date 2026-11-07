@@ -9,7 +9,7 @@
     "start": "next start --hostname 0.0.0.0",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test tests/scenario.test.mjs tests/rules.test.mjs",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "fixtures": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/export-fixtures.mjs"
   },
   "dependencies": {

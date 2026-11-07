@@ -1,15 +1,12 @@
-# Deploy frontend MilkGraph ke Dokploy
+# Deploy MilkGraph ke Dokploy
 
-## Hasil analisis
+## Pilih mode rilis
 
-- Next.js 16 + React 19. Seluruh 14 halaman UI saat ini dapat diprerender; graph dan simulasi Three.js berjalan di browser.
-- `lib/data.ts`, `mock/ops.ts`, dan `mock/site.ts` memasok data mock secara langsung. Belum ada klien HTTP atau integrasi backend.
-- `lib/demo.ts` menyimpan keputusan, hold, hasil lab, dan peran di **localStorage** browser. Bukan penyimpanan server, bukan sinkronisasi multiuser. Redeploy tidak menghapus localStorage; browser/domain lain punya state terpisah.
-- Pemilihan peran hanya simulasi, **bukan autentikasi**. Aman untuk demo data simulasi; jangan masukkan data operasional/rahasia.
-- Tidak perlu FastAPI, PostgreSQL, Neo4j, Redis, volume, atau API key untuk deploy ini.
-- `NEXT_PUBLIC_DATA_MODE` dan `NEXT_PUBLIC_API_URL` yang dibahas dalam rencana integrasi **belum dikonsumsi kode**. Tidak perlu diset; menambahkannya tidak mengaktifkan API.
+- **Mock**: frontend Next.js standalone saja, tanpa backend/DB; aksi demo tersimpan di localStorage browser dan tidak sinkron antar-perangkat. Cocok untuk presentasi data simulasi.
+- **API demo**: frontend terhubung ke backend Go, PostgreSQL untuk state/audit, dan SSE untuk pembaruan. `NEXT_PUBLIC_DATA_MODE=api` mengaktifkan klien HTTP; jika API gagal, frontend tidak fallback ke data mock. Solver dan konektor eksternal masih simulasi.
+- **Live**: backend sudah memvalidasi JWT, tetapi frontend belum menyediakan login/SSO dan issuer token. Jangan buka API demo publik: `X-Demo-Role` memberi pengunjung akses ke berbagai peran. Batasi staging lewat access gateway/VPN sampai autentikasi nyata ada.
 
-Paket deployment memakai server Next.js standalone, bukan static export. Ini mempertahankan runtime Next.js untuk integrasi nanti dan menyediakan `/api/health`, tanpa menambah Nginx/Compose/backend. Halaman UI yang statis tetap diprerender.
+Frontend memakai server Next.js standalone dengan `/api/health`. Nilai `NEXT_PUBLIC_*` dibundel saat build: perubahan mode atau URL API wajib rebuild frontend.
 
 ## Isi paket
 
@@ -35,11 +32,37 @@ Repo masih mempunyai lockfile pnpm untuk pengembangan. Jalur Docker sengaja meng
    | Command/Entrypoint override | kosong |
    | Replicas | `1` untuk awal |
 
-4. Environment/Build Arguments: **boleh kosong**. Image sudah menetapkan `NODE_ENV=production`, `NEXT_TELEMETRY_DISABLED=1`, `HOSTNAME=0.0.0.0`, `PORT=3000`. `.env.example` hanya referensi, tidak berisi secret. Jangan mengganti port tanpa menyesuaikan domain dan healthcheck.
+4. Untuk demo UI publik, Build Argument `NEXT_PUBLIC_DATA_MODE=mock`. `NEXT_PUBLIC_API_URL` boleh kosong. Jika tidak diisi, default kode adalah mock. Image menetapkan `NODE_ENV=production`, `NEXT_TELEMETRY_DISABLED=1`, `HOSTNAME=0.0.0.0`, `PORT=3000`. Jangan mengubah port tanpa menyesuaikan domain dan healthcheck.
 5. Domains: isi domain frontend, Path `/`, Container Port `3000`. Arahkan DNS A ke IP VPS; hapus/perbaiki AAAA yang menunjuk server lain. Aktifkan HTTPS dengan Let's Encrypt setelah DNS benar. Traefik Dokploy menangani TLS; tidak perlu membuka port 3000 langsung ke internet.
 6. Volumes, database, Redis, port mapping host: **tidak perlu**. Jangan mount direktori yang menimpa `/app` atau `.next`.
 7. Untuk rilis pertama, nonaktifkan Auto Deploy, lalu klik **Deploy** manual. Workflow GitHub Actions hanya menjalankan CI tanpa webhook/deploy; Dokploy tetap menjadi satu-satunya pemilik release. Jika nanti Auto Deploy diaktifkan, batasi ke branch rilis yang sama. Test/lint/build wajib lolos di Dockerfile sebelum image selesai dibuat.
 8. Tunggu build dan container berjalan, cek Logs/Monitoring. Build memerlukan unduhan registry npm/Docker serta Google Fonts (`next/font/google`); runtime memakai font yang sudah dibundel. Sediakan headroom RAM saat build; kapasitas pengguna belum di-load-test.
+
+## Staging API demo (setelah frontend mock stabil)
+
+1. Buat PostgreSQL terkelola di Dokploy, aktifkan persistent volume dan backup. Jangan expose port database publik.
+2. Buat Application backend dari repo `Milkgraph-Back`: Dockerfile `Dockerfile`, context `.`, container port `8080`.
+3. Isi backend dari connection string internal PostgreSQL Dokploy:
+
+   ```text
+   DATABASE_URL=<internal-postgresql-url>
+   MODE=demo
+   CORS_ORIGINS=https://stage.milkgraph.example
+   BIND_ADDRESS=:8080
+   ```
+
+   `MODE=demo` hanya untuk staging tertutup. `MODE=live` baru boleh aktif setelah SSO/issuer JWT tersedia, dengan `JWT_SECRET` minimum 32 karakter, `JWT_ISSUER`, dan `JWT_AUDIENCE`.
+4. Beri backend domain HTTPS terpisah, misalnya `https://api-stage.milkgraph.example`; deploy, lalu cek `GET /readyz` menghasilkan `{"status":"ready"}`.
+5. Pada frontend, set **Build Arguments**, lalu rebuild:
+
+   ```text
+   NEXT_PUBLIC_DATA_MODE=api
+   NEXT_PUBLIC_API_URL=https://api-stage.milkgraph.example
+   ```
+
+6. Dari browser, pastikan request menuju API HTTPS tersebut, tidak ke `127.0.0.1`; lakukan satu mutasi rencana dan cek tab kedua refresh lewat SSE. Origin browser harus persis ada di `CORS_ORIGINS`.
+
+Jangan publikasikan API demo. Pasang Cloudflare Access, VPN, atau allowlist IP. Untuk rollback, pilih revision/image frontend atau backend terakhir yang sehat di Dokploy; jangan reset volume PostgreSQL.
 
 ## Verifikasi lokal / sebelum rilis
 
@@ -76,7 +99,7 @@ Buka `/`, `/rencana`, `/trace`, `/simulasi`; coba ganti peran dan satu aksi demo
 
 ## GitHub Actions CI
 
-`.github/workflows/ci.yml` berjalan pada push semua branch, pull request, dan manual dispatch. Job `Test & Build` memakai Ubuntu + Node 22, cache npm, `npm ci`, lint, typecheck, 9 unit test, build Next.js, build Docker, lalu smoke test image yang berjalan.
+`.github/workflows/ci.yml` berjalan pada push semua branch, pull request, dan manual dispatch. Job `Test & Build` memakai Ubuntu + Node 22, cache npm, `npm ci`, lint, typecheck, seluruh `tests/*.test.mjs` (33 kasus saat panduan ini diperbarui), build Next.js, build Docker, lalu smoke test image yang berjalan.
 
 CI menunggu healthcheck container (maksimum sekitar 60 detik), menguji 14 halaman/aset/404, dan memeriksa runtime non-root. Kegagalan menampilkan log container; cleanup selalu dijalankan. Run lama pada ref yang sama dibatalkan otomatis. Tidak perlu secret; tidak push image atau memicu deploy Dokploy. Tes browser interaktif belum dimasukkan ke CI karena skrip lama masih usang.
 
