@@ -41,7 +41,7 @@ try {
   await page.getByRole("button", { name: "Setujui rekomendasi", exact: true }).click();
   await page.getByLabel("Catatan (opsional)").fill("Informasikan koordinator receiving.");
   await page.getByRole("button", { name: "Konfirmasi persetujuan" }).click();
-  await page.getByText(/^Disetujui oleh Rina Wulandari, 14\.\d\d$/).waitFor();
+  await page.getByText(/^Disetujui oleh Rino Akbar Hanif, 14\.\d\d$/).waitFor();
   await page.getByRole("button", { name: "Panduan demo" }).click();
   await page.getByRole("button", { name: "Atur ulang demo" }).click();
   await page.getByRole("button", { name: "What-if: CIP Bay 2 molor 40 menit" }).click();
@@ -50,7 +50,7 @@ try {
   assert.ok(await page.getByRole("button", { name: "Konfirmasi penolakan" }).isDisabled());
   await page.getByLabel("Catatan (wajib)").fill("Tunggu konfirmasi durasi CIP dari supervisor.");
   await page.getByRole("button", { name: "Konfirmasi penolakan" }).click();
-  await page.getByText(/^Ditolak oleh Rina Wulandari, 14\.\d\d$/).waitFor();
+  await page.getByText(/^Ditolak oleh Rino Akbar Hanif, 14\.\d\d$/).waitFor();
   report.push("Rencana: filter RT, 3 constraint violations, solver view clean, approve, reset, what-if, reject: PASS");
   await page.goto(root + "/trace");
   await page.getByRole("button", { name: "Trace mundur" }).click();
@@ -82,8 +82,8 @@ try {
   await page.getByText("RT-27 masuk tepat setelah CIP selesai 15.20.").waitFor();
   assert.equal(await page.locator(".scene-tag.crit").count(), 0);
   report.push("Simulasi 3D: bottlenecks before, none critical after recommendation: PASS");
-  assert.equal(await page.locator("#desktop-navigation .nav-list a").count(), 6);
-  const tabbed = { receiving: "Pabrik", tangki: "Pabrik", filling: "Pabrik", pasokan: "Rencana", constraint: "Rencana", persetujuan: "Rencana", lab: "Traceability", hold: "Traceability", graph: "Traceability", "sumber-data": "Pengaturan", pengguna: "Pengaturan" };
+  assert.equal(await page.locator("#desktop-navigation .nav-list a.nav-item").count(), 7);
+  const tabbed = { receiving: "Penerimaan", lab: "Penerimaan", alur: "Operasional", "kondisi-alat": "Operasional", "qc-produk": "Operasional", "master-data": "Operasional", "riwayat-produksi": "Traceability", hold: "Traceability", graph: "Traceability", "sumber-data": "Pengaturan", pengguna: "Pengaturan" };
   for (const [route, menu] of Object.entries(tabbed)) {
     const response = await page.goto(`${root}/${route}`);
     assert.equal(response.status(), 200, route);
@@ -91,7 +91,7 @@ try {
     assert.equal(await page.locator(".section-tabs a[aria-current=page]").getAttribute("href"), `/${route}`, route);
     assert.equal(await page.locator("#desktop-navigation .nav-item.active").getAttribute("aria-label"), menu, route);
   }
-  report.push(`Sidebar 6 menus; ${Object.keys(tabbed).length} tabbed routes show the right menu and tab: PASS`);
+  report.push(`Sidebar 7 menus; ${Object.keys(tabbed).length} tabbed routes show the right menu and tab: PASS`);
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto(root);
   const menu = page.getByRole("button", { name: "Buka menu", exact: true });

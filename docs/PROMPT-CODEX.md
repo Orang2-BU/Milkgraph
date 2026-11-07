@@ -58,7 +58,7 @@ Kode minimum yang benar: tanpa state manager, tanpa abstraksi untuk kebutuhan hi
 - Desktop ≥1200px: terbuka default, tombol ciut/buka (`aria-expanded`, `aria-controls`). 768-1199px: ciut default. <768px: tersembunyi; tombol menu di top bar membuka drawer dengan scrim, focus trap, Escape menutup, fokus kembali ke tombol menu, scroll body terkunci.
 - Item aktif: pill `surface` putih + `aria-current="page"`. Judul grup kecil `label` abu (bukan eyebrow di atas heading halaman).
 - Halaman placeholder tetap bisa diklik, diberi titik kecil abu dan `title="Belum tersedia di mockup"`.
-- Atas: logo teks "MilkGraph" (kotak kecil hijau + wordmark). Bawah: kartu akun "Rina Wulandari, Supervisor Produksi, Shift Siang" (avatar inisial, bukan foto).
+- Atas: logo teks "MilkGraph" (kotak kecil hijau + wordmark). Bawah: kartu akun "Rino Akbar Hanif, Supervisor Produksi, Shift Siang" (avatar inisial, bukan foto).
 
 ### Top bar
 
@@ -102,7 +102,7 @@ Judul "Jadwal & What-if", subjudul "Bandingkan rencana sebelum disetujui." Aksi:
 2. **Kartu hasil rekomendasi (satu-satunya kartu hijau gelap di layar ini):** 4 metrik sebelum → sesudah: menit starvation, jumlah CIP, umur bahan maksimum, estimasi biaya downtime (Rp, label `[asumsi]` dengan tooltip "Rp 18.500 per menit, asumsi"). Isi angka di JSON harus konsisten dengan Gantt.
 3. **Gantt:** baris per sumber daya (Bongkar truk, T1-T4, Line 1-3), rentang 13.00-20.00, blok membulat; jenis blok: proses (hijau pudar), CIP (hijau keabuan berarsir), starvation (merah pudar), bongkar truk (abu). Toggle "Sebelum / Sesudah". Garis vertikal "sekarang 14.42". Scroll horizontal hanya di dalam kartu Gantt. Setiap blok punya `aria-label` lengkap.
 4. **Alasan perubahan (daftar):** contoh "Truk B 4127 dibongkar setelah uji ulang QC ke Tangki T3: T3 selesai CIP 14.55", "CIP Line 3 dimajukan ke 15.10: urutan varian Plain lalu Cokelat mengurangi satu CIP", "Batch di T4 diprioritaskan ke Mixing M1: indeks risiko mutu 71". Tiap alasan punya chip sumber.
-5. **Persetujuan:** "Setujui" membuka dialog konfirmasi (focus trap, Escape, catatan opsional) → status berubah "Disetujui oleh Rina Wulandari, 14.47" dan masuk daftar riwayat kecil di bawah. "Tolak" mewajibkan catatan. Status disimpan di state halaman saja (reload = reset), dan tersedia tombol "Atur ulang demo".
+5. **Persetujuan:** "Setujui" membuka dialog konfirmasi (focus trap, Escape, catatan opsional) → status berubah "Disetujui oleh Rino Akbar Hanif, 14.47" dan masuk daftar riwayat kecil di bawah. "Tolak" mewajibkan catatan. Status disimpan di state halaman saja (reload = reset), dan tersedia tombol "Atur ulang demo".
 
 ## 5. Data simulasi (`mock/scenario.json`)
 

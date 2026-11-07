@@ -2,7 +2,7 @@ export type RoleId = "planner" | "receiving" | "supervisor" | "qa";
 export type Permission = "demand.send" | "plan.decide" | "constraint.edit" | "hold.submit" | "hold.review" | "lab.decide" | "instruction.ack";
 
 export const ROLES: Record<RoleId, { label: string; user: string; initials: string; focus: string }> = {
-  planner: { label: "Planner PPIC", user: "Rina Wulandari", initials: "RW", focus: "Rencana shift yang layak dan keputusan saat gangguan." },
+  planner: { label: "Planner PPIC", user: "Rino Akbar Hanif", initials: "RA", focus: "Rencana shift yang layak dan keputusan saat gangguan." },
   receiving: { label: "Koordinator receiving", user: "Dimas Prasetyo", initials: "DP", focus: "Urutan RT, bay yang siap, dan RT yang mendekati batas holding time." },
   supervisor: { label: "Supervisor produksi", user: "Hendra Kusuma", initials: "HK", focus: "Lokasi bottleneck dan dampaknya ke lini filling." },
   qa: { label: "QA/Lab", user: "Sri Lestari", initials: "SL", focus: "Hasil lab, lot terdampak beserta proporsi volume, dan daftar hold." },
