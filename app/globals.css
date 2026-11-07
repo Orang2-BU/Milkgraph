@@ -1053,3 +1053,29 @@ main .icon-button { box-shadow: inset 0 0 0 1px var(--color-border); color: var(
 }
 .module-big { font-size: 28px; letter-spacing: -.03em; color: var(--color-on-surface-muted); margin: 4px 0 6px; }
 .module-big strong { color: var(--color-on-surface); font-weight: 650; }
+
+/* Alur Produksi: canvas alat per tahap (React Flow) */
+.flow-card { padding: 20px; }
+.flow-frame { display: flex; flex-direction: column; gap: 16px; background: var(--color-surface); border-radius: var(--radius-md); }
+.flow-frame:fullscreen { padding: 20px; }
+.flow-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.flow-toolbar .icon-button { background: var(--color-canvas); }
+.flow-canvas { height: min(640px, calc(100dvh - 300px)); min-height: 420px; border-radius: var(--radius-md); background: var(--color-canvas); overflow: hidden; }
+.flow-frame:fullscreen .flow-canvas { flex: 1; height: auto; }
+.flow-node { width: 150px; min-height: 120px; padding: 12px 10px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); box-shadow: 0 6px 16px -12px color-mix(in oklab, var(--color-surface-inverse) 40%, transparent); color: var(--color-on-surface); transition: border-color 160ms ease, box-shadow 160ms ease; }
+.flow-node:hover, .flow-node:focus-visible { border-color: var(--color-accent-fill); box-shadow: 0 10px 22px -14px color-mix(in oklab, var(--color-surface-inverse) 55%, transparent); }
+.flow-node strong { font-size: 13px; font-weight: 650; }
+.flow-node .mini-status { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; font-size: 10.5px; }
+.flow-node .mini-status.ok { color: var(--color-status-ok); }
+.flow-node .mini-status.crit { color: var(--color-status-crit); }
+.flow-node.is-active .equipment { --eq-ink: var(--color-surface-inverse); --eq-accent: var(--color-accent-fill); }
+.flow-stage { display: block; width: 100%; text-align: center; font-size: 12px; font-weight: 550; color: var(--color-on-surface-muted); }
+.react-flow .edge-idle path { stroke-dasharray: 5 5; }
+.flow-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 14px; font-size: 12px; color: var(--color-on-surface-muted); }
+.flow-legend > span { display: inline-flex; align-items: center; gap: 8px; }
+.legend-line { width: 22px; border-top: 2px solid var(--color-accent-fill); }
+.legend-line.idle { border-top: 2px dashed var(--color-border); }
+@media (max-width: 767px) {
+  .flow-card { padding: 16px; }
+  .flow-canvas { height: 480px; min-height: 0; }
+}

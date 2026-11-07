@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Box, Factory, CalendarClock, GitBranch, Settings,
-  Truck, ListOrdered, Gauge, TestTubeDiagonal, SlidersHorizontal, Milk, ListChecks, ClipboardCheck,
+  Truck, ListOrdered, Workflow, Gauge, TestTubeDiagonal, SlidersHorizontal, Milk, ListChecks, ClipboardCheck,
   Route, Share2, FlaskConical, PackageX, Database, Library, Users,
   type LucideIcon,
 } from "lucide-react";
@@ -14,7 +14,7 @@ export const navigation: NavItem[] = [
   { label: "Beranda", hint: "Ringkasan semua area", icon: LayoutDashboard, tabs: [{ label: "Beranda", href: "/" }] },
   { label: "Simulasi 3D", hint: "Plant dan bottleneck", icon: Box, tabs: [{ label: "Simulasi 3D", href: "/simulasi" }] },
   { label: "Penerimaan", hint: "Truk dan tes lab", icon: Truck, tabs: [{ label: "Antrean Truk", href: "/receiving", icon: ListOrdered }, { label: "Tes Lab", href: "/lab", icon: FlaskConical }] },
-  { label: "Operasional", hint: "Alat dan QC produk", icon: Factory, tabs: [{ label: "Kondisi Alat", href: "/kondisi-alat", icon: Gauge, match: ["/tangki", "/filling"] }, { label: "QC Barang Jadi", href: "/qc-produk", icon: TestTubeDiagonal }, { label: "Master Alat", href: "/master-data", icon: Library }] },
+  { label: "Operasional", hint: "Alur, alat, dan QC", icon: Factory, tabs: [{ label: "Alur", href: "/alur", icon: Workflow }, { label: "Kondisi Alat", href: "/kondisi-alat", icon: Gauge, match: ["/tangki", "/filling"] }, { label: "QC Barang Jadi", href: "/qc-produk", icon: TestTubeDiagonal }, { label: "Master Alat", href: "/master-data", icon: Library }] },
   { label: "Rencana", hint: "Kelayakan dan solver", icon: CalendarClock, tabs: [{ label: "Rencana & What-if", href: "/rencana", icon: SlidersHorizontal }, { label: "Pasokan", href: "/pasokan", icon: Milk }, { label: "Constraint", href: "/constraint", icon: ListChecks }, { label: "Riwayat", href: "/persetujuan", icon: ClipboardCheck }] },
   { label: "Traceability", hint: "Asal lot dan hold", icon: GitBranch, tabs: [{ label: "Telusur", href: "/trace", icon: Route }, { label: "Context Graph", href: "/graph", icon: Share2 }, { label: "Hold", href: "/hold", icon: PackageX }] },
   { label: "Pengaturan", hint: "Data dan peran", icon: Settings, tabs: [{ label: "Sumber Data", href: "/sumber-data", icon: Database }, { label: "Pengguna & Peran", href: "/pengguna", icon: Users }] },

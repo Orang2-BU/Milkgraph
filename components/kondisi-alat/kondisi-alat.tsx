@@ -4,26 +4,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { Badge, Card, Icon, PageHeading, Toggle } from "@/components/ui";
-import { scenario } from "@/lib/data";
-import { number } from "@/lib/format";
-import { asepticTanks, fillers, midTanks, UNIT_STATE, type MidTank } from "@/mock/ops";
+import { ASSETS } from "@/lib/assets";
 import type { Tone } from "@/mock/types";
 
-interface Asset { id: string; group: string; status: string; tone: Tone; note: string; href: string }
-
-const MID: Record<MidTank["state"], { label: string; tone: Tone }> = { terisi: { label: "Terisi", tone: "ok" }, kosong: { label: "Kosong", tone: "neutral" }, cip: { label: "CIP", tone: "warn" }, tertahan: { label: "Tertahan", tone: "warn" } };
-
-/** Semua alat dalam urutan alur produksi. Halaman detail tetap /tangki dan /filling. */
-const ASSETS: Asset[] = [
-  ...scenario.assets.map(a => ({ id: a.id, group: a.kind === "Bay" ? "Penerimaan" : "Susu mentah", status: a.status, tone: a.tone, note: `${number(a.fill)} / ${number(a.capacity)} ${a.unit} · ${a.info}`, href: "/tangki" })),
-  ...midTanks.map(t => ({ id: t.id, group: `${t.group}`, status: MID[t.state].label, tone: MID[t.state].tone, note: t.note, href: "/tangki" })),
-  ...asepticTanks.map(t => ({ id: t.sterilizer, group: "Sterilisasi", status: UNIT_STATE[t.sterilizerState].label, tone: UNIT_STATE[t.sterilizerState].tone, note: `Ke ${t.id} · ${t.product}`, href: "/filling" })),
-  ...asepticTanks.map(t => {
-    const thin = t.planned && t.level < t.capacity * 0.1;
-    return { id: t.id, group: "Tangki aseptik", status: thin ? "Pasokan menipis" : t.level ? "Terisi" : "Kosong", tone: (thin ? "crit" : t.level ? "ok" : "neutral") as Tone, note: `${number(t.level)} / ${number(t.capacity)} L · melayani ${t.fillers.join(" dan ")}`, href: "/filling" };
-  }),
-  ...fillers.map(f => ({ id: f.id, group: "Filling", status: UNIT_STATE[f.state].label, tone: UNIT_STATE[f.state].tone, note: `${f.product} · ${f.note}`, href: "/filling" })),
-];
 const RANK: Record<Tone, number> = { crit: 0, warn: 1, ok: 2, neutral: 3 };
 const ATTENTION = ASSETS.filter(a => a.tone === "crit" || a.tone === "warn").sort((a, b) => RANK[a.tone] - RANK[b.tone]);
 

@@ -92,7 +92,7 @@ export function Beranda() {
         </div>
       </ModuleCard>
 
-      <ModuleCard icon={Factory} menu="Operasional" description="Proses produksi saat ini: kondisi setiap alat, QC barang jadi, dan master alat." wide>
+      <ModuleCard icon={Factory} menu="Operasional" description="Proses produksi saat ini: alur alat, kondisi setiap alat, QC barang jadi, dan master alat." wide>
         <div className="module-cols">
           <div><h4>Bay dan tangki raw milk</h4><ul className="mini-bars">{scenario.assets.map(a => <li key={a.id}><span className="mono">{a.id}</span><span className={`capacity-bar ${a.tone}`}><span style={{ width: `${a.fill / a.capacity * 100}%` }} /></span><span className={`mini-status ${a.tone}`}>{a.status}</span></li>)}</ul></div>
           <div><h4>Lini filling</h4><ul className="line-chips">{fillers.map(f => <li key={f.id} className={UNIT_STATE[f.state].tone} title={`${f.id}: ${UNIT_STATE[f.state].label}, ${f.product}`}>{f.id}</li>)}</ul><p className="module-note">{fillCount.map(x => `${x.n} ${UNIT_STATE[x.k].label.toLowerCase()}`).join(" · ")}</p></div>
