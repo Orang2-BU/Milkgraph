@@ -9,12 +9,13 @@ import { useDemo } from "@/lib/demo";
 import { evaluate, transferNeed } from "@/lib/rules";
 import type { Plan } from "@/mock/types";
 import { applyToLimits, badgeOf, effectNote, isModelled, type Adjust, type Adjustments } from "./adjust";
+import { UPGRADES } from "./upgrade-picks";
 import { HORIZON, clock, events, projectBlocks, projectChecks, statusAt, type View } from "./projection";
 
-const UPGRADES = [0, 10, 25, 50];
 const STARTS = ["13.30", "14.00", "14.30", "15.00", "15.30", "16.00", "16.30", "17.00", "17.30", "18.00", "18.30", "19.00"];
 const DURATIONS = [15, 30, 45, 60, 90];
 const NOW = 102;
+const fmt = (n: number) => new Intl.NumberFormat("id-ID").format(n);
 
 const Ctx = createContext<{ adj: Adjustments; set: (id: string, a: Adjust) => void; jump: (t: number) => void }>({ adj: {}, set: () => {}, jump: () => {} });
 
@@ -25,6 +26,7 @@ function PlanEditor({ asset, onClose }: AsideProps) {
   const update = (patch: Partial<Adjust>) => set(asset.id, { ...a, ...patch });
   const setMaint = (m: Adjust["maintenance"]) => { update({ maintenance: m }); if (m) jump(Number(m.start.slice(0, 2)) * 60 + Number(m.start.slice(3)) - 780 + 5); };
   const up = effectNote(asset.id, "upgrade"), mt = effectNote(asset.id, "maintenance");
+  const pick = UPGRADES.picks.find(p => p.id === asset.id), skip = UPGRADES.skips.find(s => s.id === asset.id);
   return <aside className="flow-inspector plan-editor" aria-label={`Atur rencana ${asset.id}`}>
     <header>
       <Equipment kind={asset.kind} size={44} />
@@ -35,10 +37,13 @@ function PlanEditor({ asset, onClose }: AsideProps) {
 
     <fieldset className="plan-field">
       <legend><Icon icon={Zap} size={15} />Upgrade kapasitas</legend>
-      <div className="toggle plan-seg" role="radiogroup" aria-label="Kenaikan kapasitas">
-        {UPGRADES.map(u => <button key={u} type="button" role="radio" aria-checked={(a.upgrade ?? 0) === u} className={(a.upgrade ?? 0) === u ? "selected" : ""} onClick={() => update({ upgrade: u || undefined })}>{u ? `+${u}%` : "Tidak"}</button>)}
-      </div>
-      {a.upgrade ? <p className="small muted">{up ?? "Efek upgrade alat ini ke alur belum dimodelkan [simulasi]. Perubahannya tetap dicatat di rencana."}</p> : null}
+      {pick ? <>
+        <div className="toggle plan-seg" role="radiogroup" aria-label="Kenaikan kapasitas">
+          {[0, pick.pct].map(u => <button key={u} type="button" role="radio" aria-checked={(a.upgrade ?? 0) === u} className={(a.upgrade ?? 0) === u ? "selected" : ""} onClick={() => update({ upgrade: u || undefined })}>{u ? `+${fmt(pick.gain)} L/jam` : "Tidak"}</button>)}
+        </div>
+        <p className="small muted">Dari {fmt(pick.from)} ke {fmt(pick.from + pick.gain)} L/jam (naik {pick.pct}%), sesuai kebutuhan jalur {pick.line}.{a.upgrade && !up ? " Efeknya ke jadwal belum dimodelkan [simulasi]." : ""}</p>
+        {a.upgrade && up ? <p className="small muted">{up}</p> : null}
+      </> : <p className="small muted">{skip?.reason ?? "Belum ada dasar data untuk menghitung upgrade alat ini."}</p>}
     </fieldset>
 
     <fieldset className="plan-field">
@@ -62,9 +67,8 @@ function PlanEditor({ asset, onClose }: AsideProps) {
  * pada jam yang dipilih. Pengaturan alat langsung mengubah alur: bongkar yang bentrok dan filling yang berhenti tampil merah.
  * Ini pratinjau di halaman Rencana saja; batas di halaman Constraint dan keputusan rencana tidak berubah.
  */
-export function PlanFlow({ plan }: { plan: Plan }) {
+export function PlanFlow({ plan, adj, setAdj }: { plan: Plan; adj: Adjustments; setAdj: React.Dispatch<React.SetStateAction<Adjustments>> }) {
   const demo = useDemo();
-  const [adj, setAdj] = useState<Adjustments>({});
   const [view, setView] = useState<View>("before");
   const [t, setT] = useState(NOW);
   const set = (id: string, a: Adjust) => setAdj(prev => {
