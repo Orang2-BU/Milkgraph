@@ -91,7 +91,8 @@ Pengguna demo: Rino Akbar Hanif (Planner PPIC), Dimas Prasetyo (Koordinator rece
 - 4 metrik: throughput receiving vs target 13,3 t/jam, waktu putar RT, tunggu lab test, bay aktif.
 - State machine RT 7 tahap (Farms, On the way, Sampling, Lab test, Released, Unloading, Stored); lab test tampil sebagai gerbang antrean.
 - Kartu sorotan: "Rencana tidak layak, N constraint dilanggar" (N dari rules dan batas tersimpan) atau "Rekomendasi disetujui, RT-26 pindah ke Bay 1"; sisa holding time RT kritis mengikuti batas di Constraint; 3 faktor bersumber.
-- Bay dan Raw Milk Buffer; tabel RT (volume, tahap, tunggu, umur susu, suhu) dengan filter tahap; grafik tunggu lab per jam.
+- Tabel RT (volume, tahap, tunggu, umur susu, suhu) dengan filter tahap, berdampingan dengan kartu sorotan.
+- Sejak revisi 7 Nov 2026 (satu halaman satu topik), halaman ini bernama Antrean Truk di menu Penerimaan. Kartu Bay dan Raw Milk Buffer tidak lagi diulang di sini karena isinya ada di Bay & Tangki, dan grafik tunggu lab per jam pindah ke Tes Lab. Kartu sorotan memberi tautan ke kedua halaman itu, dan 3 faktornya (lab 52 menit, Bay 2 CIP, holding RT-26) tetap tampil, jadi alur demo langkah 1 tidak berubah.
 
 **Simulasi 3D (`/simulasi`)**
 - Model situs dengan tata letak nyata: gedung, jalan, apron, parkir, IPAL, dan hutan ditelusuri dari citra satelit publik plant susu di Palaan, Ngajum, Malang (Esri World Imagery zoom 19, ±0,3 m/piksel; titik -8.0993468, 112.5497219). Gedung utama ±52 × 216 m, diputar 13°.
@@ -141,6 +142,7 @@ Pengguna demo: Rino Akbar Hanif (Planner PPIC), Dimas Prasetyo (Koordinator rece
 
 **Hasil Lab (`/lab`)**
 - Lab test penerimaan RT dan QC barang jadi dengan parameter dan batasnya; QA merilis RT ke receiving atau menolak (alasan wajib); rilis menunggu uji ulang bila status uji ulang; tautan trace untuk QC out-of-spec.
+- Sejak revisi 7 Nov 2026 dipecah dua: Tes Lab (`/lab`, menu Penerimaan) untuk lab test RT beserta grafik tunggu lab per jam yang dipindah dari Antrean Truk, dan QC Barang Jadi (`/qc-produk`, menu Operasional).
 
 **Daftar Hold (`/hold`)**
 - Pengajuan dari Traceability; metrik menunggu QA, hold aktif, perlu recall, cakupan tanpa genealogi.

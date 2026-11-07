@@ -9,7 +9,9 @@ import { labResults, type LabResult } from "@/mock/ops";
 import { API_MODE } from "@/lib/api/client";
 import { useResource } from "@/lib/api/resource";
 import { Badge, Card, Icon, Modal, PageHeading, RoleNote, SectionTitle, SourceButton, SourceModal } from "@/components/ui";
-import type { Tone } from "@/mock/types";
+import type { Scenario, Tone } from "@/mock/types";
+import { scenario } from "@/lib/data";
+import { LabWaitChart } from "./lab-wait-chart";
 
 const STATUS: Record<LabResult["status"], { label: string; tone: Tone }> = {
   "hasil-siap": { label: "Menunggu rilis QA", tone: "warn" },
@@ -35,6 +37,8 @@ export function Lab({ kind }: { kind: LabResult["kind"] }) {
 
   const resultsRes = useResource<LabResultItem[]>(API_MODE ? `/lab/results?kind=${kind}` : null);
   const summaryRes = useResource<{ waiting: number; released: number; avgWaitMin: number }>(API_MODE && kind === "penerimaan" ? "/lab/summary" : null);
+  // Riwayat tunggu lab per jam ikut endpoint receiving (sumber yang sama dengan antrean RT).
+  const waitRes = useResource<Pick<Scenario, "labHistory"> & { labSummary: { avgMinutes: number; deltaMinutes: number } }>(API_MODE && kind === "penerimaan" ? "/receiving" : null);
 
   if (API_MODE && (!resultsRes.data || (kind === "penerimaan" && !summaryRes.data))) {
     if (resultsRes.error || summaryRes.error) {
@@ -95,6 +99,7 @@ export function Lab({ kind }: { kind: LabResult["kind"] }) {
       </> : <><p className="small with-icon"><Icon icon={FlaskConical} size={14} />Pilih sampel untuk melihat parameternya.</p><p className="small muted">{intake ? "QA/Lab merilis RT ke antrean bongkar atau menolaknya. Penolakan wajib disertai alasan dan tercatat di Riwayat Persetujuan." : "Lot out-of-spec ditelusuri asalnya di Traceability, lalu diajukan hold."}</p></>}</aside>
     </div>
     {dialog && open && <Modal title={dialog === "dirilis" ? `Rilis ${open.subject} ke receiving?` : `Tolak ${open.subject}?`} onClose={() => { setDialog(null); setSubmitError(null); }}><form onSubmit={submit}><Badge>Data simulasi</Badge><p className="dialog-summary">{dialog === "dirilis" ? `${open.subject} masuk antrean bongkar. Semua parameter dalam batas.` : `${open.subject} tidak dibongkar dan dikembalikan ke pemasok. Alasan diperlukan agar keputusan dapat ditelusuri.`}</p>{submitError && <p className="crit-text small">{submitError}</p>}<label className="field-label" htmlFor="lab-note">Catatan {dialog === "ditolak" ? "(wajib)" : "(opsional)"}</label><textarea id="lab-note" value={note} onChange={e => setNote(e.target.value)} required={dialog === "ditolak"} maxLength={500} placeholder={dialog === "ditolak" ? "Contoh: alcohol test positif pada uji ulang." : "Contoh: prioritaskan bongkar karena umur susu 7j 20m."} /><div className="dialog-actions"><button type="button" className="button secondary" onClick={() => { setDialog(null); setSubmitError(null); }} disabled={submitting}>Batal</button><button className="button primary" disabled={submitting || (dialog === "ditolak" && !note.trim())}>{submitting ? "Memproses…" : (dialog === "dirilis" ? "Konfirmasi rilis" : "Konfirmasi penolakan")}<Icon icon={Check} size={16} /></button></div></form></Modal>}
+    {intake && <LabWaitChart history={API_MODE ? (waitRes.data?.labHistory ?? []) : scenario.labHistory} avg={API_MODE ? (waitRes.data?.labSummary.avgMinutes ?? avgWait) : 52} delta={API_MODE ? (waitRes.data?.labSummary.deltaMinutes ?? 0) : 14} onSource={setSource} />}
     <SourceModal id={source} onClose={() => setSource(null)} />
   </div>;
 }

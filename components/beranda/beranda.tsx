@@ -1,61 +1,54 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
-import { ArrowRight, ArrowUpRight, Box, CalendarClock, ChevronRight, CircleCheck, CircleX, Container, Factory, FlaskConical, GitBranch, Hourglass, PackageX, Settings, TriangleAlert, Truck, Wrench, type LucideIcon } from "lucide-react";
+import { useState } from "react";
+import { ArrowUpRight, ChevronRight, Container, FlaskConical, Hourglass, PackageX, TriangleAlert, Wrench, type LucideIcon } from "lucide-react";
 import { scenario } from "@/lib/data";
-import { duration, number } from "@/lib/format";
+import { duration } from "@/lib/format";
 import { useDemo } from "@/lib/demo";
 import { navigation } from "@/lib/nav";
 import { ROLES } from "@/lib/roles";
-import { evaluate, holdingLeft, starvation, violations, type ConstraintId } from "@/lib/rules";
-import { dataSources, farms, fillers, labResults, pastLog, UNIT_STATE, type LabResult } from "@/mock/ops";
+import { holdingLeft, violations } from "@/lib/rules";
+import { dataSources, farms, fillers, labResults, pastLog } from "@/mock/ops";
 import { BOTTLENECKS } from "@/mock/site";
 import type { Tone } from "@/mock/types";
 import { Badge, Card, Icon, PageHeading, SectionTitle, SourceModal } from "@/components/ui";
 import { MetricGrid } from "@/components/receiving/metric-grid";
-import { Equipment } from "@/components/trace/equipment";
+import { ASSETS } from "@/lib/assets";
 
 type Item = { icon: LucideIcon; title: string; meta: string; tone: Tone; href: string };
 const plan = scenario.plans[0];
 const forward = scenario.answers.find(a => a.id === "forward")!;
-const lotPacks = forward.lots!.reduce((sum, l) => sum + l.packs, 0);
-const LAB_STATE: Record<LabResult["status"], { label: string; tone: Tone }> = { "hasil-siap": { label: "Menunggu rilis QA", tone: "warn" }, "uji-ulang": { label: "Uji ulang", tone: "warn" }, "dalam-uji": { label: "Dalam uji", tone: "neutral" }, lulus: { label: "Lulus", tone: "ok" }, positif: { label: "Out-of-spec", tone: "crit" } };
-const intakeLabs = labResults.filter(r => r.kind === "penerimaan" && r.status !== "lulus");
-const qcLabs = labResults.filter(r => r.kind === "qc-fg");
-const tabsOf = (label: string) => navigation.find(n => n.label === label)!.tabs;
 
-/** Kartu satu menu: fungsi menu dalam satu kalimat, cuplikan isinya, lalu pintasan ke setiap tab. */
-function ModuleCard({ icon, menu, description, wide, children }: { icon: LucideIcon; menu: string; description: string; wide?: boolean; children: ReactNode }) {
-  const tabs = tabsOf(menu);
-  return <section className={`module-card ${wide ? "wide" : ""}`} aria-labelledby={`menu-${menu}`}>
-    <header className="module-head"><span className="module-icon"><Icon icon={icon} size={22} /></span><div><h3 id={`menu-${menu}`}>{menu}</h3><p>{description}</p></div><Link className="button secondary module-open" href={tabs[0].href}>Buka<Icon icon={ArrowRight} size={16} /></Link></header>
-    <div className="module-body">{children}</div>
-    {tabs.length > 1 && <nav className="module-tabs" aria-label={`Isi menu ${menu}`}><span>Isi menu:</span>{tabs.map(t => <Link key={t.href} href={t.href}>{t.label}</Link>)}</nav>}
-  </section>;
-}
 
-/** Beranda: KPI, hal yang perlu ditangani, lalu ringkasan isi setiap menu. Setiap baris membawa ke halaman detailnya. */
+/** Beranda: KPI, hal yang perlu ditangani, lalu satu baris ringkasan per menu. Setiap baris membawa ke halaman detailnya. */
 export function Beranda() {
   const [source, setSource] = useState<string | null>(null);
   const demo = useDemo();
   const me = ROLES[demo.role];
   const broken = violations(plan, "before", demo.limits);
   const after = violations(plan, "after", demo.limits);
-  const checks = evaluate(plan, "before", demo.limits);
   const approved = demo.decisions.find(d => d.plan === "current" && d.status === "approved");
   const left = Math.max(0, holdingLeft(demo.limits));
   const hold = demo.holds.find(h => h.trigger === scenario.qcEvent.lot && h.status !== "ditolak");
   const labPending = labResults.filter(r => r.kind === "penerimaan" && (r.status === "hasil-siap" || r.status === "uji-ulang") && !demo.labs[r.id]).length;
   const broke = fillers.filter(f => f.state === "breakdown");
-  const fillCount = (Object.keys(UNIT_STATE) as (keyof typeof UNIT_STATE)[]).map(k => ({ k, n: fillers.filter(f => f.state === k).length })).filter(x => x.n);
   const bottlenecks = BOTTLENECKS[approved ? "after" : "before"];
   const arrived = farms.reduce((s, f) => s + f.arrived, 0);
   const plannedRt = farms.reduce((s, f) => s + f.plannedRt, 0);
   const connected = dataSources.filter(d => d.status === "terhubung").length;
   const bay = scenario.metrics[3];
   const lab = scenario.metrics[2];
+
+  const watch = ASSETS.filter(a => a.tone === "crit" || a.tone === "warn").length;
+  const summary: Record<string, { text: string; tone: Tone }> = {
+    "Simulasi 3D": { text: `${bottlenecks.length} titik bottleneck di tata letak plant`, tone: bottlenecks.some(b => b.tone === "crit") ? "crit" : "neutral" },
+    Penerimaan: { text: `${scenario.tankers.length} RT di plant, ${labPending} hasil lab menunggu QA, tiba ${arrived} dari ${plannedRt} RT`, tone: labPending ? "warn" : "neutral" },
+    Operasional: { text: `${watch} alat perlu diperhatikan${broke.length ? `, ${broke.map(f => f.id).join(", ")} breakdown` : ""}`, tone: broke.length ? "crit" : watch ? "warn" : "neutral" },
+    Rencana: { text: `${broken} constraint dilanggar, ${after} dengan rekomendasi solver`, tone: broken ? "crit" : "neutral" },
+    Traceability: { text: `${scenario.qcEvent.lot} out-of-spec, ${forward.lots!.length} lot terdampak, ${hold ? hold.id : "hold belum diajukan"}`, tone: hold ? "warn" : "crit" },
+    Pengaturan: { text: `${connected} dari ${dataSources.length} sumber data terhubung`, tone: connected < dataSources.length ? "warn" : "neutral" },
+  };
 
   const attention: Item[] = [
     ...(!approved ? [{ icon: Hourglass, title: "RT-26 mendekati batas holding time", meta: `${duration(left)} tersisa, menunggu bay`, tone: "crit" as Tone, href: "/receiving" }] : []),
@@ -82,47 +75,13 @@ export function Beranda() {
       </Card>
     </div>
 
-    <div className="home-section-head"><h2>Isi setiap menu</h2><p>Ringkasan dan pintasan ke semua halaman.</p></div>
-    <div className="module-grid">
-      <ModuleCard icon={Truck} menu="Penerimaan" description="Susu masuk: antrean road tanker dari farm sampai tes lab, sebelum masuk produksi." wide>
-        <div className="module-cols">
-          <div><h4>Antrean RT per tahap</h4><ol className="home-flow">{scenario.stages.map(s => <li key={s.id} className={s.tone}><strong>{s.count}</strong><span>{s.label}</span></li>)}</ol><p className="module-note">{scenario.tankers.length} RT di plant, tunggu lab {lab.value} {lab.unit}.</p></div>
-          <div><h4>Tes lab RT</h4><ul className="source-list">{intakeLabs.map(r => <li key={r.id}><span className={`status-dot tone-${LAB_STATE[r.status].tone}`} aria-hidden="true" /><strong className="mono">{r.subject}</strong><span>{LAB_STATE[r.status].label}</span></li>)}</ul></div>
-          <div><h4>RT tiba hari ini</h4><p className="module-big"><strong>{arrived}</strong> / {plannedRt}</p><p className="module-note">Sesuai rencana kirim farm.</p></div>
-        </div>
-      </ModuleCard>
-
-      <ModuleCard icon={Factory} menu="Operasional" description="Proses produksi saat ini: alur alat, kondisi setiap alat, QC barang jadi, dan master alat." wide>
-        <div className="module-cols">
-          <div><h4>Bay dan tangki raw milk</h4><ul className="mini-bars">{scenario.assets.map(a => <li key={a.id}><span className="mono">{a.id}</span><span className={`capacity-bar ${a.tone}`}><span style={{ width: `${a.fill / a.capacity * 100}%` }} /></span><span className={`mini-status ${a.tone}`}>{a.status}</span></li>)}</ul></div>
-          <div><h4>Lini filling</h4><ul className="line-chips">{fillers.map(f => <li key={f.id} className={UNIT_STATE[f.state].tone} title={`${f.id}: ${UNIT_STATE[f.state].label}, ${f.product}`}>{f.id}</li>)}</ul><p className="module-note">{fillCount.map(x => `${x.n} ${UNIT_STATE[x.k].label.toLowerCase()}`).join(" · ")}</p></div>
-          <div><h4>QC barang jadi</h4><ul className="source-list">{qcLabs.map(r => <li key={r.id}><span className={`status-dot tone-${LAB_STATE[r.status].tone}`} aria-hidden="true" /><strong className="mono">{r.subject}</strong><span>{LAB_STATE[r.status].label}</span></li>)}</ul></div>
-        </div>
-      </ModuleCard>
-
-      <ModuleCard icon={CalendarClock} menu="Rencana" description="Cek kelayakan rencana shift terhadap 6 constraint, bandingkan rekomendasi solver, lalu putuskan.">
-        <ul className="check-list">{plan.constraints.map(c => { const r = checks[c.id as ConstraintId]; return <li key={c.id} className={r.ok ? "ok" : "crit"}><Icon icon={r.ok ? CircleCheck : CircleX} size={16} />{c.label}</li>; })}</ul>
-        <dl className="compare-row"><div><dt>Constraint dilanggar</dt><dd>{broken} <ArrowRight size={14} aria-hidden /> <strong>{after}</strong></dd></div><div><dt>Starvation filling</dt><dd>{starvation(plan.before)} <ArrowRight size={14} aria-hidden /> <strong>{starvation(plan.after)}</strong> mnt</dd></div></dl>
-      </ModuleCard>
-
-      <ModuleCard icon={GitBranch} menu="Traceability" description="Telusuri asal dan sebaran volume susu per lot, lalu kelola hold.">
-        <ol className="mini-chain" aria-label="Jalur genealogi FG-1013-07">{[["Farm", "Farm"], ["RT", "RT-04"], ["Buffer", "RMT-2"], ["Sterilisasi", "UHT-2"], ["Filling", "F2"], ["Lot", "FG-07"]].map(([kind, label]) => <li key={label}><Equipment kind={kind} size={40} /><span className="mono">{label}</span></li>)}</ol>
-        <dl className="compare-row"><div><dt>QC out-of-spec</dt><dd><strong className="mono">{scenario.qcEvent.lot}</strong></dd></div><div><dt>Lot terdampak</dt><dd><strong>{forward.lots!.length}</strong> lot · {number(lotPacks)} pak</dd></div><div><dt>Hold</dt><dd>{hold ? <strong className="mono">{hold.id}</strong> : "Belum diajukan"}</dd></div></dl>
-      </ModuleCard>
-
-      <ModuleCard icon={Box} menu="Simulasi 3D" description="Model plant dari tata letak nyata: alur susu, kondisi aset, dan lokasi bottleneck.">
-        <Link href="/simulasi" className="sim-thumb"><Image src="/beranda/simulasi-3d.jpg" alt="Cuplikan model 3D plant dengan penanda bottleneck" width={840} height={520} sizes="(max-width: 1199px) 100vw, 40vw" /></Link>
-        <ul className="home-bottlenecks">{bottlenecks.map(b => <li key={b.title}><span className={`status-dot tone-${b.tone}`} aria-hidden="true" /><strong>{b.title}</strong><span>{b.text}</span></li>)}</ul>
-      </ModuleCard>
-
-      <ModuleCard icon={Settings} menu="Pengaturan" description="Sumber data yang terhubung secara read-only dan hak akses setiap peran.">
-        <ul className="source-list">{dataSources.map(d => <li key={d.id}><span className={`status-dot tone-${d.status === "terhubung" ? "ok" : "warn"}`} aria-hidden="true" /><strong>{d.name}</strong><span>{d.status === "terhubung" ? `Sinkron ${d.lastSync}` : "Tertunda"}</span></li>)}</ul>
-        <p className="module-note">{connected} dari {dataSources.length} sumber terhubung. Masuk sebagai {me.user}, {me.label}.</p>
-      </ModuleCard>
-    </div>
+    {/* Isi tiap menu diringkas jadi satu baris (poin 7): detailnya ada di halaman menu masing-masing. */}
+    <Card className="home-menus"><SectionTitle title="Semua menu" subtitle="Satu baris per menu. Klik untuk membuka halamannya." />
+      <ul className="attention-list menu-list">{navigation.filter(n => summary[n.label]).map(n => { const m = summary[n.label]; return <li key={n.label}><Link href={n.tabs[0].href} className={`attention-item ${m.tone}`}><span className="attention-icon"><Icon icon={n.icon} size={18} /></span><span className="attention-copy"><strong>{n.label}</strong><span>{m.text}</span></span><Icon icon={ChevronRight} size={18} /></Link></li>; })}</ul>
+    </Card>
 
     <Card className="home-activity"><SectionTitle title="Aktivitas terbaru" action={<Link className="text-link" href="/persetujuan">Semua riwayat<Icon icon={ChevronRight} size={14} /></Link>} />
-      <ul className="activity-list">{[...demo.log, ...pastLog].slice(0, 4).map(e => <li key={e.id}><span className={`status-dot tone-${e.tone}`} aria-hidden="true" /><span><strong>{e.title}</strong><span>{e.detail}</span><span>{e.by} · {e.at}</span></span></li>)}</ul>
+      <ul className="activity-list">{[...demo.log, ...pastLog].slice(0, 3).map(e => <li key={e.id}><span className={`status-dot tone-${e.tone}`} aria-hidden="true" /><span><strong>{e.title}</strong><span>{e.detail}</span><span>{e.by} · {e.at}</span></span></li>)}</ul>
     </Card>
     <SourceModal id={source} onClose={() => setSource(null)} />
   </div>;

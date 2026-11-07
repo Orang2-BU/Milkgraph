@@ -406,7 +406,7 @@ tbody tr:hover { background: color-mix(in oklab, var(--color-surface) 70%, trans
 .home-bottlenecks .status-dot, .source-list .status-dot { width: 8px; height: 8px; }
 .source-list li { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; gap: 10px; font-size: 13px; padding-bottom: 10px; border-bottom: 1px solid var(--color-border); }
 .source-list li span:last-child { font-size: 12px; color: var(--color-on-surface-muted); }
-.home-activity .activity-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.home-activity .activity-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 @media (max-width: 1199px) { .home-top, .module-grid { grid-template-columns: minmax(0, 1fr); } .module-cols { grid-template-columns: minmax(0, 1fr); gap: 24px; } .home-activity .activity-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 767px) { .home-flow { grid-template-columns: repeat(4, minmax(0, 1fr)); } .module-card { padding: 20px; } .module-head { flex-wrap: wrap; } .module-open { width: 100%; } .check-list, .home-activity .activity-list { grid-template-columns: minmax(0, 1fr); } .mini-chain li span { font-size: 10px; } }
 /* Trace: graph alat kiri ke kanan, panel detail, tabel, dan mass balance. */
@@ -1118,3 +1118,12 @@ main .icon-button { box-shadow: inset 0 0 0 1px var(--color-border); color: var(
 .flow-related small { color: var(--color-on-surface-muted); font-size: 11px; }
 /* React Flow mematikan pointer-events pada node yang tidak bisa dipilih/diseret; kartu tetap harus bisa diklik. */
 button.flow-node { pointer-events: all; font: inherit; cursor: pointer; }
+/* Antrean Truk: tautan dari faktor kartu rencana ke halaman detailnya (poin 7) */
+.incident-links { font-size: 12px; color: var(--color-on-inverse-muted); }
+.incident-links a { color: var(--color-on-inverse); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: color-mix(in oklab, var(--color-on-inverse) 40%, transparent); }
+.incident-links a:hover { text-decoration-color: currentColor; }
+/* Beranda: satu baris ringkasan per menu (poin 7), memakai baris yang sama dengan "Perlu perhatian" */
+.home-menus { margin: 16px 0; }
+.menu-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
+.menu-list li:nth-last-child(2) .attention-item { border-bottom: 0; }
+@media (max-width: 767px) { .menu-list { grid-template-columns: minmax(0, 1fr); } .menu-list li:nth-last-child(2) .attention-item { border-bottom: 1px solid var(--color-border); } }
