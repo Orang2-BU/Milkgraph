@@ -150,7 +150,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="topbar-start">
           <button className="icon-button desktop-toggle" aria-label="Buka atau ciutkan sidebar" aria-expanded={collapsed === null ? undefined : !collapsed} aria-controls="desktop-navigation" onClick={() => setCollapsed(collapsed === null ? window.innerWidth >= 1200 : !collapsed)}><Icon icon={collapsed === false ? ChevronsLeft : ChevronsRight} /></button>
           <button ref={menuButton} className="icon-button mobile-menu" aria-label="Buka menu" aria-expanded={drawer} aria-controls="mobile-navigation" onClick={() => setDrawer(true)}><Icon icon={Menu} /></button>
-          <span className="breadcrumb">{current.item.tabs.length > 1 ? <>{current.item.label}<span>/</span><strong>{current.tab.label}</strong></> : <strong>{current.item.label}</strong>}</span>
+          <span className="breadcrumb">{current.item.tabs.length > 1 && <>{current.item.label}<span>/</span></>}{pathname === current.tab.href ? <strong>{current.tab.label}</strong> : <Link href={current.tab.href}>{current.tab.label}</Link>}</span>
         </div>
         <div className="topbar-actions">
           <Badge>Data simulasi</Badge>

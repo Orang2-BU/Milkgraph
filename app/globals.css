@@ -1079,3 +1079,9 @@ main .icon-button { box-shadow: inset 0 0 0 1px var(--color-border); color: var(
   .flow-card { padding: 16px; }
   .flow-canvas { height: 480px; min-height: 0; }
 }
+/* Rencana: tautan ke halaman pendukung yang tidak punya sub-menu sendiri */
+.plan-links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; margin: -12px 0 20px; font-size: 13px; color: var(--color-on-surface-muted); }
+.plan-links a { min-height: 32px; display: inline-flex; align-items: center; color: var(--color-primary); font-weight: 550; text-decoration: underline; text-decoration-color: color-mix(in oklab, var(--color-primary) 35%, transparent); text-underline-offset: 3px; }
+.plan-links a:hover { text-decoration-color: currentColor; }
+.breadcrumb a { color: var(--color-on-surface); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--color-on-surface-muted); }
+.breadcrumb a:hover { color: var(--color-primary); }
