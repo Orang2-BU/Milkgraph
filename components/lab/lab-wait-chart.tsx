@@ -5,7 +5,7 @@ import { Card, Icon, SectionTitle, SourceButton } from "@/components/ui";
 
 /** Grafik tunggu lab test per jam. Dipindah dari Antrean Truk ke Tes Lab (poin 7: satu halaman satu topik). */
 export function LabWaitChart({ history, avg, delta, onSource }: { history: { hour: string; minutes: number }[]; avg: number; delta: number; onSource: (id: string) => void }) {
-  return <Card className="qc-chart">
+  return <Card className="qc-chart lab-wait">
     <SectionTitle
       title="Tunggu lab test"
       subtitle="Menit, rata-rata per jam."

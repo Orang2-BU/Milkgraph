@@ -1127,3 +1127,7 @@ button.flow-node { pointer-events: all; font: inherit; cursor: pointer; }
 .menu-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
 .menu-list li:nth-last-child(2) .attention-item { border-bottom: 0; }
 @media (max-width: 767px) { .menu-list { grid-template-columns: minmax(0, 1fr); } .menu-list li:nth-last-child(2) .attention-item { border-bottom: 1px solid var(--color-border); } }
+.lab-wait { margin-top: 16px; }
+/* Dua kolom kartu (Master Alat). Kelas ini dipakai tapi belum pernah didefinisikan, jadi kartunya menempel. */
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+@media (max-width: 1199px) { .grid-2 { grid-template-columns: minmax(0, 1fr); } }
