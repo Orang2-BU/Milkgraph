@@ -1,114 +1,105 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ReactFlow, Background, Controls, Handle, Position, MarkerType, type Node, type Edge, type NodeProps } from "@xyflow/react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { ReactFlow, Background, Controls, MarkerType, type Edge, type ReactFlowInstance } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Maximize2, Minimize2, MousePointer2 } from "lucide-react";
 import { Card, Icon, PageHeading, Toggle } from "@/components/ui";
-import { Equipment, KIND_LABEL } from "@/components/trace/equipment";
-import { ASSETS, FOCUS, LINKS, STAGES, type Asset } from "@/lib/assets";
+import { ASSETS, FOCUS, LINKS, STAGES } from "@/lib/assets";
+import { autoLayout, visibleEdges, CARD } from "./graph";
+import { nodeTypes, type AssetNode, type StageNode } from "./flow-nodes";
+import { AssetInfo } from "./asset-info";
 
-const CARD = 150;
-const SUB = 172;
-const GAP = 48;
-const ROW = 148;
-const TOP = 56;
-const MAX_ROWS = 5;
-
-type AssetNode = Node<Asset, "asset">;
-type StageNode = Node<{ label: string }, "stage">;
-
-function AssetCard({ data }: NodeProps<AssetNode>) {
-  return <Link href={data.href} className={`flow-node ${data.active ? "is-active" : ""}`} aria-label={`${KIND_LABEL[data.kind] ?? data.kind} ${data.id}, ${data.status}. Lihat detail`}>
-    <Handle type="target" position={Position.Left} isConnectable={false} />
-    <Equipment kind={data.kind} size={48} />
-    <strong>{data.id}</strong>
-    <span className={`mini-status ${data.tone}`}><span className={`status-dot tone-${data.tone}`} aria-hidden="true" />{data.status}</span>
-    <Handle type="source" position={Position.Right} isConnectable={false} />
-  </Link>;
-}
-function StageLabel({ data }: NodeProps<StageNode>) {
-  return <span className="flow-stage">{data.label}</span>;
-}
-const nodeTypes = { asset: AssetCard, stage: StageLabel };
-
-/**
- * Kolom per tahap, alat ditumpuk dari atas. Tahap dengan lebih dari MAX_ROWS alat dipecah jadi beberapa sub-kolom
- * supaya canvas tidak memanjang ke bawah. Tahap tanpa alat (mis. di Fokus Shift) tetap tampil agar urutan tahap konsisten.
- */
-function layout(assets: Asset[]) {
-  const ids = new Set(assets.map(a => a.id));
-  const byId = new Map(assets.map(a => [a.id, a]));
-  const nodes: (AssetNode | StageNode)[] = [];
-  let x = 0;
-  for (const stage of STAGES) {
-    const items = assets.filter(a => a.stage === stage);
-    const subs = Math.max(1, Math.ceil(items.length / MAX_ROWS));
-    nodes.push({ id: `stage-${stage}`, type: "stage", position: { x, y: 0 }, data: { label: stage }, style: { width: subs * SUB - (SUB - CARD) }, selectable: false, draggable: false });
-    items.forEach((a, i) => nodes.push({ id: a.id, type: "asset", position: { x: x + Math.floor(i / MAX_ROWS) * SUB, y: TOP + (i % MAX_ROWS) * ROW }, data: a }));
-    x += subs * SUB + GAP;
-  }
-  const edges: Edge[] = LINKS.filter(([s, t]) => ids.has(s) && ids.has(t)).map(([s, t]) => {
-    const flowing = byId.get(s)!.active && byId.get(t)!.active;
-    return { id: `${s}>${t}`, source: s, target: t, type: "smoothstep", className: flowing ? "edge-active" : "edge-idle", markerEnd: { type: MarkerType.ArrowClosed, width: 14, height: 14, color: flowing ? "var(--color-accent-fill)" : "var(--color-border)" } };
-  });
-  return { nodes, edges };
-}
-
-/** Tampilan default Operasional: alur alat produksi saja, tanpa ringkasan lain. */
+/** Tampilan default Operasional: alur alat produksi. Klik alat untuk melihat info alatnya. Susunan alat mengikuti data plant. */
 export function Alur() {
   const [view, setView] = useState<"fokus" | "semua">("fokus");
+  const [picked, setPicked] = useState<string | null>(null);
   const [full, setFull] = useState(false);
-  const frame = useRef<HTMLDivElement>(null);
-  const graph = useMemo(() => layout(view === "fokus" ? ASSETS.filter(a => FOCUS.has(a.id)) : ASSETS), [view]);
+  const flow = useRef<ReactFlowInstance<AssetNode | StageNode> | null>(null);
+  // Panel info mempersempit canvas; geser kamera ke alat yang dipilih supaya tidak tertutup.
+  const pick = (id: string) => {
+    setPicked(id);
+    requestAnimationFrame(() => {
+      const n = flow.current?.getNode(id);
+      if (n && flow.current) void flow.current.setCenter(n.position.x + CARD / 2, n.position.y + 60, { zoom: flow.current.getZoom(), duration: 300 });
+    });
+  };
+
+  const visible = useMemo(() => view === "semua" ? ASSETS : ASSETS.filter(a => FOCUS.has(a.id)), [view]);
+  const graph = useMemo(() => {
+    const ids = new Set(visible.map(a => a.id));
+    const { pos, columns } = autoLayout(visible, STAGES);
+    const stages: StageNode[] = columns.map(c => ({ id: `stage-${c.stage}`, type: "stage", position: { x: c.x, y: 0 }, style: { width: Math.max(c.width, CARD) }, data: { label: c.stage, count: c.count }, selectable: false, draggable: false, focusable: false }));
+    const edges: Edge[] = visibleEdges(ASSETS, LINKS, ids).map(e => ({
+      id: e.id, source: e.source, target: e.target, type: "smoothstep", className: `edge-${e.kind}`, label: e.via ? `via ${e.via} alat` : undefined,
+      markerEnd: { type: MarkerType.ArrowClosed, width: 14, height: 14, color: e.kind === "flow" ? "var(--color-accent-fill)" : "var(--color-on-surface-muted)" },
+    }));
+    return { stages, pos, edges };
+  }, [visible]);
+  const nodes: (AssetNode | StageNode)[] = [
+    ...graph.stages,
+    ...visible.map(a => ({ id: a.id, type: "asset" as const, position: graph.pos[a.id], data: { ...a, picked: a.id === picked, onPick: pick } })),
+  ];
+  const asset = ASSETS.find(a => a.id === picked);
 
   useEffect(() => {
-    const sync = () => setFull(document.fullscreenElement === frame.current);
-    document.addEventListener("fullscreenchange", sync);
-    return () => document.removeEventListener("fullscreenchange", sync);
-  }, []);
-  const toggleFull = () => { if (document.fullscreenElement) void document.exitFullscreen(); else void frame.current?.requestFullscreen(); };
+    // Layar penuh di dalam halaman, bukan Fullscreen API: API itu ditolak diam-diam di browser tertanam (mis. panel aplikasi).
+    if (!full) return;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setFull(false); };
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = overflow; window.removeEventListener("keydown", onKey); };
+  }, [full]);
 
+  // Layar penuh dirender ke body: Card memakai backdrop-filter, jadi position: fixed di dalamnya terkurung di kartu.
+  const portal = (frame: ReactNode) => full ? createPortal(frame, document.body) : frame;
   return <div className="page-enter">
     <PageHeading title="Alur Produksi" subtitle="Alur susu dari bay bongkar sampai mesin filling, snapshot 14.42." />
     <Card className="flow-card">
-      <div ref={frame} className="flow-frame">
+      {portal(<div className={`flow-frame ${full ? "is-full" : ""}`} role={full ? "dialog" : undefined} aria-modal={full || undefined} aria-label={full ? "Alur produksi layar penuh" : undefined}>
         <div className="flow-toolbar">
-          <Toggle label="Alat yang ditampilkan" value={view} onChange={setView} options={[{ value: "fokus", label: "Fokus Shift" }, { value: "semua", label: `Semua Alat (${ASSETS.length})` }]} />
-          <button className="icon-button" onClick={toggleFull} aria-label={full ? "Keluar dari layar penuh" : "Tampilkan layar penuh"}><Icon icon={full ? Minimize2 : Maximize2} size={18} /></button>
+          <Toggle label="Alat yang ditampilkan" value={view} onChange={v => { setView(v); setPicked(null); }} options={[{ value: "fokus", label: "Fokus Shift" }, { value: "semua", label: `Semua Alat (${ASSETS.length})` }]} />
+          <button className="icon-button" onClick={() => setFull(f => !f)} aria-label={full ? "Keluar dari layar penuh (Esc)" : "Tampilkan layar penuh"} title={full ? "Keluar dari layar penuh (Esc)" : "Layar penuh"}><Icon icon={full ? Minimize2 : Maximize2} size={18} /></button>
         </div>
-        <div className="flow-canvas">
-          <ReactFlow
-            key={view}
-            nodes={graph.nodes}
-            edges={graph.edges}
-            nodeTypes={nodeTypes}
-            fitView
-            fitViewOptions={{ padding: 0.12, minZoom: 0.35 }}
-            onInit={rf => {
-              // HP: seluruh alur terlalu kecil untuk dibaca, jadi mulai dari dua tahap pertama lalu geser ke kanan.
-              if (!window.matchMedia("(max-width: 767px)").matches) return;
-              const first = new Set(STAGES.slice(0, 2));
-              void rf.fitView({ nodes: graph.nodes.filter(n => n.type === "asset" ? first.has(n.data.stage) : first.has(n.data.label)), padding: 0.15, maxZoom: 1 });
-            }}
-            minZoom={0.2}
-            maxZoom={1.5}
-            nodesDraggable={false}
-            nodesConnectable={false}
-            elementsSelectable={false}
-            proOptions={{ hideAttribution: true }}
-            ariaLabelConfig={{ "controls.zoomIn.ariaLabel": "Perbesar alur", "controls.zoomOut.ariaLabel": "Perkecil alur", "controls.fitView.ariaLabel": "Pas ke layar" }}
-          >
-            <Background gap={22} size={1} />
-            <Controls showInteractive={false} position="bottom-left" />
-          </ReactFlow>
+        <div className={`flow-body ${asset ? "with-inspector" : ""}`}>
+          <div className="flow-canvas">
+            <ReactFlow
+              key={`${view}-${full}`}
+              nodes={nodes}
+              edges={graph.edges}
+              nodeTypes={nodeTypes}
+              onPaneClick={() => setPicked(null)}
+              nodesDraggable={false}
+              nodesConnectable={false}
+              elementsSelectable={false}
+              fitView
+              fitViewOptions={{ padding: 0.12, minZoom: 0.35 }}
+              onInit={rf => {
+                flow.current = rf;
+                // HP: seluruh alur terlalu kecil untuk dibaca, jadi mulai dari dua tahap pertama lalu geser ke kanan.
+                if (!window.matchMedia("(max-width: 767px)").matches) return;
+                const first = new Set(STAGES.slice(0, 2));
+                void rf.fitView({ nodes: nodes.filter(n => first.has(n.type === "asset" ? n.data.stage : n.data.label)), padding: 0.15, maxZoom: 1 });
+              }}
+              minZoom={0.2}
+              maxZoom={1.5}
+              proOptions={{ hideAttribution: true }}
+              ariaLabelConfig={{ "controls.zoomIn.ariaLabel": "Perbesar alur", "controls.zoomOut.ariaLabel": "Perkecil alur", "controls.fitView.ariaLabel": "Pas ke layar" }}
+            >
+              <Background gap={22} size={1} />
+              <Controls showInteractive={false} position="bottom-left" />
+            </ReactFlow>
+          </div>
+          {asset && <AssetInfo key={asset.id} asset={asset} assets={ASSETS} onPick={pick} onClose={() => setPicked(null)} />}
         </div>
-      </div>
+      </div>)}
       <div className="flow-legend">
         <span><i className="legend-line" aria-hidden="true" />Mengalir</span>
         <span><i className="legend-line idle" aria-hidden="true" />Tidak mengalir</span>
-        <span><Icon icon={MousePointer2} size={14} />Geser kanvas, scroll untuk zoom, klik alat untuk detail</span>
+        {view === "fokus" && <span><i className="legend-line summary" aria-hidden="true" />Jalur diringkas</span>}
+        <span><Icon icon={MousePointer2} size={14} />Klik alat untuk melihat infonya</span>
       </div>
     </Card>
   </div>;

@@ -179,7 +179,6 @@ main { padding-top: 28px; min-height: calc(100dvh - 160px); }
 .sparkline polygon { fill: var(--color-accent-soft); }
 .sparkline polyline { fill: none; stroke: var(--color-accent-fill); stroke-width: 1.5; stroke-linejoin: round; }
 .flow-card { margin-bottom: 16px; }
-.flow-hint { display: flex; align-items: center; gap: 6px; }
 .flow-step { background: var(--color-canvas); border-radius: var(--radius-full); display: flex; gap: 9px; align-items: center; min-height: 64px; padding: 10px 14px; width: 100%; }
 .flow-step:hover { background: var(--color-surface-muted); transform: translateY(-2px); }
 .flow-icon { display: inline-flex; color: var(--color-on-surface-muted); }
@@ -604,7 +603,6 @@ textarea { width: 100%; resize: vertical; min-height: 110px; border: 1px solid v
   .card, .panel { padding: 20px; }
   .section-heading { gap: 12px; align-items: start; }
   .section-heading p { font-size: 12px; line-height: 1.6; }
-  .flow-hint { display: none; }
   .flow-step { padding: 12px 18px; min-height: 66px; }
   .flow-step strong { font-size: 13px; }
   .flow-status { font-size: 12px; }
@@ -1056,12 +1054,9 @@ main .icon-button { box-shadow: inset 0 0 0 1px var(--color-border); color: var(
 
 /* Alur Produksi: canvas alat per tahap (React Flow) */
 .flow-card { padding: 20px; }
-.flow-frame { display: flex; flex-direction: column; gap: 16px; background: var(--color-surface); border-radius: var(--radius-md); }
-.flow-frame:fullscreen { padding: 20px; }
 .flow-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .flow-toolbar .icon-button { background: var(--color-canvas); }
 .flow-canvas { height: min(640px, calc(100dvh - 300px)); min-height: 420px; border-radius: var(--radius-md); background: var(--color-canvas); overflow: hidden; }
-.flow-frame:fullscreen .flow-canvas { flex: 1; height: auto; }
 .flow-node { width: 150px; min-height: 120px; padding: 12px 10px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); box-shadow: 0 6px 16px -12px color-mix(in oklab, var(--color-surface-inverse) 40%, transparent); color: var(--color-on-surface); transition: border-color 160ms ease, box-shadow 160ms ease; }
 .flow-node:hover, .flow-node:focus-visible { border-color: var(--color-accent-fill); box-shadow: 0 10px 22px -14px color-mix(in oklab, var(--color-surface-inverse) 55%, transparent); }
 .flow-node strong { font-size: 13px; font-weight: 650; }
@@ -1069,12 +1064,9 @@ main .icon-button { box-shadow: inset 0 0 0 1px var(--color-border); color: var(
 .flow-node .mini-status.ok { color: var(--color-status-ok); }
 .flow-node .mini-status.crit { color: var(--color-status-crit); }
 .flow-node.is-active .equipment { --eq-ink: var(--color-surface-inverse); --eq-accent: var(--color-accent-fill); }
-.flow-stage { display: block; width: 100%; text-align: center; font-size: 12px; font-weight: 550; color: var(--color-on-surface-muted); }
-.react-flow .edge-idle path { stroke-dasharray: 5 5; }
 .flow-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 14px; font-size: 12px; color: var(--color-on-surface-muted); }
 .flow-legend > span { display: inline-flex; align-items: center; gap: 8px; }
 .legend-line { width: 22px; border-top: 2px solid var(--color-accent-fill); }
-.legend-line.idle { border-top: 2px dashed var(--color-border); }
 @media (max-width: 767px) {
   .flow-card { padding: 16px; }
   .flow-canvas { height: 480px; min-height: 0; }
@@ -1085,3 +1077,44 @@ main .icon-button { box-shadow: inset 0 0 0 1px var(--color-border); color: var(
 .plan-links a:hover { text-decoration-color: currentColor; }
 .breadcrumb a { color: var(--color-on-surface); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--color-on-surface-muted); }
 .breadcrumb a:hover { color: var(--color-primary); }
+
+.flow-frame { position: relative; display: flex; flex-direction: column; gap: 16px; background: var(--color-surface); border-radius: var(--radius-md); }
+.flow-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.flow-body.with-inspector { grid-template-columns: minmax(0, 1fr) 300px; }
+.flow-canvas { transition: background-color 240ms var(--ease), box-shadow 240ms var(--ease); }
+.flow-stage { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; text-align: center; font-size: 12px; font-weight: 600; color: var(--color-on-surface); }
+.flow-stage small { display: block; margin-top: 2px; font-size: 11px; font-weight: 400; color: var(--color-on-surface-muted); }
+.flow-node.is-selected { border-color: var(--color-primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent), 0 10px 22px -14px color-mix(in oklab, var(--color-surface-inverse) 55%, transparent); }
+.react-flow .edge-flow path { stroke: var(--color-accent-fill); stroke-width: 2; }
+.react-flow .edge-idle path { stroke: color-mix(in oklab, var(--color-on-surface-muted) 55%, transparent); stroke-width: 1.5; }
+.react-flow .edge-summary path { stroke: var(--color-accent-fill); stroke-width: 1.5; stroke-dasharray: 5 5; opacity: .85; }
+.legend-line.idle { border-top: 2px solid color-mix(in oklab, var(--color-on-surface-muted) 55%, transparent); }
+.legend-line.summary { border-top: 2px dashed var(--color-accent-fill); }
+.flow-inspector { display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: var(--radius-md); background: var(--color-canvas); max-height: min(640px, calc(100dvh - 300px)); overflow-y: auto; }
+.flow-inspector header { display: flex; align-items: center; gap: 12px; }
+.flow-inspector header .icon-button { margin-left: auto; background: var(--color-surface); }
+.flow-inspector h2 { font-size: 17px; font-weight: 650; letter-spacing: -.01em; }
+.flow-inspector header p { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-on-surface-muted); margin-top: 2px; }
+.flow-inspector .badge { align-self: flex-start; }
+.flow-inspector .equipment { --eq-ink: var(--color-surface-inverse); --eq-accent: var(--color-accent-fill); }
+@media (max-width: 1199px) { .flow-body.with-inspector { grid-template-columns: minmax(0, 1fr); } .flow-inspector { max-height: none; } }
+@media (max-width: 767px) {
+}
+/* Alur layar penuh di dalam halaman: menutup seluruh jendela, kanvas mengisi sisa tinggi. */
+.flow-frame.is-full { position: fixed; inset: 0; z-index: 60; padding: 20px; border-radius: 0; background: var(--color-surface); animation: full-in 260ms cubic-bezier(.16, 1, .3, 1); }
+.flow-frame.is-full .flow-body { flex: 1; min-height: 0; }
+.flow-frame.is-full .flow-canvas { height: 100%; min-height: 0; }
+.flow-frame.is-full .flow-inspector { max-height: 100%; }
+@keyframes full-in { from { opacity: 0; transform: scale(.985); } }
+@media (max-width: 767px) { .flow-frame.is-full { padding: 12px; } }
+/* Alur: panel info alat (hanya baca) */
+.flow-inspector section h3 { font-size: 12px; font-weight: 600; color: var(--color-on-surface-muted); margin-bottom: 6px; }
+.flow-facts { display: grid; gap: 10px; margin: 0; }
+.flow-facts dt { font-size: 11px; color: var(--color-on-surface-muted); }
+.flow-facts dd { margin: 2px 0 0; font-size: 13px; line-height: 1.5; }
+.flow-related { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.flow-related button { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: var(--radius-full); background: var(--color-surface); border: 1px solid var(--color-border); font-size: 12px; transition: border-color 160ms ease; }
+.flow-related button:hover { border-color: var(--color-accent-fill); }
+.flow-related small { color: var(--color-on-surface-muted); font-size: 11px; }
+/* React Flow mematikan pointer-events pada node yang tidak bisa dipilih/diseret; kartu tetap harus bisa diklik. */
+button.flow-node { pointer-events: all; font: inherit; cursor: pointer; }

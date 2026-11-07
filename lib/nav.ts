@@ -16,7 +16,7 @@ export const navigation: NavItem[] = [
   { label: "Penerimaan", hint: "Truk dan tes lab", icon: Truck, tabs: [{ label: "Antrean Truk", href: "/receiving", icon: ListOrdered }, { label: "Tes Lab", href: "/lab", icon: FlaskConical }] },
   { label: "Operasional", hint: "Alur dan kondisi produksi", icon: Factory, tabs: [{ label: "Alur", href: "/alur", icon: Workflow }, { label: "Kondisi Alat", href: "/kondisi-alat", icon: Gauge, match: ["/tangki", "/filling"] }, { label: "QC Barang Jadi", href: "/qc-produk", icon: TestTubeDiagonal }, { label: "Master Alat", href: "/master-data", icon: Library }] },
   { label: "Rencana", hint: "Kelayakan dan solver", icon: CalendarClock, tabs: [{ label: "Rencana", href: "/rencana", match: ["/pasokan", "/constraint", "/persetujuan"] }] },
-  { label: "Traceability", hint: "Riwayat dan asal produksi", icon: GitBranch, tabs: [{ label: "Telusur", href: "/trace", icon: Route }, { label: "Context Graph", href: "/graph", icon: Share2 }, { label: "Hold Produk", href: "/hold", icon: PackageX }] },
+  { label: "Traceability", hint: "Riwayat asal produksi", icon: GitBranch, tabs: [{ label: "Telusur", href: "/trace", icon: Route }, { label: "Context Graph", href: "/graph", icon: Share2 }, { label: "Hold Produk", href: "/hold", icon: PackageX }] },
   { label: "Pengaturan", hint: "Sumber data dan akses", icon: Settings, tabs: [{ label: "Sumber Data", href: "/sumber-data", icon: Database }, { label: "Pengguna & Peran", href: "/pengguna", icon: Users }] },
 ];
 
