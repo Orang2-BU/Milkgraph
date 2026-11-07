@@ -15,7 +15,7 @@ export function QualityCard({ output, onSource }: { output: Output; onSource: (i
       action: <Link className="button primary" href="/trace">Telusuri dan ajukan hold<Icon icon={ArrowRight} size={16} /></Link>,
     } : qc ? {
       icon: CircleCheck, tone: "ok", label: "QC lulus", text: qc.note,
-      action: <Link className="button secondary" href="/qc-produk">Lihat QC Barang Jadi<Icon icon={ArrowRight} size={16} /></Link>,
+      action: <Link className="button secondary" href={`/qc-produk?lot=${output.id}`}>Lihat QC Barang Jadi<Icon icon={ArrowRight} size={16} /></Link>,
     } : {
       icon: CircleDashed, tone: "neutral", label: "Belum diuji", text: `Belum ada hasil QC barang jadi untuk ${output.id}. Lot lain dari batch yang sama: ${output.chain.at(-1)?.batch}.`,
       action: <Link className="button secondary" href="/qc-produk">Lihat QC Barang Jadi<Icon icon={ArrowRight} size={16} /></Link>,

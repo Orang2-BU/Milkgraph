@@ -131,6 +131,11 @@ export const labResults: LabResult[] = [
     { name: "Inkubasi 7 hari 30 °C", value: "Belum selesai", limit: "Steril", ok: null },
     { name: "pH", value: "6,74", limit: "6,6 - 6,9", ok: true },
   ], source: "LAB-8812" },
+  { id: "LAB-8806", kind: "qc-fg", subject: "FG-1012-11", detail: "UHT Stroberi 200 ml · Filling F2", sampled: "12 Okt 16.20", status: "lulus", params: [
+    { name: "Residu antibiotik beta-laktam", value: "Negatif", limit: "Negatif", ok: true },
+    { name: "Inkubasi 7 hari 30 °C", value: "Belum selesai", limit: "Steril", ok: null },
+    { name: "pH", value: "6,78", limit: "6,6 - 6,9", ok: true },
+  ], source: "TR-FILL" },
   { id: "LAB-8809", kind: "qc-fg", subject: "FG-1013-04", detail: "UHT Full Cream 1 L · Filling F1", sampled: "13 Okt 19.40", status: "lulus", params: [
     { name: "Residu antibiotik beta-laktam", value: "Negatif", limit: "Negatif", ok: true },
     { name: "Inkubasi 7 hari 30 °C", value: "Belum selesai", limit: "Steril", ok: null },

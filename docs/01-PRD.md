@@ -112,6 +112,10 @@ Pengguna demo: Rino Akbar Hanif (Planner PPIC), Dimas Prasetyo (Koordinator rece
 - Konfigurasi 5 UHT → 5 AT → 10 filler dengan status unit (jalan, CIP, siaga, breakdown, ganti format).
 - Gantt F1, F2, F4; matriks changeover SOP.
 
+**Kondisi Alat (`/kondisi-alat`)** (revisi 7 Nov 2026, poin 2 dan 12)
+- Menu Operasional. Tab "Semua" menampilkan semua alat (38) sesuai urutan alur produksi, dengan kondisi, keterangan, dan tautan ke detailnya di Bay & Tangki atau Lini Filling. Ada pencarian nama, kode, atau kondisi.
+- Tab "Perlu diperhatikan" mengelompokkan alat yang bermasalah menurut jenisnya, dari yang paling mendesak: Rusak, perlu perbaikan (F10); Isi tangki di batas (AT-2, RMT-2); Tertahan menunggu uji (ST-6); Berhenti sementara karena CIP atau ganti format (Bay 2, ST-2, CT-3, UHT-3, F5, F6, F8). Di dalam grup, yang kritis tampil dulu [simulasi, snapshot 14.42].
+
 **Rencana & What-if (`/rencana`)**
 - Skenario rencana shift (FIFO) dan what-if "CIP Bay 2 molor 40 menit".
 - Kartu sorotan rekomendasi solver: CP-SAT + waktu solve `[simulasi]`; constraint dilanggar, waktu putar RT, starvation filling, RT antre (sebelum → sesudah).
@@ -150,7 +154,7 @@ Pengguna demo: Rino Akbar Hanif (Planner PPIC), Dimas Prasetyo (Koordinator rece
 
 **Hasil Lab (`/lab`)**
 - Lab test penerimaan RT dan QC barang jadi dengan parameter dan batasnya; QA merilis RT ke receiving atau menolak (alasan wajib); rilis menunggu uji ulang bila status uji ulang; tautan trace untuk QC out-of-spec.
-- Sejak revisi 7 Nov 2026 dipecah dua: Tes Lab (`/lab`, menu Penerimaan) untuk lab test RT beserta grafik tunggu lab per jam yang dipindah dari Antrean Truk, dan QC Barang Jadi (`/qc-produk`, menu Operasional).
+- Sejak revisi 7 Nov 2026 dipecah dua: Tes Lab (`/lab`, menu Penerimaan) untuk lab test RT beserta grafik tunggu lab per jam yang dipindah dari Antrean Truk, dan QC Barang Jadi (`/qc-produk`, menu Operasional). Poin 11: QC Barang Jadi dan Riwayat Produksi saling bertaut lewat `?lot=` (kartu "Mutu & tindak lanjut" membuka sampel lot itu di QC, dan sampel QC membuka riwayat produksi lotnya). Lot stroberi FG-1012-11 punya sampel QC LAB-8806 (lulus, inkubasi masih berjalan) [simulasi].
 
 **Daftar Hold (`/hold`)**
 - Pengajuan dari Traceability; metrik menunggu QA, hold aktif, perlu recall, cakupan tanpa genealogi.

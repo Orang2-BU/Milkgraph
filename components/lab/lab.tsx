@@ -6,6 +6,7 @@ import { ArrowRight, Check, CircleCheck, CircleDashed, CircleX, FlaskConical, X 
 import { decideLab, useDemo, type LabDecision } from "@/lib/demo";
 import { can } from "@/lib/roles";
 import { labResults, type LabResult } from "@/mock/ops";
+import { OUTPUTS } from "@/mock/outputs";
 import { API_MODE } from "@/lib/api/client";
 import { useResource } from "@/lib/api/resource";
 import { Badge, Card, Icon, Modal, PageHeading, RoleNote, SectionTitle, SourceButton, SourceModal } from "@/components/ui";
@@ -26,9 +27,10 @@ const decidable = (r: LabResult) => r.kind === "penerimaan" && (r.status === "ha
 type LabResultItem = LabResult & { decision?: LabDecision; eta?: string };
 
 /** Satu halaman per jenis uji: Tes Lab penerimaan RT (menu Penerimaan) dan QC barang jadi (menu Operasional). */
-export function Lab({ kind }: { kind: LabResult["kind"] }) {
+/** `lot` dari ?lot=... (tautan dari Riwayat Produksi) langsung membuka sampel lot itu. */
+export function Lab({ kind, lot }: { kind: LabResult["kind"]; lot?: string }) {
   const demo = useDemo();
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(() => labResults.find(r => r.kind === kind && r.subject === lot)?.id ?? null);
   const [dialog, setDialog] = useState<"dirilis" | "ditolak" | null>(null);
   const [note, setNote] = useState("");
   const [source, setSource] = useState<string | null>(null);
@@ -94,9 +96,15 @@ export function Lab({ kind }: { kind: LabResult["kind"] }) {
         <ul className="param-list">{open.params.map(p => <li key={p.name}><Icon icon={p.ok === null ? CircleDashed : p.ok ? CircleCheck : CircleX} size={16} className={p.ok === null ? "muted" : p.ok ? "ok-text" : "crit-text"} /><span><strong>{p.name}</strong><small>Batas {p.limit}</small></span><span className="mono">{p.value}</span></li>)}</ul>
         {open.decision || demo.labs[open.id] ? <p className="small"><strong>{decided((open.decision || demo.labs[open.id])!).label}</strong> oleh {(open.decision || demo.labs[open.id])!.by}, {(open.decision || demo.labs[open.id])!.at}. {(open.decision || demo.labs[open.id])!.note}</p>
           : decidable(open) ? <><div className="page-actions"><button className="button secondary" disabled={!allowed || submitting} onClick={() => { setNote(""); setSubmitError(null); setDialog("ditolak"); }}><Icon icon={X} size={16} />Tolak RT</button><button className="button primary" disabled={!allowed || open.status === "uji-ulang" || submitting} onClick={() => { setNote(""); setSubmitError(null); setDialog("dirilis"); }}><Icon icon={Check} size={16} />Rilis ke receiving</button></div>{open.status === "uji-ulang" && <p className="small muted">Rilis menunggu hasil uji ulang alcohol test, perkiraan keluar pukul {open.eta || "15.30"}. RT ini tetap bisa ditolak sekarang.</p>}<RoleNote permission="lab.decide" /></>
-          : open.status === "positif" ? <Link className="button primary" href="/trace">Telusuri lot ini<Icon icon={ArrowRight} size={16} /></Link>
+          : !intake ? <>
+            <p className="small muted">{open.status === "positif" ? "Lot ini gagal QC. Telusuri asalnya, lalu ajukan hold." : "Lot ini lulus QC barang jadi."}</p>
+            <div className="page-actions">
+              {open.status === "positif" && <Link className="button primary" href="/trace">Telusuri dan ajukan hold<Icon icon={ArrowRight} size={16} /></Link>}
+              {OUTPUTS.some(o => o.id === open.subject) && <Link className="button secondary" href={`/riwayat-produksi?lot=${open.subject}`}>Lihat riwayat produksi lot<Icon icon={ArrowRight} size={16} /></Link>}
+            </div>
+          </>
           : <p className="small muted">{open.status === "dalam-uji" ? "Uji masih berjalan. QA baru bisa memutuskan setelah semua parameter selesai diuji." : "RT ini sudah dirilis sebelum snapshot pukul 14.42."}</p>}
-      </> : <><p className="small with-icon"><Icon icon={FlaskConical} size={14} />Pilih sampel untuk melihat parameternya.</p><p className="small muted">{intake ? "QA/Lab merilis RT ke antrean bongkar atau menolaknya. Penolakan wajib disertai alasan dan akan tercatat di Riwayat Persetujuan." : "Asal lot yang out-of-spec bisa ditelusuri di Traceability, lalu diajukan hold."}</p></>}</aside>
+      </> : <><p className="small with-icon"><Icon icon={FlaskConical} size={14} />Pilih sampel untuk melihat parameternya.</p><p className="small muted">{intake ? "QA/Lab merilis RT ke antrean bongkar atau menolaknya. Penolakan wajib disertai alasan dan akan tercatat di Riwayat Persetujuan." : <>Riwayat tiap lot, dari asal susu sampai selesai filling, ada di <Link href="/riwayat-produksi">Riwayat Produksi</Link>. Lot yang out-of-spec bisa ditelusuri lalu diajukan hold.</>}</p></>}</aside>
     </div>
     {dialog && open && <Modal title={dialog === "dirilis" ? `Rilis ${open.subject} ke receiving?` : `Tolak ${open.subject}?`} onClose={() => { setDialog(null); setSubmitError(null); }}><form onSubmit={submit}><Badge>Data simulasi</Badge><p className="dialog-summary">{dialog === "dirilis" ? `${open.subject} akan masuk antrean bongkar. Semua parameternya dalam batas.` : `${open.subject} tidak dibongkar dan dikembalikan ke pemasok. Tulis alasannya supaya keputusan ini bisa ditelusuri nanti.`}</p>{submitError && <p className="crit-text small">{submitError}</p>}<label className="field-label" htmlFor="lab-note">Catatan {dialog === "ditolak" ? "(wajib)" : "(opsional)"}</label><textarea id="lab-note" value={note} onChange={e => setNote(e.target.value)} required={dialog === "ditolak"} maxLength={500} placeholder={dialog === "ditolak" ? "Contoh: alcohol test positif pada uji ulang." : "Contoh: prioritaskan bongkar karena umur susu sudah 7 jam 20 menit."} /><div className="dialog-actions"><button type="button" className="button secondary" onClick={() => { setDialog(null); setSubmitError(null); }} disabled={submitting}>Batal</button><button className="button primary" disabled={submitting || (dialog === "ditolak" && !note.trim())}>{submitting ? "Memproses…" : (dialog === "dirilis" ? "Konfirmasi rilis" : "Konfirmasi penolakan")}<Icon icon={Check} size={16} /></button></div></form></Modal>}
     {intake && <LabWaitChart history={API_MODE ? (waitRes.data?.labHistory ?? []) : scenario.labHistory} avg={API_MODE ? (waitRes.data?.labSummary.avgMinutes ?? avgWait) : 52} delta={API_MODE ? (waitRes.data?.labSummary.deltaMinutes ?? 0) : 14} onSource={setSource} />}
