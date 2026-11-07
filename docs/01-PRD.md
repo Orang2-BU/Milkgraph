@@ -140,6 +140,11 @@ Pengguna demo: Rino Akbar Hanif (Planner PPIC), Dimas Prasetyo (Koordinator rece
 - Rantai serah-terima batch 7 langkah dari surat jalan sampai lot; serah-terima di transfer tank ST-4 dan mixing MX-2 ditandai sebagai celah yang kini terhubung.
 - Graph view berlapis; ajukan hold dan recall ke QA.
 
+**Riwayat Produksi (`/riwayat-produksi`)** (revisi 7 Nov 2026, poin 8)
+- Sub-menu pertama Traceability. Pilih output (produk, tanggal, jam selesai, kode lot), lalu tampil jalur produksi 7 tahap dari rantai serah-terima: jam mulai-selesai, durasi, jeda antarcatatan, asal-tujuan, batch, dan celah yang disambungkan. Panel detail per tahap dengan tombol bukti.
+- Bagian "Mutu & tindak lanjut": lot out-of-spec (FG-1013-07) membuka halaman Traceability di atas (`/trace`) untuk trace mundur/maju dan pengajuan hold. `/trace` tidak lagi jadi sub-menu sendiri, tapi tetap ada dan menyorot Riwayat Produksi di sidebar.
+- Data simulasi `mock/outputs.ts`: 5 lot UHT Cokelat FG-1013-05 s.d. 09 (rantai scenario.json) dan 1 jalur contoh UHT Stroberi FG-1012-11 selesai 16.00. Belum ada endpoint daftar output di API; jam selesai per lot cokelat belum tercatat.
+
 **Hasil Lab (`/lab`)**
 - Lab test penerimaan RT dan QC barang jadi dengan parameter dan batasnya; QA merilis RT ke receiving atau menolak (alasan wajib); rilis menunggu uji ulang bila status uji ulang; tautan trace untuk QC out-of-spec.
 - Sejak revisi 7 Nov 2026 dipecah dua: Tes Lab (`/lab`, menu Penerimaan) untuk lab test RT beserta grafik tunggu lab per jam yang dipindah dari Antrean Truk, dan QC Barang Jadi (`/qc-produk`, menu Operasional).
@@ -316,7 +321,7 @@ Model graph, tabel relasional, dan aturan waktu ada di `03-ARCHITECTURE.md` §4.
 2. **Rencana & What-if:** rencana FIFO tidak layak (3 constraint dilanggar); rekomendasi memindahkan RT-26 ke Bay 1 dan menjaga F2/F4; planner menyetujui. Coba what-if CIP molor.
 3. **Bay & Tangki / Lini Filling:** instruksi muncul; koordinator receiving dan supervisor mengonfirmasi.
 4. **Simulasi 3D:** bandingkan lokasi bottleneck sebelum dan sesudah rekomendasi di tata letak nyata.
-5. **Traceability:** QC FG out-of-spec → trace mundur ke RT-04 dan Farm Ngadirejo (12%) → trace maju ke 5 lot (1 recall) → rantai serah-terima batch → ajukan hold.
+5. **Traceability:** Riwayat Produksi (FG-1013-07 terpilih, jalur produksinya tampil) → Mutu & tindak lanjut → QC FG out-of-spec → trace mundur ke RT-04 dan Farm Ngadirejo (12%) → trace maju ke 5 lot (1 recall) → rantai serah-terima batch → ajukan hold.
 6. **Daftar Hold / Hasil Lab:** QA menyetujui hold dan merilis RT di lab.
 7. **Pasokan & Permintaan / Constraint:** planner mengirim kebutuhan ke farm; ubah batas holding time dan lihat dampaknya.
 8. **Riwayat Persetujuan:** semua keputusan tercatat dengan peran dan waktu.
