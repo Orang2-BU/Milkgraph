@@ -82,8 +82,8 @@ try {
   await page.getByText("RT-27 masuk tepat setelah CIP selesai 15.20.").waitFor();
   assert.equal(await page.locator(".scene-tag.crit").count(), 0);
   report.push("Simulasi 3D: bottlenecks before, none critical after recommendation: PASS");
-  assert.equal(await page.locator("#desktop-navigation .nav-list a").count(), 6);
-  const tabbed = { receiving: "Pabrik", tangki: "Pabrik", filling: "Pabrik", pasokan: "Rencana", constraint: "Rencana", persetujuan: "Rencana", lab: "Traceability", hold: "Traceability", graph: "Traceability", "sumber-data": "Pengaturan", pengguna: "Pengaturan" };
+  assert.equal(await page.locator("#desktop-navigation .nav-list a.nav-item").count(), 6);
+  const tabbed = { receiving: "Operasional", "kondisi-alat": "Operasional", "master-data": "Operasional", pasokan: "Rencana", constraint: "Rencana", persetujuan: "Rencana", lab: "Traceability", hold: "Traceability", graph: "Traceability", "sumber-data": "Pengaturan", pengguna: "Pengaturan" };
   for (const [route, menu] of Object.entries(tabbed)) {
     const response = await page.goto(`${root}/${route}`);
     assert.equal(response.status(), 200, route);

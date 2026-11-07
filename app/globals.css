@@ -133,7 +133,11 @@ svg { flex-shrink: 0; }
 .topbar-actions .icon-button { background: var(--glass-chip); box-shadow: var(--glass-rim), var(--shadow-chip); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
 .topbar-actions .icon-button:hover { background: color-mix(in oklab, var(--color-surface) 78%, transparent); }
 .desktop-toggle { background: transparent; width: 32px; }
-.shift-label { display: flex; align-items: center; gap: 8px; padding: 0 4px; font-size: 12px; color: var(--color-on-surface-muted); }
+.shift-button { border-radius: var(--radius-full); background: var(--glass-chip); box-shadow: var(--glass-rim), var(--shadow-chip); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); min-height: 40px; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+.shift-button:hover { background: color-mix(in oklab, var(--color-surface) 78%, transparent); }
+.top-avatar { width: 40px; height: 40px; flex-shrink: 0; }
+.shift-choice { display: flex; align-items: start; flex-direction: column; gap: 8px; background: var(--color-canvas); padding: 20px; border-radius: var(--radius-md); width: 100%; margin: 20px 0; text-align: left; }
+.shift-choice > span:not(.badge) { font-size: 12px; color: var(--color-on-surface-muted); }
 /* Tab bagian: menu yang menggabungkan beberapa halaman. Bentuk sama dengan .toggle, tapi berupa tautan agar URL dan tombol back tetap jalan. */
 .section-tabs { display: inline-flex; flex-wrap: wrap; padding: 4px; gap: 4px; margin-bottom: 24px; border-radius: var(--radius-full); background: color-mix(in oklab, var(--color-surface-muted) 55%, transparent); box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-surface) 70%, transparent); }
 .section-tabs a { min-height: 40px; display: inline-flex; align-items: center; border-radius: var(--radius-full); padding: 0 18px; font-size: 13px; color: var(--color-on-surface-muted); }
@@ -560,7 +564,7 @@ textarea { width: 100%; resize: vertical; min-height: 110px; border: 1px solid v
   .recommendation-saving { white-space: normal; }
 }
 @media (max-width:1199px) {
-  .button, .icon-button, .source-chip, .text-link, .toggle button, .section-tabs a, .send-button, .source-help, .filter-select select, .tank-footer button, .incident-factors button, .inline-link, .recommendation-note > button, .graph-toolbar .icon-button { min-height: 44px; }
+  .button, .icon-button, .source-chip, .text-link, .toggle button, .section-tabs a, .shift-button, .send-button, .source-help, .filter-select select, .tank-footer button, .incident-factors button, .inline-link, .recommendation-note > button, .graph-toolbar .icon-button { min-height: 44px; }
   .icon-button, .source-help, .send-button, .metric-source, .table-action .icon-button, .graph-toolbar .icon-button { min-width: 44px; }
   .filter-select svg { top: 15px; }
   .gantt-track, .gantt-row { min-height: 60px; }
@@ -574,7 +578,7 @@ textarea { width: 100%; resize: vertical; min-height: 110px; border: 1px solid v
   .workspace { --ws-pad: 16px; width: 100%; }
   .topbar { height: 72px; gap: 8px; }
   .topbar-start, .topbar-actions { gap: 8px; }
-  .desktop-toggle, .breadcrumb, .shift-label { display: none; }
+  .desktop-toggle, .breadcrumb, .shift-button, .top-avatar { display: none; }
   .section-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-radius: var(--radius-lg); }
   .section-tabs a { justify-content: center; padding: 0 12px; text-align: center; }
   .mobile-menu { display: inline-flex; }
@@ -836,7 +840,7 @@ button.recommendation-saving { min-height: 36px; }
 
 /* Pengguna yang mengurangi transparansi: permukaan kaca kembali solid. */
 @media (prefers-reduced-transparency: reduce) {
-  .card, .tank-card, .placeholder-card, .qc-trigger, .nav-item.active, .account, .topbar-actions .icon-button, .filter-select select, .modal { background: var(--color-surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .card, .tank-card, .placeholder-card, .qc-trigger, .nav-item.active, .account, .shift-button, .topbar-actions .icon-button, .filter-select select, .modal { background: var(--color-surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
   .panel, .toggle, .section-tabs { background: var(--color-surface-muted); -webkit-backdrop-filter: none; backdrop-filter: none; }
   .topbar { background: var(--color-canvas); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
@@ -1018,3 +1022,32 @@ main .icon-button { box-shadow: inset 0 0 0 1px var(--color-border); color: var(
 .module-tabs a { min-height: 40px; padding: 0 16px; font-size: 13px; font-weight: 500; background: var(--color-surface); box-shadow: inset 0 0 0 1px var(--color-border); }
 .graph-toolbar .icon-button { background: var(--color-surface); }
 @media (max-width: 767px) { .button { padding: 0 18px; font-size: 14px; } .source-chip { font-size: 12px; } .section-tabs a { padding: 0 12px; font-size: 13px; } }
+
+/* Kondisi Alat: tab tampilan + cari, satu tabel semua alat */
+.asset-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.asset-search { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; flex: 0 1 320px; border-radius: var(--radius-full); background: var(--glass-chip); box-shadow: var(--glass-rim), var(--shadow-chip); color: var(--color-on-surface-muted); }
+.asset-search:focus-within { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.asset-search input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: inherit; font-size: 13px; color: var(--color-on-surface); }
+.asset-table td { font-size: 12px; }
+.asset-table .asset-note { color: var(--color-on-surface-muted); }
+.asset-table .table-action { text-align: right; white-space: nowrap; }
+.asset-empty { padding: 32px 0; text-align: center; }
+@media (max-width: 767px) {
+  .asset-search { flex-basis: 100%; }
+  .asset-toolbar .toggle { width: 100%; }
+  .asset-toolbar .toggle button { flex: 1; }
+  .asset-table .asset-note { grid-column: 1 / -1; }
+  .asset-table .table-action { width: auto; }
+}
+.asset-table .text-link { background: none; padding: 0 4px; color: var(--color-on-surface-muted); font-weight: 500; }
+.asset-table tr:hover .text-link, .asset-table .text-link:hover { color: var(--color-primary); }
+/* HP: toggle dengan banyak pilihan digeser horizontal, label tidak dipecah jadi beberapa baris. */
+@media (max-width: 767px) {
+  .toggle { overflow-x: auto; scrollbar-width: none; }
+  .toggle button { white-space: nowrap; flex-shrink: 0; }
+}
+/* HP: aksi di judul bagian turun ke baris baru, bukan keluar layar. */
+@media (max-width: 767px) {
+  .section-heading { flex-wrap: wrap; }
+  .section-heading .page-actions { flex-wrap: wrap; flex-shrink: 1; }
+}

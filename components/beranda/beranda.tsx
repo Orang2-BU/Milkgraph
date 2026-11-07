@@ -82,7 +82,7 @@ export function Beranda() {
 
     <div className="home-section-head"><h2>Isi setiap menu</h2><p>Ringkasan dan pintasan ke semua halaman.</p></div>
     <div className="module-grid">
-      <ModuleCard icon={Factory} menu="Pabrik" description="Kondisi fisik plant saat ini: antrean road tanker, bay dan tangki, serta mesin filling." wide>
+      <ModuleCard icon={Factory} menu="Operasional" description="Kondisi fisik plant saat ini: antrean road tanker, kondisi setiap alat, dan master alat." wide>
         <div className="module-cols">
           <div><h4>Antrean RT per tahap</h4><ol className="home-flow">{scenario.stages.map(s => <li key={s.id} className={s.tone}><strong>{s.count}</strong><span>{s.label}</span></li>)}</ol><p className="module-note">{scenario.tankers.length} RT di plant, tunggu lab {lab.value} {lab.unit}.</p></div>
           <div><h4>Bay dan tangki raw milk</h4><ul className="mini-bars">{scenario.assets.map(a => <li key={a.id}><span className="mono">{a.id}</span><span className={`capacity-bar ${a.tone}`}><span style={{ width: `${a.fill / a.capacity * 100}%` }} /></span><span className={`mini-status ${a.tone}`}>{a.status}</span></li>)}</ul></div>
