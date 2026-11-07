@@ -4,10 +4,10 @@ import { readFileSync } from 'node:fs';
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
-test('navigation includes master-data tab under Pengaturan', () => {
+test('navigation includes master-data tab (Master Alat)', () => {
   const nav = read('lib/nav.ts');
   assert.ok(nav.includes('"/master-data"'), 'nav missing /master-data route');
-  assert.ok(nav.includes('"Katalog Master"'), 'nav missing Katalog Master label');
+  assert.ok(nav.includes('"Master Alat"'), 'nav missing Master Alat label');
 });
 
 test('master-data view queries master endpoints and changeover classifier in API mode', () => {
