@@ -79,7 +79,7 @@ try {
   await page.goto(root + "/simulasi");
   await page.locator(".scene-tag.crit").first().waitFor();
   await page.getByRole("button", { name: "Rekomendasi · proyeksi 15.30" }).click();
-  await page.getByText("RT-27 masuk tepat setelah CIP selesai 15.20.").waitFor();
+  await page.getByText("RT-27 masuk tepat setelah CIP selesai pukul 15.20.").waitFor();
   assert.equal(await page.locator(".scene-tag.crit").count(), 0);
   report.push("Simulasi 3D: bottlenecks before, none critical after recommendation: PASS");
   assert.equal(await page.locator("#desktop-navigation .nav-list a.nav-item").count(), 7);

@@ -35,7 +35,7 @@ export const SOP_CHANGEOVER: Record<string, number> = { "UHT Full Cream 1 L>UHT 
 const LINES = ["Filling F1", "Filling F2", "Filling F4"];
 
 const clock = (offset: number) => `${13 + Math.floor(offset / 60)}.${String(offset % 60).padStart(2, "0")}`;
-const hours = (minutes: number) => `${Math.floor(minutes / 60)}j ${String(minutes % 60).padStart(2, "0")}m`;
+const hours = (minutes: number) => minutes % 60 ? `${Math.floor(minutes / 60)} jam ${minutes % 60} menit` : `${Math.floor(minutes / 60)} jam`;
 const litres = (n: number) => `${new Intl.NumberFormat("id-ID").format(n)} L/jam`;
 const rt = (b: Block) => b.label.replace(/ bentrok CIP$/, "");
 const overlaps = (b: Block, start: number, end: number) => b.start < end && b.end > start;
@@ -57,35 +57,35 @@ export function evaluate(plan: Plan, view: View, limits: Limits): Record<Constra
   const stopped = [...new Set(gaps.map(b => line(b.resource)))].join(" dan ");
   const rateOk = fact.transfer <= limits.maxTransfer;
   const flow: Check = rateOk && starved <= limits.starvationTol
-    ? { ok: true, text: `UHT-2 ke AT-2 butuh ${litres(fact.transfer)}, dalam batas transfer ${litres(limits.maxTransfer)}. ${starved ? `Jeda ${stopped} ${starved} menit, dalam toleransi ${limits.starvationTol} menit [asumsi].` : "Pasokan F2 dan F4 terjaga."}` }
-    : { ok: false, text: `${rateOk ? `UHT-2 ke AT-2 butuh ${litres(fact.transfer)}, dalam batas transfer.` : `Untuk mengisi AT-2 tepat waktu, UHT-2 harus mengejar ${litres(fact.transfer)}, melebihi batas transfer ${litres(limits.maxTransfer)}.`} ${starved ? `Pasokan ke ${stopped} terputus ${starved} menit mulai ${clock(gaps[0].start)}${starved > limits.starvationTol ? `, melebihi toleransi ${limits.starvationTol} menit` : ""}.` : ""}`.trim() };
+    ? { ok: true, text: `UHT-2 ke AT-2 butuh ${litres(fact.transfer)}, masih dalam batas transfer ${litres(limits.maxTransfer)}. ${starved ? `${stopped} berhenti ${starved} menit, masih dalam toleransi ${limits.starvationTol} menit [asumsi].` : "Pasokan ke F2 dan F4 tetap terjaga."}` }
+    : { ok: false, text: `${rateOk ? `UHT-2 ke AT-2 butuh ${litres(fact.transfer)}, masih dalam batas transfer.` : `Supaya AT-2 terisi tepat waktu, UHT-2 harus mengejar ${litres(fact.transfer)}, padahal batas transfernya ${litres(limits.maxTransfer)}.`} ${starved ? `Pasokan ke ${stopped} terputus selama ${starved} menit mulai pukul ${clock(gaps[0].start)}${starved > limits.starvationTol ? `, melebihi toleransi ${limits.starvationTol} menit` : ""}.` : ""}`.trim() };
 
   const blocked = limits.maintenanceBay3 ? unloads.filter(b => b.resource === MAINTENANCE.bay && overlaps(b, MAINTENANCE.start, MAINTENANCE.end)) : [];
   const window = `${MAINTENANCE.bay} ${clock(MAINTENANCE.start)}-${clock(MAINTENANCE.end)}`;
-  const maintenance: Check = !limits.maintenanceBay3 ? { ok: true, text: "Tidak ada maintenance window di horizon ini." }
-    : blocked.length ? { ok: false, text: `${blocked.map(rt).join(", ")} bongkar saat maintenance ${window}.` }
-    : { ok: true, text: `Tidak ada bongkar saat maintenance ${window}.` };
+  const maintenance: Check = !limits.maintenanceBay3 ? { ok: true, text: "Tidak ada jadwal maintenance di horizon ini." }
+    : blocked.length ? { ok: false, text: `${blocked.map(rt).join(", ")} terjadwal bongkar saat maintenance ${window}.` }
+    : { ok: true, text: `Tidak ada bongkar yang bentrok dengan maintenance ${window}.` };
 
   const left = limits.holdingMin - (RT26_AGE + fact.finish - NOW);
   const rt26 = left >= 0
-    ? `RT-26 selesai bongkar ${clock(fact.finish)}, sisa ${left} menit sebelum batas ${hours(limits.holdingMin)} [asumsi].`
-    : `RT-26 baru selesai bongkar ${clock(fact.finish)}, lewat batas ${hours(limits.holdingMin)} [asumsi] pukul ${clock(NOW + holdingLeft(limits))}.`;
+    ? `RT-26 selesai bongkar pukul ${clock(fact.finish)}, ${left} menit sebelum batas ${hours(limits.holdingMin)} [asumsi].`
+    : `RT-26 baru selesai bongkar pukul ${clock(fact.finish)}, padahal batas ${hours(limits.holdingMin)} [asumsi] jatuh pukul ${clock(NOW + holdingLeft(limits))}.`;
   const bufferOk = fact.bufferAge <= limits.bufferMaxMin;
-  const buffer = `Susu tertua di RMT-2 masuk thermal pada umur ${hours(fact.bufferAge)}, batas ${hours(limits.bufferMaxMin)}${bufferOk ? "" : ", terlampaui"}.`;
+  const buffer = `Susu tertua di RMT-2 masuk thermal saat berumur ${hours(fact.bufferAge)}, batasnya ${hours(limits.bufferMaxMin)}${bufferOk ? "" : ", jadi sudah terlampaui"}.`;
   const holding: Check = { ok: left >= 0 && bufferOk, text: `${rt26} ${buffer}` };
 
   const cips = blocks.filter(b => b.type === "cip");
   const clash = unloads.filter(b => b.label.startsWith("RT") && cips.some(c => c.resource === b.resource && overlaps(b, c.start, c.end + limits.cipBuffer)));
   const cipEnd = Math.max(...cips.map(c => c.end)) + limits.cipBuffer;
-  const buffered = limits.cipBuffer ? ` + jeda ${limits.cipBuffer} menit` : "";
+  const buffered = limits.cipBuffer ? `, ditambah jeda ${limits.cipBuffer} menit` : "";
   const broken = limits.breakdownF1 ? blocks.filter(b => b.resource === BREAKDOWN.line && b.type !== "starvation" && overlaps(b, BREAKDOWN.start, BREAKDOWN.end)) : [];
-  const breakdown = broken.length ? ` Breakdown F1 ${clock(BREAKDOWN.start)}-${clock(BREAKDOWN.end)} memotong ${broken.map(b => b.label).join(" dan ")}; jadwal F1 perlu disusun ulang.` : limits.breakdownF1 ? ` Breakdown F1 ${clock(BREAKDOWN.start)}-${clock(BREAKDOWN.end)} tidak memotong jadwal.` : "";
+  const breakdown = broken.length ? ` Breakdown F1 pukul ${clock(BREAKDOWN.start)}-${clock(BREAKDOWN.end)} memotong ${broken.map(b => b.label).join(" dan ")}, jadi jadwal F1 perlu disusun ulang.` : limits.breakdownF1 ? ` Breakdown F1 pukul ${clock(BREAKDOWN.start)}-${clock(BREAKDOWN.end)} tidak memotong jadwal.` : "";
   const cipText = clash.length
-    ? clash.map(b => `${rt(b)} dijadwalkan di ${b.resource} ${clock(b.start)}, padahal ${b.resource} CIP sampai ${clock(cipEnd - limits.cipBuffer)}${buffered}.`).join(" ")
-    : `Tidak ada bongkar di Bay 2 sebelum CIP selesai ${clock(cipEnd)}${buffered ? " (termasuk jeda)" : ""}.`;
+    ? clash.map(b => `${rt(b)} dijadwalkan di ${b.resource} pukul ${clock(b.start)}, padahal ${b.resource} masih CIP sampai pukul ${clock(cipEnd - limits.cipBuffer)}${buffered}.`).join(" ")
+    : `Tidak ada bongkar di Bay 2 sebelum CIP selesai pukul ${clock(cipEnd)}${buffered ? " (sudah termasuk jeda)" : ""}.`;
   const cip: Check = { ok: !clash.length && !broken.length, text: cipText + breakdown };
 
-  const tank: Check = { ok: fact.tankPeak <= limits.tankMax, text: `Raw Milk Buffer maksimum ${fact.tankPeak}% dari kapasitas, batas ${limits.tankMax}%. Transfer tank ST-4 siap menerima.` };
+  const tank: Check = { ok: fact.tankPeak <= limits.tankMax, text: `Raw Milk Buffer terisi paling tinggi ${fact.tankPeak}% dari kapasitas, batasnya ${limits.tankMax}%. Transfer tank ST-4 siap menerima susu.` };
 
   const changes = blocks.filter(b => b.type === "changeover");
   const perLine = Math.max(0, ...LINES.map(l => changes.filter(b => b.resource === l).length));
@@ -99,8 +99,8 @@ export function evaluate(plan: Plan, view: View, limits: Limits): Record<Constra
   const changeover: Check = {
     ok: perLine <= limits.changeoverMax && sop.every(c => c.ok),
     text: first
-      ? `${changes.length} changeover di ${line(first.block.resource)} pukul ${clock(first.block.start)}, ${first.block.end - first.block.start} menit; ${first.ok ? "memenuhi" : "kurang dari"} SOP ${first.need} menit. Batas ${limits.changeoverMax} changeover per lini per shift.`
-      : `Tidak ada changeover. Batas ${limits.changeoverMax} per lini per shift.`,
+      ? `${changes.length} changeover di ${line(first.block.resource)} pukul ${clock(first.block.start)} selama ${first.block.end - first.block.start} menit, ${first.ok ? "sudah memenuhi" : "kurang dari"} SOP ${first.need} menit. Batasnya ${limits.changeoverMax} changeover per lini per shift.`
+      : `Tidak ada changeover. Batasnya ${limits.changeoverMax} changeover per lini per shift.`,
   };
 
   return { flow, maintenance, holding, cip, tank, changeover };
@@ -115,9 +115,9 @@ export function instructions(plan: Plan): Instruction[] {
   const moved = plan.after.filter(b => b.type === "unload" && b.label.startsWith("RT")).flatMap(b => {
     const was = unloadOf("before", b.label);
     if (was && was.resource === b.resource && was.start === b.start) return [];
-    return [{ id: `${plan.id}:${b.label}`, role: "receiving" as const, text: `${b.label} bongkar di ${b.resource}, ${clock(b.start)} - ${clock(b.end)}`, from: was ? `Semula ${was.resource} ${clock(was.start)}` : "Belum terjadwal di rencana awal" }];
+    return [{ id: `${plan.id}:${b.label}`, role: "receiving" as const, text: `${b.label} bongkar di ${b.resource} pukul ${clock(b.start)} - ${clock(b.end)}`, from: was ? `Semula di ${was.resource} pukul ${clock(was.start)}` : "Belum terjadwal di rencana awal" }];
   });
   const [before, after] = [starvation(plan.before), starvation(plan.after)];
-  const supply = before > after ? [{ id: `${plan.id}:F2`, role: "supervisor" as const, text: `Filling F2 dan F4 tetap jalan, jeda pasokan AT-2 turun dari ${before} ke ${after} menit`, from: "Rencana awal: F2 dan F4 berhenti menunggu AT-2" }] : [];
+  const supply = before > after ? [{ id: `${plan.id}:F2`, role: "supervisor" as const, text: `Filling F2 dan F4 tetap jalan karena jeda pasokan AT-2 turun dari ${before} menjadi ${after} menit`, from: "Di rencana awal, F2 dan F4 berhenti menunggu AT-2" }] : [];
   return [...moved.sort((a, b) => a.text.localeCompare(b.text)), ...supply];
 }
