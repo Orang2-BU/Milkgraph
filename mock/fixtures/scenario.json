@@ -345,234 +345,234 @@
       "id": "THRU-01",
       "time": "14.42",
       "title": "Throughput receiving",
-      "detail": "Total volume yang dibongkar per jam dari data weighbridge dan flowmeter bay. Target 13,3 t/jam diturunkan dari kapasitas 320 t/hari [study case]."
+      "detail": "Total volume susu yang dibongkar per jam, dihitung dari data weighbridge dan flowmeter bay. Target 13,3 t/jam diturunkan dari kapasitas pabrik 320 t/hari [study case]."
     },
     {
       "id": "TURN-01",
       "time": "14.42",
       "title": "Waktu putar RT",
-      "detail": "Rata-rata waktu dari RT tiba di weighbridge sampai keluar setelah bongkar, untuk 12 RT terakhir. Baseline FIFO 2j 34m [simulasi]."
+      "detail": "Rata-rata waktu sejak RT tiba di weighbridge sampai keluar setelah bongkar, dihitung dari 12 RT terakhir. Dengan urutan FIFO, waktunya 2 jam 34 menit [simulasi]."
     },
     {
       "id": "LAB-QUEUE",
       "time": "14.42",
       "title": "Antrean lab test",
-      "detail": "Tiga RT menunggu hasil lab test: RT-24, RT-27, RT-28. Rata-rata tunggu 52 menit. Lab test menjadi gerbang antrean receiving.",
+      "detail": "Tiga RT sedang menunggu hasil lab test, yaitu RT-24, RT-27, dan RT-28, rata-rata selama 52 menit. RT baru bisa masuk antrean bongkar setelah lab test selesai.",
       "node": "lab-gate"
     },
     {
       "id": "BAY-STAT",
       "time": "14.42",
       "title": "Status bay",
-      "detail": "Bay 1 bongkar RT-23, Bay 2 CIP sampai 15.20, Bay 3 bongkar RT-25."
+      "detail": "Bay 1 sedang membongkar RT-23, Bay 2 sedang CIP sampai pukul 15.20, dan Bay 3 sedang membongkar RT-25."
     },
     {
       "id": "WB-20",
       "time": "13.00",
       "title": "Weighbridge RT-20",
-      "detail": "RT-20 bongkar di Bay 2, 13.00 - 13.40, 10.100 L."
+      "detail": "RT-20 dibongkar di Bay 2 pukul 13.00 - 13.40 dengan volume 10.100 L."
     },
     {
       "id": "WB-21",
       "time": "13.00",
       "title": "Weighbridge RT-21",
-      "detail": "RT-21 bongkar di Bay 1, 13.00 - 13.35, 9.700 L."
+      "detail": "RT-21 dibongkar di Bay 1 pukul 13.00 - 13.35 dengan volume 9.700 L."
     },
     {
       "id": "WB-22",
       "time": "13.00",
       "title": "Weighbridge RT-22",
-      "detail": "RT-22 bongkar di Bay 3, 13.00 - 13.45, 10.900 L."
+      "detail": "RT-22 dibongkar di Bay 3 pukul 13.00 - 13.45 dengan volume 10.900 L."
     },
     {
       "id": "WB-23",
       "time": "14.25",
       "title": "RT-23 · Farm Sumberejo",
-      "detail": "10.200 L, lab test lolos 13.30, bongkar di Bay 1 mulai 14.25. Suhu tiba 3,8 °C."
+      "detail": "Membawa 10.200 L susu dan lolos lab test pukul 13.30. Bongkar di Bay 1 dimulai pukul 14.25, suhu saat tiba 3,8 °C."
     },
     {
       "id": "WB-24",
       "time": "13.41",
       "title": "RT-24 · Farm Ngadirejo",
-      "detail": "8.800 L. Lab test diulang karena alcohol test meragukan; hasil diperkirakan 15.30. Umur susu 8j 05m."
+      "detail": "Membawa 8.800 L susu. Lab test diulang karena hasil alcohol test meragukan, dan hasilnya diperkirakan keluar pukul 15.30. Umur susunya 8 jam 5 menit."
     },
     {
       "id": "WB-25",
       "time": "14.10",
       "title": "RT-25 · Farm Tutur",
-      "detail": "9.600 L, bongkar di Bay 3 mulai 14.10. Suhu tiba 4,0 °C."
+      "detail": "Membawa 9.600 L susu. Bongkar di Bay 3 dimulai pukul 14.10, suhu saat tiba 4,0 °C."
     },
     {
       "id": "WB-26",
       "time": "14.18",
       "title": "RT-26 · KUD Ngantang",
-      "detail": "11.400 L, rilis lab 14.18. Menunggu bay 24 menit. Umur susu 9j 20m, batas 10j 30m [asumsi].",
+      "detail": "Membawa 11.400 L susu dan dirilis lab pukul 14.18. Sudah menunggu bay selama 24 menit. Umur susunya 9 jam 20 menit, batasnya 10 jam 30 menit [asumsi].",
       "node": "rt-26"
     },
     {
       "id": "WB-27",
       "time": "13.54",
       "title": "RT-27 · Farm Pujon Kidul",
-      "detail": "10.600 L, menunggu lab test 48 menit. Umur susu 7j 20m."
+      "detail": "Membawa 10.600 L susu dan sudah menunggu lab test selama 48 menit. Umur susunya 7 jam 20 menit."
     },
     {
       "id": "WB-28",
       "time": "13.55",
       "title": "RT-28 · Farm Sumberejo",
-      "detail": "9.900 L, menunggu lab test 47 menit. Umur susu 6j 55m."
+      "detail": "Membawa 9.900 L susu dan sudah menunggu lab test selama 47 menit. Umur susunya 6 jam 55 menit."
     },
     {
       "id": "WB-29",
       "time": "14.24",
       "title": "RT-29 · KUD Ngantang",
-      "detail": "10.800 L, sampling sejak 14.24."
+      "detail": "Membawa 10.800 L susu dan sedang diambil sampelnya sejak pukul 14.24."
     },
     {
       "id": "WB-30",
       "time": "14.30",
       "title": "RT-30 · Farm Tutur",
-      "detail": "9.200 L, sampling sejak 14.30."
+      "detail": "Membawa 9.200 L susu dan sedang diambil sampelnya sejak pukul 14.30."
     },
     {
       "id": "RMT-LEVEL",
       "time": "14.42",
       "title": "Level Raw Milk Buffer",
-      "detail": "RMT-1 41.200 L, RMT-2 52.800 L, RMT-3 12.400 L dari kapasitas masing-masing 60.000 L. Suhu 3,9 - 4,1 °C."
+      "detail": "Isi RMT-1 41.200 L, RMT-2 52.800 L, dan RMT-3 12.400 L, masing-masing berkapasitas 60.000 L. Suhunya 3,9 - 4,1 °C."
     },
     {
       "id": "CIP-B2",
       "time": "14.10",
       "title": "CIPEvent Bay 2",
-      "detail": "CIP Bay 2 mulai 14.10, durasi standar 70 menit, selesai 15.20.",
+      "detail": "CIP Bay 2 dimulai pukul 14.10 dengan durasi standar 70 menit, jadi selesai pukul 15.20.",
       "node": "cip-b2"
     },
     {
       "id": "HOLD-RT26",
       "time": "14.42",
       "title": "Holding time RT-26",
-      "detail": "Umur susu 9j 20m. Batas dari farm sampai tersimpan dingin 10j 30m adalah parameter [asumsi], akan divalidasi mentor.",
+      "detail": "Umur susunya 9 jam 20 menit. Batas waktu dari farm sampai susu tersimpan dingin adalah 10 jam 30 menit. Angka ini masih [asumsi] dan akan divalidasi mentor.",
       "node": "rt-26"
     },
     {
       "id": "HOLD-RT24",
       "time": "14.42",
       "title": "Holding time RT-24",
-      "detail": "Umur susu 8j 05m. Prioritas bongkar setelah rilis lab karena paling dekat batas di antara RT berikutnya."
+      "detail": "Umur susunya 8 jam 5 menit. RT ini didahulukan setelah dirilis lab karena paling dekat dengan batasnya di antara RT berikutnya."
     },
     {
       "id": "FLOW-F2",
       "time": "14.42",
       "title": "Pasokan Filling F2 dan F4",
-      "detail": "F2 dan F4 berbagi Aseptic Tank AT-2 dan butuh 8.290 L/jam. Dengan rencana FIFO, RMT-2 telat terisi sehingga UHT-2 harus mengejar 10.200 L/jam, di atas batas transfer 9.000 L/jam; AT-2 kosong 15.50 dan kedua lini berhenti."
+      "detail": "F2 dan F4 berbagi Aseptic Tank AT-2 dan bersama-sama butuh 8.290 L/jam. Dengan rencana FIFO, RMT-2 terlambat terisi, sehingga UHT-2 harus mengejar 10.200 L/jam, padahal batas transfernya 9.000 L/jam. Akibatnya AT-2 kosong pukul 15.50 dan kedua lini berhenti."
     },
     {
       "id": "FILL-F1",
       "time": "14.42",
       "title": "Jadwal Filling F1",
-      "detail": "UHT Full Cream 1 L sampai 16.00, changeover size 35 menit, lalu UHT Cokelat 200 ml."
+      "detail": "UHT Full Cream 1 L diisi sampai pukul 16.00, lalu ganti ukuran kemasan (changeover size) selama 35 menit sebelum lanjut ke UHT Cokelat 200 ml."
     },
     {
       "id": "FILL-F2",
       "time": "14.42",
       "title": "Jadwal Filling F2",
-      "detail": "UHT Stroberi 200 ml sepanjang horizon."
+      "detail": "UHT Stroberi 200 ml diisi sepanjang horizon rencana."
     },
     {
       "id": "MAINT-01",
       "time": "14.42",
       "title": "Maintenance window",
-      "detail": "Tidak ada maintenance terjadwal 13.00 - 20.00."
+      "detail": "Tidak ada maintenance yang dijadwalkan pukul 13.00 - 20.00."
     },
     {
       "id": "PLAN-FIFO",
       "time": "14.40",
       "title": "Rencana FIFO shift siang",
-      "detail": "Rencana awal planner: RT dibongkar berdasarkan urutan rilis lab. Diuji solver CP-SAT terhadap 6 constraint."
+      "detail": "Rencana awal dari planner membongkar RT sesuai urutan rilis lab. Rencana ini diuji oleh solver CP-SAT terhadap 6 constraint."
     },
     {
       "id": "SOLVER-01",
       "time": "14.42",
       "title": "Run solver CP-SAT",
-      "detail": "Model: 6 constraint, 9 RT, 3 bay, 2 lini filling. Waktu solve dicatat per skenario [simulasi]."
+      "detail": "Model berisi 6 constraint, 9 RT, 3 bay, dan 2 lini filling. Waktu solve dicatat untuk setiap skenario [simulasi]."
     },
     {
       "id": "LAB-8812",
       "time": "13 Okt 22.40",
       "title": "QC FG out-of-spec FG-1013-07",
-      "detail": "Uji residu antibiotik beta-laktam pada lot FG-1013-07: positif di atas batas. Lot sudah di gudang, belum dikirim.",
+      "detail": "Hasil uji residu antibiotik beta-laktam pada lot FG-1013-07 positif, di atas batas. Lot ini masih di gudang dan belum dikirim.",
       "node": "lab-8812"
     },
     {
       "id": "LAB-4471",
       "time": "13 Okt 06.05",
       "title": "Lab test RT-04 saat penerimaan",
-      "detail": "Screening antibiotik cepat: lolos, nilai mendekati batas deteksi. Alcohol test negatif.",
+      "detail": "Screening antibiotik cepat lolos, tetapi nilainya mendekati batas deteksi. Alcohol test negatif.",
       "node": "lab-4471"
     },
     {
       "id": "TR-RMT2",
       "time": "13 Okt 06.40",
       "title": "Transfer ke RMT-2",
-      "detail": "RT-02 10.400 L, RT-04 8.800 L, RT-06 9.900 L, RT-09 10.100 L masuk RMT-2, 06.20 - 08.15.",
+      "detail": "RT-02 (10.400 L), RT-04 (8.800 L), RT-06 (9.900 L), dan RT-09 (10.100 L) masuk ke RMT-2 pukul 06.20 - 08.15.",
       "node": "rmt-2"
     },
     {
       "id": "TR-PROC",
       "time": "13 Okt 09.00",
       "title": "Separator, premix, sterilisasi",
-      "detail": "RMT-2 ke Separator SP-1, Premix PM-3 (cokelat), Sterilisasi UHT-2, lalu Aseptic Tank AT-2.",
+      "detail": "Dari RMT-2, susu mengalir ke Separator SP-1, Premix PM-3 (cokelat), Sterilisasi UHT-2, lalu Aseptic Tank AT-2.",
       "node": "uht-1"
     },
     {
       "id": "TR-FILL",
       "time": "13 Okt 18.30",
       "title": "Filling F2 lot 05 - 09",
-      "detail": "AT-2 ke Filling F2, lima lot UHT 200 ml antara 13.10 dan 21.30.",
+      "detail": "Dari AT-2, susu diisi di Filling F2 menjadi lima lot UHT 200 ml antara pukul 13.10 dan 21.30.",
       "node": "f2"
     },
     {
       "id": "GEN-01",
       "time": "14.42",
       "title": "Perhitungan genealogi",
-      "detail": "Proporsi dihitung dari irisan waktu dan volume setiap transfer (FILLED_INTO). Ambang hold: lot dengan kontribusi RT-04 di atas 0% [asumsi QA]."
+      "detail": "Proporsi dihitung dari irisan waktu dan volume setiap transfer (FILLED_INTO). Lot di-hold bila kontribusi RT-04 di dalamnya di atas 0% [asumsi QA]."
     },
     {
       "id": "FARM-B",
       "time": "13 Okt 05.10",
       "title": "Farm Ngadirejo",
-      "detail": "Pemasok RT-04. Riwayat 30 hari: tidak ada temuan antibiotik.",
+      "detail": "Farm ini pemasok RT-04. Dalam 30 hari terakhir tidak ada temuan antibiotik.",
       "node": "farm-b"
     },
     {
       "id": "CIP-LOG",
       "time": "14.10",
       "title": "Log CIP Bay 2",
-      "detail": "Siklus CIP Bay 2 berjalan, alkali 14.10 - 14.45, asam 14.45 - 15.05, bilas 15.05 - 15.20.",
+      "detail": "Siklus CIP Bay 2 sedang berjalan: alkali pukul 14.10 - 14.45, asam 14.45 - 15.05, dan bilas 15.05 - 15.20.",
       "node": "cip-b2"
     },
     {
       "id": "TR-ST4",
       "time": "13 Okt 11.30",
       "title": "Serah-terima SP-1 ke transfer tank ST-4",
-      "detail": "Susu terstandar dari SP-1 masuk ST-4 10.40 - 11.30, 36.600 L, dicatat sebagai batch STB-1013-04. Sebelumnya serah-terima ini hanya ada di catatan operator; MilkGraph menghubungkannya dari irisan waktu flowmeter SP-1 dan kenaikan level ST-4. Cream ke CT-1."
+      "detail": "Susu terstandar dari SP-1 masuk ke ST-4 pukul 10.40 - 11.30 sebanyak 36.600 L dan dicatat sebagai batch STB-1013-04. Dulu serah-terima ini hanya ada di catatan operator. MilkGraph menyambungkannya dari irisan waktu flowmeter SP-1 dan kenaikan level ST-4. Cream dialirkan ke CT-1."
     },
     {
       "id": "TR-MIX",
       "time": "13 Okt 12.30",
       "title": "Mixing MX-2 batch MXB-1013-07",
-      "detail": "ST-4 (STB-1013-04) dan Premix PM-3 cokelat dicampur di MX-2 11.40 - 12.30, 40.200 L. Batch record MES dicocokkan dengan turunnya level ST-4."
+      "detail": "Isi ST-4 (STB-1013-04) dan Premix PM-3 cokelat dicampur di MX-2 pukul 11.40 - 12.30, totalnya 40.200 L. Batch record MES dicocokkan dengan turunnya level ST-4."
     },
     {
       "id": "FILL-F4",
       "time": "14.42",
       "title": "Jadwal Filling F4",
-      "detail": "F4 mengisi UHT Stroberi Kids 105 ml (Small Pack) dari Aseptic Tank AT-2, berbagi tangki dan produk dengan F2 (Stroberi 200 ml). Pada 13 Okt 13.10 - 21.30 F4 ganti format dan tidak mengisi."
+      "detail": "F4 mengisi UHT Stroberi Kids 105 ml (Small Pack) dari Aseptic Tank AT-2, berbagi tangki dan produk dengan F2 (Stroberi 200 ml). Pada 13 Okt pukul 13.10 - 21.30, F4 sedang ganti format dan tidak mengisi."
     },
     {
       "id": "SJ-NGD",
       "time": "13 Okt 05.40",
       "title": "Surat jalan SJ-NGD-1013-04",
-      "detail": "Farm Ngadirejo, RT-04, 8.800 L, suhu muat 3,6 °C, berangkat 04.30. Dicocokkan dengan tiket weighbridge saat tiba."
+      "detail": "RT-04 memuat 8.800 L susu dari Farm Ngadirejo dengan suhu muat 3,6 °C dan berangkat pukul 04.30. Data ini dicocokkan dengan tiket weighbridge saat RT tiba."
     }
   ],
   "answers": [
@@ -582,26 +582,26 @@
       "template": "trace_backward",
       "params": "lot_id = FG-1013-07",
       "title": "FG-1013-07 berasal dari 4 RT di RMT-2",
-      "conclusion": "Lot ini mengandung 12% susu dari RT-04 (Farm Ngadirejo). Hasil lab RT-04 saat penerimaan lolos, tetapi mendekati batas deteksi antibiotik.",
+      "conclusion": "Lot ini mengandung 12% susu dari RT-04 (Farm Ngadirejo). Saat penerimaan, hasil lab RT-04 lolos, tetapi nilainya mendekati batas deteksi antibiotik.",
       "factors": [
         {
           "title": "Hasil QC FG out-of-spec",
-          "text": "Residu antibiotik beta-laktam positif pada FG-1013-07, 13 Okt 22.40.",
+          "text": "Residu antibiotik beta-laktam terdeteksi positif pada FG-1013-07, 13 Okt pukul 22.40.",
           "source": "LAB-8812"
         },
         {
           "title": "Jalur proses lot",
-          "text": "RMT-2 ke Thermal TH-1, Separator SP-1, transfer tank ST-4, Mixing MX-2 bersama Premix PM-3 (cokelat), Sterilisasi UHT-2, lalu Aseptic Tank AT-2. Serah-terima batch di ST-4 tercatat sebagai STB-1013-04.",
+          "text": "Dari RMT-2, susu mengalir ke Thermal TH-1, Separator SP-1, transfer tank ST-4, lalu Mixing MX-2 bersama Premix PM-3 (cokelat), Sterilisasi UHT-2, dan Aseptic Tank AT-2. Serah-terima batch di ST-4 tercatat sebagai STB-1013-04.",
           "source": "TR-PROC"
         },
         {
           "title": "Komposisi RMT-2 saat lot diproses",
-          "text": "RT-02 31%, RT-04 12%, RT-06 27%, RT-09 30% dari volume yang masuk lot ini.",
+          "text": "Dari volume yang masuk ke lot ini, 31% berasal dari RT-02, 12% dari RT-04, 27% dari RT-06, dan 30% dari RT-09.",
           "source": "TR-RMT2"
         },
         {
           "title": "Kandidat sumber: RT-04",
-          "text": "Screening antibiotik RT-04 lolos dengan nilai mendekati batas deteksi.",
+          "text": "Screening antibiotik RT-04 lolos, tetapi nilainya mendekati batas deteksi.",
           "source": "LAB-4471"
         }
       ],
@@ -642,7 +642,7 @@
         "e-pm-mx",
         "e-mx-uht"
       ],
-      "note": "Kandidat sumber berdasarkan genealogi volume, bukan kesimpulan penyebab. QA perlu uji ulang sampel retensi RT-04.",
+      "note": "Ini kandidat sumber berdasarkan genealogi volume dan belum tentu penyebabnya. QA perlu menguji ulang sampel retensi RT-04.",
       "mix": [
         {
           "id": "RT-04",
@@ -668,31 +668,31 @@
       "template": "trace_forward",
       "params": "rt_id = RT-04, tanggal = 13 Okt",
       "title": "Susu RT-04 masuk ke 5 lot barang jadi",
-      "conclusion": "Daftar hold cukup 5 lot (36.100 pak), bukan seluruh 14 lot dari RMT-2 pada 13 Okt.",
+      "conclusion": "Yang perlu di-hold cukup 5 lot (36.100 pak), tidak seluruh 14 lot dari RMT-2 pada 13 Okt.",
       "factors": [
         {
           "title": "RT-04 masuk RMT-2",
-          "text": "8.800 L, 06.20 - 06.48, bersama tiga RT lain.",
+          "text": "Volumenya 8.800 L, tercatat pukul 06.20 - 06.48 bersama tiga RT lain.",
           "source": "TR-RMT2"
         },
         {
           "title": "Proses lanjutan",
-          "text": "RMT-2 ke Thermal TH-1, Separator SP-1, transfer tank ST-4, Mixing MX-2 bersama Premix PM-3 (cokelat), Sterilisasi UHT-2, lalu Aseptic Tank AT-2. Serah-terima batch di ST-4 tercatat sebagai STB-1013-04.",
+          "text": "Dari RMT-2, susu mengalir ke Thermal TH-1, Separator SP-1, transfer tank ST-4, lalu Mixing MX-2 bersama Premix PM-3 (cokelat), Sterilisasi UHT-2, dan Aseptic Tank AT-2. Serah-terima batch di ST-4 tercatat sebagai STB-1013-04.",
           "source": "TR-PROC"
         },
         {
           "title": "F4 berbagi AT-2",
-          "text": "AT-2 melayani dua lini filling, F2 dan F4. Pada 13 Okt 13.10 - 21.30 F4 sedang ganti format dan tidak mengisi dari AT-2, sehingga tidak ada lot F4 yang terdampak.",
+          "text": "AT-2 melayani dua lini filling, F2 dan F4. Pada 13 Okt pukul 13.10 - 21.30, F4 sedang ganti format dan tidak mengisi dari AT-2, jadi tidak ada lot F4 yang terdampak.",
           "source": "FILL-F4"
         },
         {
           "title": "Lot terdampak di Filling F2",
-          "text": "Lima lot UHT 200 ml antara 13.10 dan 21.30 mengandung susu RT-04 dengan proporsi 3% - 12%.",
+          "text": "Lima lot UHT 200 ml yang diisi antara pukul 13.10 dan 21.30 mengandung susu RT-04 dengan proporsi 3% - 12%.",
           "source": "TR-FILL"
         },
         {
           "title": "Ambang hold",
-          "text": "Semua lot dengan kontribusi RT-04 di atas 0% masuk daftar hold [asumsi QA].",
+          "text": "Semua lot yang mengandung susu RT-04 lebih dari 0% masuk daftar hold [asumsi QA].",
           "source": "GEN-01"
         }
       ],
@@ -733,7 +733,7 @@
         "e-mx-uht",
         "e-at2-f4"
       ],
-      "note": "Daftar hold diajukan ke QA. Sistem tidak menahan atau menarik produk secara otomatis.",
+      "note": "Daftar hold diajukan ke QA untuk diputuskan. Sistem tidak menahan atau menarik produk secara otomatis.",
       "lots": [
         {
           "id": "FG-1013-05",
@@ -773,11 +773,11 @@
       "template": "explain_resource",
       "params": "resource = Bay 2, waktu = 14.50",
       "title": "Bay 2 sedang CIP sampai 15.20",
-      "conclusion": "CIP Bay 2 mulai 14.10 dengan durasi standar 70 menit. Rencana FIFO menjadwalkan RT-26 di Bay 2 pukul 14.50, sehingga rencana ditandai tidak layak.",
+      "conclusion": "CIP Bay 2 dimulai pukul 14.10 dengan durasi standar 70 menit. Rencana FIFO menjadwalkan RT-26 di Bay 2 pukul 14.50, jadi rencana itu ditandai tidak layak.",
       "factors": [
         {
           "title": "CIPEvent Bay 2",
-          "text": "Alkali 14.10 - 14.45, asam 14.45 - 15.05, bilas 15.05 - 15.20.",
+          "text": "Alkali pukul 14.10 - 14.45, asam 14.45 - 15.05, dan bilas 15.05 - 15.20.",
           "source": "CIP-LOG"
         },
         {
@@ -787,7 +787,7 @@
         },
         {
           "title": "Dampak ke holding time",
-          "text": "Jika RT-26 menunggu Bay 2, bongkar selesai 16.15 dan melewati batas 10j 30m [asumsi].",
+          "text": "Kalau RT-26 menunggu Bay 2, bongkarnya baru selesai pukul 16.15 dan melewati batas 10 jam 30 menit [asumsi].",
           "source": "HOLD-RT26"
         }
       ],
@@ -802,14 +802,14 @@
         "e-cip-bay2",
         "e-lab-rt26"
       ],
-      "note": "Rekomendasi penyusunan ulang ada di halaman Rencana & What-if dan menunggu persetujuan planner."
+      "note": "Rekomendasi susunan antrean baru ada di halaman Rencana & What-if dan sedang menunggu persetujuan planner."
     }
   ],
   "plans": [
     {
       "id": "current",
       "label": "Rencana shift (FIFO)",
-      "detail": "Rencana awal berbasis urutan rilis lab, diuji terhadap 6 constraint.",
+      "detail": "Rencana awal mengikuti urutan rilis lab dan diuji terhadap 6 constraint.",
       "solveTime": "3,8 detik",
       "turnaround": [
         "3j 12m",
@@ -1261,11 +1261,11 @@
           "label": "Flow rate",
           "before": {
             "ok": false,
-            "text": "Pasokan ke Filling F2 terputus 45 menit mulai 15.50."
+            "text": "Pasokan ke Filling F2 terputus selama 45 menit mulai pukul 15.50."
           },
           "after": {
             "ok": true,
-            "text": "Pasokan F2 terjaga."
+            "text": "Pasokan ke F2 tetap terjaga."
           },
           "source": "FLOW-F2"
         },
@@ -1274,11 +1274,11 @@
           "label": "Ketersediaan & maintenance",
           "before": {
             "ok": true,
-            "text": "Tidak ada maintenance window di horizon ini."
+            "text": "Tidak ada jadwal maintenance di horizon ini."
           },
           "after": {
             "ok": true,
-            "text": "Tidak ada maintenance window di horizon ini."
+            "text": "Tidak ada jadwal maintenance di horizon ini."
           },
           "source": "MAINT-01"
         },
@@ -1287,11 +1287,11 @@
           "label": "Holding time",
           "before": {
             "ok": false,
-            "text": "RT-26 baru selesai bongkar 16.15, lewat batas 10j 30m [asumsi] pukul 15.52."
+            "text": "RT-26 baru selesai bongkar pukul 16.15, padahal batas 10 jam 30 menit [asumsi] jatuh pukul 15.52."
           },
           "after": {
             "ok": true,
-            "text": "RT-26 selesai bongkar 15.50, sisa 2 menit sebelum batas."
+            "text": "RT-26 selesai bongkar pukul 15.50, 2 menit sebelum batasnya."
           },
           "source": "HOLD-RT26"
         },
@@ -1300,11 +1300,11 @@
           "label": "Downtime & CIP",
           "before": {
             "ok": false,
-            "text": "RT-26 dijadwalkan di Bay 2 14.50, padahal Bay 2 CIP sampai 15.20."
+            "text": "RT-26 dijadwalkan di Bay 2 pukul 14.50, padahal Bay 2 masih CIP sampai pukul 15.20."
           },
           "after": {
             "ok": true,
-            "text": "Tidak ada bongkar di Bay 2 sebelum CIP selesai 15.20."
+            "text": "Tidak ada bongkar di Bay 2 sebelum CIP selesai pukul 15.20."
           },
           "source": "CIP-B2"
         },
@@ -1313,11 +1313,11 @@
           "label": "Kapasitas tangki",
           "before": {
             "ok": true,
-            "text": "Raw Milk Buffer maksimum 91% dari kapasitas."
+            "text": "Raw Milk Buffer terisi paling tinggi 91% dari kapasitas."
           },
           "after": {
             "ok": true,
-            "text": "Raw Milk Buffer maksimum 94% dari kapasitas."
+            "text": "Raw Milk Buffer terisi paling tinggi 94% dari kapasitas."
           },
           "source": "RMT-LEVEL"
         },
@@ -1326,11 +1326,11 @@
           "label": "Changeover paper/size/flavor",
           "before": {
             "ok": true,
-            "text": "Satu changeover size di F1 pukul 16.00, sesuai matriks."
+            "text": "Ada satu changeover size di F1 pukul 16.00, sesuai matriks."
           },
           "after": {
             "ok": true,
-            "text": "Satu changeover size di F1 pukul 16.00, sesuai matriks."
+            "text": "Ada satu changeover size di F1 pukul 16.00, sesuai matriks."
           },
           "source": "FILL-F1"
         }
@@ -1338,17 +1338,17 @@
       "reasons": [
         {
           "title": "RT-26 dipindah dari Bay 2 ke Bay 1, mulai 15.15",
-          "text": "Bay 2 masih CIP sampai 15.20. Bay 1 kosong setelah RT-23 selesai 15.15, dan RT-26 selesai sebelum batas holding time.",
+          "text": "Bay 2 masih CIP sampai pukul 15.20. Bay 1 kosong setelah RT-23 selesai pukul 15.15, dan RT-26 selesai sebelum batas holding time.",
           "source": "CIP-B2"
         },
         {
           "title": "RT-24 didahulukan ke Bay 3 setelah rilis lab 15.30",
-          "text": "Umur susu RT-24 paling tinggi di antrean berikutnya. Bay 3 kosong sejak 15.00.",
+          "text": "Di antara antrean berikutnya, umur susu RT-24 yang paling tinggi. Bay 3 kosong sejak pukul 15.00.",
           "source": "HOLD-RT24"
         },
         {
           "title": "RT-27 masuk Bay 2 tepat setelah CIP selesai",
-          "text": "Pasokan Raw Milk Buffer RMT-2 terjaga, sehingga Filling F2 tidak berhenti pukul 15.50.",
+          "text": "Pasokan Raw Milk Buffer RMT-2 tetap terjaga, jadi Filling F2 tidak berhenti pukul 15.50.",
           "source": "FLOW-F2"
         }
       ]
@@ -1356,7 +1356,7 @@
     {
       "id": "cip-molor",
       "label": "What-if: CIP Bay 2 molor 40 menit",
-      "detail": "Skenario: CIP Bay 2 selesai 16.00, bukan 15.20.",
+      "detail": "Skenario: CIP Bay 2 baru selesai pukul 16.00, tidak pukul 15.20.",
       "solveTime": "4,6 detik",
       "turnaround": [
         "3j 30m",
@@ -1840,11 +1840,11 @@
           "label": "Flow rate",
           "before": {
             "ok": false,
-            "text": "Pasokan ke Filling F2 terputus 75 menit mulai 15.50."
+            "text": "Pasokan ke Filling F2 terputus selama 75 menit mulai pukul 15.50."
           },
           "after": {
             "ok": true,
-            "text": "Jeda F2 15 menit, dalam toleransi 20 menit [asumsi]."
+            "text": "F2 berhenti 15 menit, masih dalam toleransi 20 menit [asumsi]."
           },
           "source": "FLOW-F2"
         },
@@ -1853,11 +1853,11 @@
           "label": "Ketersediaan & maintenance",
           "before": {
             "ok": true,
-            "text": "Tidak ada maintenance window di horizon ini."
+            "text": "Tidak ada jadwal maintenance di horizon ini."
           },
           "after": {
             "ok": true,
-            "text": "Tidak ada maintenance window di horizon ini."
+            "text": "Tidak ada jadwal maintenance di horizon ini."
           },
           "source": "MAINT-01"
         },
@@ -1866,11 +1866,11 @@
           "label": "Holding time",
           "before": {
             "ok": false,
-            "text": "RT-26 baru selesai bongkar 16.15, lewat batas 10j 30m [asumsi] pukul 15.52."
+            "text": "RT-26 baru selesai bongkar pukul 16.15, padahal batas 10 jam 30 menit [asumsi] jatuh pukul 15.52."
           },
           "after": {
             "ok": true,
-            "text": "RT-26 selesai bongkar 15.50, sisa 2 menit sebelum batas."
+            "text": "RT-26 selesai bongkar pukul 15.50, 2 menit sebelum batasnya."
           },
           "source": "HOLD-RT26"
         },
@@ -1879,11 +1879,11 @@
           "label": "Downtime & CIP",
           "before": {
             "ok": false,
-            "text": "RT-26 dijadwalkan di Bay 2 14.50, padahal Bay 2 CIP sampai 16.00."
+            "text": "RT-26 dijadwalkan di Bay 2 pukul 14.50, padahal Bay 2 masih CIP sampai pukul 16.00."
           },
           "after": {
             "ok": true,
-            "text": "Tidak ada bongkar di Bay 2 sebelum CIP selesai 16.00."
+            "text": "Tidak ada bongkar di Bay 2 sebelum CIP selesai pukul 16.00."
           },
           "source": "CIP-B2"
         },
@@ -1892,11 +1892,11 @@
           "label": "Kapasitas tangki",
           "before": {
             "ok": true,
-            "text": "Raw Milk Buffer maksimum 91% dari kapasitas."
+            "text": "Raw Milk Buffer terisi paling tinggi 91% dari kapasitas."
           },
           "after": {
             "ok": true,
-            "text": "Raw Milk Buffer maksimum 94% dari kapasitas."
+            "text": "Raw Milk Buffer terisi paling tinggi 94% dari kapasitas."
           },
           "source": "RMT-LEVEL"
         },
@@ -1905,11 +1905,11 @@
           "label": "Changeover paper/size/flavor",
           "before": {
             "ok": true,
-            "text": "Satu changeover size di F1 pukul 16.00, sesuai matriks."
+            "text": "Ada satu changeover size di F1 pukul 16.00, sesuai matriks."
           },
           "after": {
             "ok": true,
-            "text": "Satu changeover size di F1 pukul 16.00, sesuai matriks."
+            "text": "Ada satu changeover size di F1 pukul 16.00, sesuai matriks."
           },
           "source": "FILL-F1"
         }
@@ -1917,17 +1917,17 @@
       "reasons": [
         {
           "title": "Bay 2 dikeluarkan dari antrean sampai 16.00",
-          "text": "RT-26 ke Bay 1 pukul 15.15, RT-27 ke Bay 3 pukul 16.05.",
+          "text": "RT-26 dipindah ke Bay 1 pukul 15.15 dan RT-27 ke Bay 3 pukul 16.05.",
           "source": "CIP-B2"
         },
         {
           "title": "RT-28 dipindah ke Bay 1 pukul 16.00",
-          "text": "Bay 1 kosong setelah RT-26. Bay 3 tetap untuk RT-24 dan RT-27.",
+          "text": "Bay 1 kosong setelah RT-26 selesai. Bay 3 tetap dipakai RT-24 dan RT-27.",
           "source": "WB-28"
         },
         {
           "title": "Jeda Filling F2 tersisa 15 menit",
-          "text": "Masih dalam toleransi 20 menit [asumsi]. Tanpa penyusunan ulang, jeda F2 menjadi 75 menit.",
+          "text": "Masih dalam toleransi 20 menit [asumsi]. Tanpa penyusunan ulang, F2 akan berhenti 75 menit.",
           "source": "FLOW-F2"
         }
       ]

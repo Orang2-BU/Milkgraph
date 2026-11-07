@@ -78,15 +78,15 @@ export type Focus = "overview" | "lab" | "yard" | "bay1" | "bay2" | "silos" | "f
 /** Daftar bottleneck di samping kanvas 3D, per tampilan rencana. */
 export const BOTTLENECKS: Record<"before" | "after", { title: string; text: string; tone: Tone; focus: Focus }[]> = {
   before: [
-    { title: "Lab test", text: "3 RT menunggu hasil, rata-rata 52 menit.", tone: "crit", focus: "lab" },
-    { title: "RT-26 di yard", text: "Sudah rilis lab, holding time tersisa 1j 10m.", tone: "crit", focus: "yard" },
-    { title: "Bay 2", text: "CIP sampai 15.20, tetapi rencana FIFO menjadwalkan RT-26 pukul 14.50.", tone: "warn", focus: "bay2" },
-    { title: "Filling F2 dan F4", text: "Rencana awal: AT-2 kosong 15.50, kedua lini berhenti 45 menit karena RMT-2 terlambat terisi.", tone: "crit", focus: "f2" },
+    { title: "Lab test", text: "3 RT menunggu hasil lab, rata-rata 52 menit.", tone: "crit", focus: "lab" },
+    { title: "RT-26 di yard", text: "Sudah dirilis lab, sisa holding time 1 jam 10 menit.", tone: "crit", focus: "yard" },
+    { title: "Bay 2", text: "Bay ini CIP sampai pukul 15.20, tetapi rencana FIFO menjadwalkan RT-26 di sini pukul 14.50.", tone: "warn", focus: "bay2" },
+    { title: "Filling F2 dan F4", text: "Di rencana awal, AT-2 kosong pukul 15.50 dan kedua lini berhenti 45 menit karena RMT-2 terlambat terisi.", tone: "crit", focus: "f2" },
   ],
   after: [
-    { title: "Lab test", text: "Masih gerbang antrean, 2 RT menunggu.", tone: "warn", focus: "lab" },
-    { title: "Bay 1", text: "RT-26 bongkar 15.15 - 15.50, sebelum batas holding time.", tone: "ok", focus: "bay1" },
-    { title: "Bay 2", text: "RT-27 masuk tepat setelah CIP selesai 15.20.", tone: "ok", focus: "bay2" },
-    { title: "Filling F2 dan F4", text: "Pasokan dari Aseptic Tank AT-2 terjaga untuk kedua lini.", tone: "ok", focus: "f2" },
+    { title: "Lab test", text: "Lab test masih jadi gerbang antrean, 2 RT menunggu.", tone: "warn", focus: "lab" },
+    { title: "Bay 1", text: "RT-26 dibongkar pukul 15.15 - 15.50, sebelum batas holding time.", tone: "ok", focus: "bay1" },
+    { title: "Bay 2", text: "RT-27 masuk tepat setelah CIP selesai pukul 15.20.", tone: "ok", focus: "bay2" },
+    { title: "Filling F2 dan F4", text: "Pasokan dari Aseptic Tank AT-2 tetap terjaga untuk kedua lini.", tone: "ok", focus: "f2" },
   ],
 };

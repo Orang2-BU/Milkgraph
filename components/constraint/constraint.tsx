@@ -16,7 +16,7 @@ type NumberKey = { [K in keyof Limits]: Limits[K] extends number ? K : never }[k
 type ToggleKey = { [K in keyof Limits]: Limits[K] extends boolean ? K : never }[keyof Limits];
 type RangeParam = { key: NumberKey; label: string; unit: string; min: number; max: number; step: number; format?: (v: number) => string };
 type Param = RangeParam | { key: ToggleKey; label: string; hint: string };
-const hm = (v: number) => `${Math.floor(v / 60)}j ${String(v % 60).padStart(2, "0")}m`;
+const hm = (v: number) => v % 60 ? `${Math.floor(v / 60)} jam ${v % 60} menit` : `${Math.floor(v / 60)} jam`;
 
 type PlanCheckVerdict = { ok: boolean; text: string };
 type PlanCheckResult = {
@@ -62,13 +62,13 @@ const STATIC_CONSTRAINTS: { id: ConstraintId; what: string; params: Param[] }[] 
   { id: "maintenance", what: "Waktu siap aset memengaruhi jadwal. Aset dalam maintenance window tidak boleh dipakai.", params: [
     { key: "maintenanceBay3", label: "Uji maintenance window Bay 3, 16.00 - 16.30", hint: "Lihat apakah rencana masih layak bila Bay 3 diservis." },
   ] },
-  { id: "holding", what: "Bahan harus diproses dalam batas waktu sebelum tahap berikutnya, diperiksa per tahap.", params: [
+  { id: "holding", what: "Bahan harus diproses dalam batas waktu sebelum masuk tahap berikutnya. Batas ini diperiksa di setiap tahap.", params: [
     { key: "holdingMin", label: "Farm sampai tersimpan dingin", unit: "menit", min: 480, max: 720, step: 10, format: hm },
     { key: "bufferMaxMin", label: "Raw Milk Buffer sampai thermal", unit: "menit", min: 720, max: 1_440, step: 30, format: hm },
   ] },
   { id: "cip", what: "Cleaning, kerusakan, dan stop memotong produksi.", params: [
     { key: "cipBuffer", label: "Jeda setelah CIP bay", unit: "menit", min: 0, max: 30, step: 5 },
-    { key: "breakdownF1", label: "Uji breakdown Filling F1, 16.30 - 17.00", hint: "Simulasi kerusakan mesin di tengah jadwal." },
+    { key: "breakdownF1", label: "Uji breakdown Filling F1, 16.30 - 17.00", hint: "Mensimulasikan mesin rusak di tengah jadwal." },
   ] },
   { id: "tank", what: "Ruang tangki membatasi receiving dan buffer. Tangki penuh atau CIP tidak bisa menerima.", params: [
     { key: "tankMax", label: "Batas level Raw Milk Buffer", unit: "%", min: 85, max: 100, step: 1 },

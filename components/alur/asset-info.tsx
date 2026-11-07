@@ -27,8 +27,8 @@ export function AssetInfo({ asset, assets, onPick, onClose }: { asset: Asset; as
       <div><dt>Tahap</dt><dd>{asset.stage}</dd></div>
       <div><dt>Keterangan</dt><dd>{asset.note}</dd></div>
     </dl>
-    <section><h3>Menerima dari</h3>{related(from, "Titik awal alur, susu masuk dari road tanker.")}</section>
-    <section><h3>Mengirim ke</h3>{related(to, "Titik akhir alur, produk keluar ke gudang.")}</section>
+    <section><h3>Menerima dari</h3>{related(from, "Ini titik awal alur. Susu masuk dari road tanker.")}</section>
+    <section><h3>Mengirim ke</h3>{related(to, "Ini titik akhir alur. Produk keluar ke gudang.")}</section>
     <Link className="button secondary wide" href={asset.href}>Buka detail di {DETAIL[asset.href] ?? "Kondisi Alat"}<Icon icon={ArrowRight} size={16} /></Link>
   </aside>;
 }

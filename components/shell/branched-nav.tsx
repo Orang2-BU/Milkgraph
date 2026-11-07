@@ -33,7 +33,12 @@ export function BranchedNav({ pathname, onNavigate }: { pathname: string; onNavi
       const height = kids ? PAD * 2 + kids.length * ROW : 0;
       return <div key={item.label} className="nav-section" data-open={open ? "" : undefined}>
         <div className="nav-row">
-          <Link href={item.tabs[0].href} className={`nav-item ${inSection ? "active" : ""}`} title={`${item.label}: ${item.hint}`} aria-label={item.label} aria-current={inSection && !kids ? "page" : undefined} onClick={() => { if (kids) setToggled(t => ({ ...t, [item.label]: true })); onNavigate(); }}>
+          <Link href={item.tabs[0].href} className={`nav-item ${inSection ? "active" : ""}`} title={`${item.label}: ${item.hint}`} aria-label={item.label} aria-current={inSection && !kids ? "page" : undefined} onClick={e => {
+            // Sudah di dalam bagian ini: klik menu induk membuka/menutup sub-menu, tidak pindah ke sub-halaman pertama.
+            if (kids && inSection) { e.preventDefault(); setToggled(t => ({ ...t, [item.label]: !open })); return; }
+            if (kids) setToggled(t => ({ ...t, [item.label]: true }));
+            onNavigate();
+          }}>
             <span className="nav-icon"><Icon icon={item.icon} size={22} /></span>
             <span className="nav-label nav-text"><span>{item.label}</span><small>{item.hint}</small></span>
           </Link>
@@ -53,6 +58,10 @@ export function BranchedNav({ pathname, onNavigate }: { pathname: string; onNavi
               })}
             </div>
           </div>
+        </div>}
+        {/* Sidebar ciut (konsep Pantara): sub-halaman bagian yang terbuka tampil sebagai ikon kecil di bawah induknya. */}
+        {kids && <div className="nav-rail" role="group" aria-label={`Sub-menu ${item.label}`}>
+          {kids.map(tab => <Link key={tab.href} href={tab.href} className="nav-rail-link" title={tab.label} aria-label={tab.label} aria-current={tab === current.tab ? "page" : undefined} onClick={onNavigate}>{tab.icon && <Icon icon={tab.icon} size={17} />}</Link>)}
         </div>}
       </div>;
     })}

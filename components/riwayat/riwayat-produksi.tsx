@@ -16,9 +16,10 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "
 const dateText = (iso: string) => { const [y, m, d] = iso.split("-").map(Number); return `${d} ${MONTHS[m - 1]} ${y}`; };
 
 /** Riwayat Produksi: pilih output, lalu ikuti jalurnya dari asal susu sampai produk selesai (poin 8). */
-export function RiwayatProduksi() {
+/** `lot` dari ?lot=..., misalnya tautan dari QC Barang Jadi. */
+export function RiwayatProduksi({ lot }: { lot?: string }) {
   const [filters, setFilters] = useState<Filters>(EMPTY);
-  const [picked, setPicked] = useState("FG-1013-07");
+  const [picked, setPicked] = useState(lot && OUTPUTS.some(o => o.id === lot) ? lot : "FG-1013-07");
   const [active, setActive] = useState<number | null>(null);
   const [source, setSource] = useState<string | null>(null);
 

@@ -50,7 +50,7 @@ export function Simulasi() {
       <div className="page-heading">
         <div>
           <h1>Simulasi 3D</h1>
-          <p>Model situs plant dengan tata letak nyata: alur susu, kondisi bay dan tangki, serta lokasi bottleneck.</p>
+          <p>Model plant dengan tata letak nyata. Di sini terlihat alur susu, kondisi bay dan tangki, dan lokasi bottleneck.</p>
         </div>
         <Link className="button primary" href="/rencana">
           <Icon icon={CalendarClock} />
@@ -104,8 +104,8 @@ export function Simulasi() {
             title="Bottleneck"
             subtitle={
               state === "before"
-                ? "Kondisi jika rencana FIFO dijalankan. Pilih untuk memfokuskan kamera."
-                : "Proyeksi setelah rekomendasi disetujui. Pilih untuk memfokuskan kamera."
+                ? "Kondisi kalau rencana FIFO dijalankan. Pilih salah satu untuk memfokuskan kamera."
+                : "Proyeksi setelah rekomendasi disetujui. Pilih salah satu untuk memfokuskan kamera."
             }
             action={
               <button className="icon-button" aria-label="Lihat seluruh pabrik" aria-pressed={focus === "overview"} onClick={() => setFocus("overview")}>

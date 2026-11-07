@@ -149,7 +149,7 @@ export function Filling() {
 
   // Calculate AT-2 stoppage for initial subtitle
   const at2 = asepticTanks.find(t => t.id === "AT-2");
-  let at2StoppageText = "AT-2 kosong 15.50, F2 dan F4 berhenti bersamaan";
+  let at2StoppageText = "AT-2 kosong pukul 15.50, sehingga F2 dan F4 berhenti bersamaan";
   if (at2) {
     const at2Lines = at2.fillers.map(filler);
     const at2Need = at2Lines.reduce((sum, f) => sum + f.litres, 0);
@@ -157,18 +157,18 @@ export function Filling() {
     const at2EmptyAt = at2Net < 0 ? nowOffset + Math.round(at2.level / -at2Net * 60) : null;
     const at2Stopped = at2Lines.map(f => f.id).join(" dan ");
     if (at2EmptyAt) {
-      at2StoppageText = `${at2.id} kosong ${time(at2EmptyAt)}, ${at2Stopped} berhenti bersamaan`;
+      at2StoppageText = `${at2.id} kosong pukul ${time(at2EmptyAt)}, sehingga ${at2Stopped} berhenti bersamaan`;
     }
   }
 
   const ganttSubtitle = approved
-    ? "Rekomendasi disetujui: F2 dan F4 tetap berjalan."
-    : `Rencana awal: ${at2StoppageText}.`;
+    ? "Rekomendasi sudah disetujui, jadi F2 dan F4 tetap berjalan."
+    : `Di rencana awal, ${at2StoppageText}.`;
 
   return (
     <div className="page-enter">
       <PageHeading title="Lini Filling" subtitle="Lima lini sterilisasi, lima aseptic tank, dan sepuluh mesin filling. Setiap aseptic tank melayani dua mesin filling.">
-        <Badge>{approved ? "Mengikuti rekomendasi disetujui" : "Mengikuti rencana awal (FIFO)"}</Badge>
+        <Badge>{approved ? "Mengikuti rekomendasi yang disetujui" : "Mengikuti rencana awal (FIFO)"}</Badge>
       </PageHeading>
       <Instructions role="supervisor" />
       <div className="split-even page-block">
@@ -216,13 +216,13 @@ export function Filling() {
                     ) : (
                       <small className="muted">{f.note}</small>
                     )}
-                    <span className="numeric small">{number(f.output)} pak<br /><span className="muted">sejak 14.00</span></span>
+                    <span className="numeric small">{number(f.output)} pak<br /><span className="muted">sejak pukul 14.00</span></span>
                   </li>
                 ))}
               </ul>
               {lines.length > 1 && running.length > 1 && (
                 <p className="small muted with-icon">
-                  <Icon icon={TriangleAlert} size={14} />Satu tangki untuk dua lini: bila {tank.id} kosong, {running.map(f => f.id).join(" dan ")} berhenti bersamaan.
+                  <Icon icon={TriangleAlert} size={14} />Satu tangki melayani dua lini. Kalau {tank.id} kosong, {running.map(f => f.id).join(" dan ")} berhenti bersamaan.
                 </p>
               )}
               <SourceButton id={tank.id === "AT-2" ? "FLOW-F2" : "FILL-F1"} onSelect={setSource} />
@@ -233,7 +233,7 @@ export function Filling() {
       <Card className="page-block">
         <SectionTitle
           title="Konfigurasi sterilisasi, aseptic, dan filling"
-          subtitle={`Status setiap unit pada snapshot ${nowTime}. Aset hilir dipakai bersama, jadi gangguan di satu titik menjalar ke dua lini.`}
+          subtitle={`Kondisi setiap unit pada snapshot pukul ${nowTime}. Aset hilir dipakai bersama, jadi gangguan di satu titik merembet ke dua lini.`}
           action={breakdown.length ? <Badge tone="crit">{breakdown.length} breakdown</Badge> : undefined}
         />
         <div className="config-grid">
@@ -284,7 +284,7 @@ export function Filling() {
       <Card>
         <SectionTitle
           title="Matriks changeover (SOP)"
-          subtitle="Menit minimum [asumsi]."
+          subtitle="Waktu minimum dalam menit [asumsi]."
           action={<Link className="text-link" href="/constraint">Batas changeover<Icon icon={ArrowRight} size={14} /></Link>}
         />
         <div className="table-wrap">

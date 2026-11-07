@@ -132,7 +132,7 @@
         0
       ]
     ],
-    "note": "Ganti size (1 L ke 200 ml) butuh penggantian format; ganti rasa butuh bilas produk; dari rasa ke Full Cream wajib bilas lebih lama. Ganti roll kemasan (paper) 15 menit di semua kombinasi."
+    "note": "Ganti ukuran kemasan (1 L ke 200 ml) butuh penggantian format. Ganti rasa butuh bilas produk, dan dari rasa ke Full Cream bilasnya lebih lama. Ganti roll kemasan (paper) butuh 15 menit di semua kombinasi."
   },
   "cipLog": [
     {
@@ -147,7 +147,7 @@
       "asset": "Bay 2",
       "last": "14.10",
       "hoursSince": 0,
-      "next": "Berjalan, selesai 15.20",
+      "next": "Sedang berjalan, selesai pukul 15.20",
       "status": "CIP berjalan",
       "tone": "warn"
     },
@@ -163,7 +163,7 @@
       "asset": "RMT-1",
       "last": "13 Okt 22.05",
       "hoursSince": 16.6,
-      "next": "Setelah kosong, perkiraan 19.40",
+      "next": "Setelah tangki kosong, perkiraan pukul 19.40",
       "status": "Siap",
       "tone": "ok"
     },
@@ -171,7 +171,7 @@
       "asset": "RMT-2",
       "last": "13 Okt 20.30",
       "hoursSince": 18.2,
-      "next": "Setelah kosong, perkiraan 21.15",
+      "next": "Setelah tangki kosong, perkiraan pukul 21.15",
       "status": "Mendekati batas 24 jam [asumsi]",
       "tone": "warn"
     },
@@ -370,7 +370,7 @@
       "output": 10420,
       "litres": 6550,
       "state": "jalan",
-      "note": "Changeover size 16.00, lalu UHT Cokelat 200 ml",
+      "note": "Ganti ukuran kemasan pukul 16.00, lalu lanjut UHT Cokelat 200 ml",
       "source": "FILL-F1"
     },
     {
@@ -383,7 +383,7 @@
       "output": 4310,
       "litres": 0,
       "state": "siaga",
-      "note": "Siaga, AT-1 cukup untuk satu lini",
+      "note": "Siaga karena AT-1 hanya cukup untuk satu lini",
       "source": "FILL-F1"
     },
     {
@@ -422,7 +422,7 @@
       "output": 38200,
       "litres": 0,
       "state": "cip",
-      "note": "Ikut CIP UHT-3 sampai 15.10",
+      "note": "Ikut berhenti selama UHT-3 CIP sampai pukul 15.10",
       "source": "CIP-LOG"
     },
     {
@@ -435,7 +435,7 @@
       "output": 36950,
       "litres": 0,
       "state": "cip",
-      "note": "Ikut CIP UHT-3 sampai 15.10",
+      "note": "Ikut berhenti selama UHT-3 CIP sampai pukul 15.10",
       "source": "CIP-LOG"
     },
     {
@@ -461,7 +461,7 @@
       "output": 12300,
       "litres": 0,
       "state": "ganti-format",
-      "note": "Ganti format 1 L ke 250 ml sampai 15.05",
+      "note": "Ganti format dari 1 L ke 250 ml sampai pukul 15.05",
       "source": "FILL-F1"
     },
     {
@@ -474,7 +474,7 @@
       "output": 0,
       "litres": 0,
       "state": "siaga",
-      "note": "Siaga, menunggu UHT-5",
+      "note": "Siaga sambil menunggu UHT-5",
       "source": "FILL-F2"
     },
     {
@@ -487,7 +487,7 @@
       "output": 0,
       "litres": 0,
       "state": "breakdown",
-      "note": "Seal jaw rusak, tiket MT-2231, perkiraan pulih 16.30",
+      "note": "Seal jaw rusak. Tiket perbaikan MT-2231, perkiraan pulih pukul 16.30",
       "source": "FILL-F2"
     }
   ],
@@ -898,6 +898,35 @@
       "source": "LAB-8812"
     },
     {
+      "id": "LAB-8806",
+      "kind": "qc-fg",
+      "subject": "FG-1012-11",
+      "detail": "UHT Stroberi 200 ml · Filling F2",
+      "sampled": "12 Okt 16.20",
+      "status": "lulus",
+      "params": [
+        {
+          "name": "Residu antibiotik beta-laktam",
+          "value": "Negatif",
+          "limit": "Negatif",
+          "ok": true
+        },
+        {
+          "name": "Inkubasi 7 hari 30 °C",
+          "value": "Belum selesai",
+          "limit": "Steril",
+          "ok": null
+        },
+        {
+          "name": "pH",
+          "value": "6,78",
+          "limit": "6,6 - 6,9",
+          "ok": true
+        }
+      ],
+      "source": "TR-FILL"
+    },
+    {
       "id": "LAB-8809",
       "kind": "qc-fg",
       "subject": "FG-1013-04",
@@ -929,7 +958,7 @@
   ],
   "lotLocation": {
     "FG-1013-05": {
-      "place": "Terkirim ke DC Sidoarjo, 14 Okt 06.10",
+      "place": "Sudah dikirim ke DC Sidoarjo, 14 Okt pukul 06.10",
       "shipped": true
     },
     "FG-1013-06": {
@@ -968,7 +997,7 @@
       "capacity": 40000,
       "batch": "-",
       "state": "cip",
-      "note": "CIP sampai 15.40, tidak bisa menerima"
+      "note": "Sedang CIP sampai pukul 15.40, belum bisa menerima susu"
     },
     {
       "id": "ST-3",
@@ -988,7 +1017,7 @@
       "capacity": 40000,
       "batch": "-",
       "state": "kosong",
-      "note": "Siap, CIP 12.10. Tujuan batch berikutnya dari SP-1"
+      "note": "Siap menerima, terakhir CIP pukul 12.10. Jadi tujuan batch berikutnya dari SP-1"
     },
     {
       "id": "ST-5",
@@ -1008,7 +1037,7 @@
       "capacity": 40000,
       "batch": "STB-1014-06",
       "state": "tertahan",
-      "note": "Menunggu hasil uji lemak, tertahan sejak 13.55"
+      "note": "Tertahan sejak pukul 13.55 sambil menunggu hasil uji lemak"
     },
     {
       "id": "CT-1",
@@ -1095,7 +1124,7 @@
       "by": "Hendra Kusuma",
       "at": "12 Okt 21.10",
       "review": {
-        "note": "Uji ulang sampel retensi negatif, lot dilepas ke gudang kirim.",
+        "note": "Hasil uji ulang sampel retensi negatif, jadi lot dilepas ke gudang kirim.",
         "by": "Sri Lestari",
         "at": "13 Okt 16.20"
       }
@@ -1107,7 +1136,7 @@
       "kind": "hold",
       "title": "Hold dilepas",
       "detail": "HOLD-2610 · FG-1012-03",
-      "note": "Uji ulang sampel retensi negatif, lot dilepas ke gudang kirim.",
+      "note": "Hasil uji ulang sampel retensi negatif, jadi lot dilepas ke gudang kirim.",
       "by": "Sri Lestari",
       "role": "QA/Lab",
       "at": "13 Okt 16.20",

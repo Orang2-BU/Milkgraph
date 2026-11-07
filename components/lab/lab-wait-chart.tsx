@@ -8,7 +8,7 @@ export function LabWaitChart({ history, avg, delta, onSource }: { history: { hou
   return <Card className="qc-chart lab-wait">
     <SectionTitle
       title="Tunggu lab test"
-      subtitle="Menit, rata-rata per jam."
+      subtitle="Rata-rata menit tunggu per jam."
       action={<button className="icon-button" aria-label="Lihat sumber grafik lab test" onClick={() => onSource("LAB-QUEUE")}><Icon icon={ArrowUpRight} /></button>}
     />
     <div className="chart-summary">

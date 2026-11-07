@@ -79,7 +79,7 @@ try {
   await page.goto(root + "/simulasi");
   await page.locator(".scene-tag.crit").first().waitFor();
   await page.getByRole("button", { name: "Rekomendasi · proyeksi 15.30" }).click();
-  await page.getByText("RT-27 masuk tepat setelah CIP selesai 15.20.").waitFor();
+  await page.getByText("RT-27 masuk tepat setelah CIP selesai pukul 15.20.").waitFor();
   assert.equal(await page.locator(".scene-tag.crit").count(), 0);
   report.push("Simulasi 3D: bottlenecks before, none critical after recommendation: PASS");
   assert.equal(await page.locator("#desktop-navigation .nav-list a.nav-item").count(), 7);
@@ -88,7 +88,7 @@ try {
     const response = await page.goto(`${root}/${route}`);
     assert.equal(response.status(), 200, route);
     await page.getByRole("heading", { level: 1 }).waitFor();
-    assert.equal(await page.locator(".section-tabs a[aria-current=page]").getAttribute("href"), `/${route}`, route);
+    assert.equal(await page.locator("#desktop-navigation .nav-sub[aria-current=page]").getAttribute("href"), `/${route}`, route);
     assert.equal(await page.locator("#desktop-navigation .nav-item.active").getAttribute("aria-label"), menu, route);
   }
   report.push(`Sidebar 7 menus; ${Object.keys(tabbed).length} tabbed routes show the right menu and tab: PASS`);

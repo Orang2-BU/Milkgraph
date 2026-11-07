@@ -28,3 +28,11 @@ export function findNav(pathname: string) {
   }
   return { item: navigation[0], tab: navigation[0].tabs[0] };
 }
+
+/** Halaman detail tanpa menu sendiri: selalu punya tombol Kembali (lihat AppShell). */
+const DETAIL_TITLES: Record<string, string> = {
+  "/tangki": "Bay & Tangki", "/filling": "Lini Filling", "/pasokan": "Pasokan & Permintaan",
+  "/constraint": "Constraint", "/persetujuan": "Riwayat Persetujuan", "/trace": "Traceability",
+};
+export const isDetail = (path: string) => path in DETAIL_TITLES;
+export const pageTitle = (path: string) => DETAIL_TITLES[path] ?? findNav(path).tab.label;
