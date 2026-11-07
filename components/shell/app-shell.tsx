@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Bell, Check, ChevronDown, ChevronsLeft, ChevronsRight, Menu, X, CircleHelp, ArrowUpRight, Clock3, RotateCcw } from "lucide-react";
-import { navigation, findNav } from "@/lib/nav";
+import { findNav } from "@/lib/nav";
+import { BranchedNav } from "@/components/shell/branched-nav";
 import { scenario } from "@/lib/data";
 import { Badge, Icon, Modal, SourceModal } from "@/components/ui";
 import { resetDemo, setRole, useDemo } from "@/lib/demo";
@@ -136,7 +137,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   function renderNavigation(mobile = false) {
     return <>
       <div className="brand-row"><Link href="/" className="brand" aria-label="MilkGraph, Beranda" onClick={() => setDrawer(false)}><svg className="brand-symbol" viewBox="44 60 184 136" aria-hidden="true"><path fill="var(--color-surface-inverse)" d="M44 116A56 56 0 0 1 156 116V196H116V116A16 16 0 0 0 84 116H44ZM116 196V116A56 56 0 0 1 228 116V196H188V116A16 16 0 0 0 156 116V196Z" /><circle fill="var(--color-accent-fill)" cx="64" cy="176" r="20" /></svg><span className="nav-label">MilkGraph<span className="brand-caption">Dairy operations</span></span></Link>{mobile && <button className="icon-button" aria-label="Tutup menu" onClick={() => setDrawer(false)}><Icon icon={X} /></button>}</div>
-      <nav aria-label="Navigasi utama" className="nav-list">{navigation.map(item => { const active = item === current.item; return <Link key={item.label} href={item.tabs[0].href} className={`nav-item ${active ? "active" : ""}`} title={`${item.label}: ${item.hint}`} aria-label={item.label} aria-current={active ? "page" : undefined} onClick={() => setDrawer(false)}><span className="nav-icon"><Icon icon={item.icon} size={22} /></span><span className="nav-label nav-text"><span>{item.label}</span><small>{item.hint}</small></span></Link>; })}</nav>
+      <BranchedNav pathname={pathname} onNavigate={() => setDrawer(false)} />
       <div className="sidebar-bottom"><button className="nav-item help" onClick={() => { setDrawer(false); setPanel("help"); }} aria-label="Panduan demo"><span className="nav-icon"><Icon icon={CircleHelp} size={22} /></span><span className="nav-label">Panduan demo</span></button><button className="account" onClick={() => { setDrawer(false); setPanel("profile"); }} aria-label={`Lihat akun ${me.user}, ganti peran`}><span className="avatar">{me.initials}</span><span className="account-copy nav-label"><strong>{me.user}</strong><span>{me.label}</span></span><Icon icon={ChevronDown} size={15} className="nav-label" /></button></div>
     </>;
   }
@@ -162,7 +163,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main id="main-content" tabIndex={-1}>
-        {current.item.tabs.length > 1 && <nav className="section-tabs" aria-label={`Bagian ${current.item.label}`}>{current.item.tabs.map(tab => <Link key={tab.href} href={tab.href} className={tab === current.tab ? "selected" : ""} aria-current={tab === current.tab ? "page" : undefined}>{tab.label}</Link>)}</nav>}
+        {current.item.tabs.length > 1 && <nav className="section-tabs sub-tabs" aria-label={`Bagian ${current.item.label}`}>{current.item.tabs.map(tab => <Link key={tab.href} href={tab.href} className={tab === current.tab ? "selected" : ""} aria-current={tab === current.tab ? "page" : undefined}>{tab.label}</Link>)}</nav>}
         {children}
       </main>
       <footer className="workspace-footer"><span>MilkGraph <span className="footer-divider">/</span> Context graph operasional pabrik susu</span><span>{snapshotFooter} <span className="status-dot" /></span></footer>

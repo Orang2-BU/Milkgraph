@@ -4,7 +4,7 @@ Index dokumen. Diperbarui 29 Okt 2026.
 
 | File | Isi | Untuk |
 |---|---|---|
-| `01-PRD.md` | Problem statement, pengguna, 14 halaman, peran, penyelarasan materi mitra, alur demo, target, risiko | Semua |
+| `01-PRD.md` | Problem statement, pengguna, 14 halaman + shell, peran, penyelarasan materi mitra, peta fungsi dan pengaruh fitur, asal fitur (tanya jawab juri), penjelasan sederhana per fitur, alur demo, target, risiko | Semua |
 | `02-PLAN.md` | Keputusan, skenario data simulasi, status pekerjaan, pemeriksaan, langkah berikut | Semua |
 | `03-ARCHITECTURE.md` | Komponen sistem, peta modul FE, model data Neo4j + PostgreSQL, alur utama, keamanan, Q&A keputusan | FE + BE |
 | `04-API-CONTRACT.md` | Kontrak REST `/api/v1` + SSE: setiap endpoint, tipe, izin, validasi, event, algoritma rules | BE (wajib), FE |

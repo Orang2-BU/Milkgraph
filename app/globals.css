@@ -93,6 +93,30 @@ svg { flex-shrink: 0; }
 .nav-item.active { background: var(--glass-chip); box-shadow: var(--glass-rim), var(--shadow-chip); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); color: var(--color-on-surface); font-weight: 600; }
 .nav-item.active .nav-icon { color: var(--color-primary); }
 .nav-icon { width: 24px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+/* Sub-menu bercabang, diadaptasi dari BranchedMenu (React Bits). Geometri di components/shell/branched-nav.tsx. */
+.nav-section { display: flex; flex-direction: column; }
+.nav-row { position: relative; }
+.nav-row:has(.nav-fold) .nav-item { padding-right: 52px; }
+.nav-fold { position: absolute; right: 6px; top: 50%; translate: 0 -50%; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius-full); color: var(--color-on-surface-muted); transition: color 200ms ease, background-color 200ms ease; }
+.nav-fold:hover { color: var(--color-on-surface); background: color-mix(in oklab, var(--color-surface) 55%, transparent); }
+.nav-fold svg { transition: rotate 300ms var(--ease); }
+.nav-section[data-open] .nav-fold svg { rotate: 180deg; }
+.nav-branch { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 300ms var(--ease); }
+.nav-section[data-open] .nav-branch { grid-template-rows: 1fr; }
+.nav-branch-fold { min-height: 0; overflow: hidden; }
+.nav-branch-tree { position: relative; padding: 4px 0; box-sizing: border-box; }
+.nav-branch-lines { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; opacity: 0; transition: opacity 200ms ease; }
+.nav-section[data-open] .nav-branch-lines { opacity: 1; transition: opacity 250ms ease 100ms; }
+.nav-branch-base, .nav-branch-reach { fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.nav-branch-base { stroke: color-mix(in oklab, var(--color-on-surface) 14%, var(--color-canvas)); }
+.nav-branch-reach { stroke: var(--color-primary); transition: stroke-dashoffset 400ms var(--ease); }
+.nav-sub { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px 0 54px; font-size: 14px; color: var(--color-on-surface-muted); white-space: nowrap; transition: color 200ms ease; }
+.nav-sub:hover { color: var(--color-on-surface); }
+.nav-sub[aria-current="page"] { color: var(--color-primary); font-weight: 600; }
+/* Sub-menu ada di sidebar; tab di atas halaman hanya muncul saat sidebar ciut (cabang tersembunyi). */
+.section-tabs.sub-tabs { display: none; }
+.collapsed .section-tabs.sub-tabs { display: inline-flex; }
+@media (max-width: 1199px) and (min-width: 768px) { .auto-sidebar .section-tabs.sub-tabs { display: inline-flex; } }
 .sidebar-bottom { margin-top: auto; padding-top: 24px; }
 .account { display: flex; gap: 10px; align-items: center; background: var(--glass-chip); box-shadow: var(--glass-rim), var(--shadow-chip); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); padding: 12px; width: 100%; border-radius: var(--radius-md); text-align: left; margin-top: 12px; }
 .avatar { background: var(--color-neutral-fill); color: var(--color-surface-inverse); width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; font-weight: 600; }
