@@ -101,7 +101,7 @@ function ReceivingContent({
     <div className="page-enter">
       <div className="page-heading">
         <div>
-          <h1>Receiving Flow</h1>
+          <h1>Antrean Truk</h1>
           <p>Alur RT dari farm sampai tangki, diperbarui {now}</p>
         </div>
         <div className="page-actions">

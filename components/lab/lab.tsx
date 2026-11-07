@@ -8,7 +8,7 @@ import { can } from "@/lib/roles";
 import { labResults, type LabResult } from "@/mock/ops";
 import { API_MODE } from "@/lib/api/client";
 import { useResource } from "@/lib/api/resource";
-import { Badge, Card, Icon, Modal, PageHeading, RoleNote, SectionTitle, SourceButton, SourceModal, Toggle } from "@/components/ui";
+import { Badge, Card, Icon, Modal, PageHeading, RoleNote, SectionTitle, SourceButton, SourceModal } from "@/components/ui";
 import type { Tone } from "@/mock/types";
 
 const STATUS: Record<LabResult["status"], { label: string; tone: Tone }> = {
@@ -23,9 +23,9 @@ const decidable = (r: LabResult) => r.kind === "penerimaan" && (r.status === "ha
 
 type LabResultItem = LabResult & { decision?: LabDecision; eta?: string };
 
-export function Lab() {
+/** Satu halaman per jenis uji: Tes Lab penerimaan RT (menu Penerimaan) dan QC barang jadi (menu Operasional). */
+export function Lab({ kind }: { kind: LabResult["kind"] }) {
   const demo = useDemo();
-  const [kind, setKind] = useState<LabResult["kind"]>("penerimaan");
   const [openId, setOpenId] = useState<string | null>(null);
   const [dialog, setDialog] = useState<"dirilis" | "ditolak" | null>(null);
   const [note, setNote] = useState("");
@@ -33,10 +33,10 @@ export function Lab() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const resultsRes = useResource<LabResultItem[]>(API_MODE ? (kind ? `/lab/results?kind=${kind}` : "/lab/results") : null);
-  const summaryRes = useResource<{ waiting: number; released: number; avgWaitMin: number }>(API_MODE ? "/lab/summary" : null);
+  const resultsRes = useResource<LabResultItem[]>(API_MODE ? `/lab/results?kind=${kind}` : null);
+  const summaryRes = useResource<{ waiting: number; released: number; avgWaitMin: number }>(API_MODE && kind === "penerimaan" ? "/lab/summary" : null);
 
-  if (API_MODE && (!resultsRes.data || !summaryRes.data)) {
+  if (API_MODE && (!resultsRes.data || (kind === "penerimaan" && !summaryRes.data))) {
     if (resultsRes.error || summaryRes.error) {
       const err = resultsRes.error ?? summaryRes.error;
       return (
@@ -55,6 +55,10 @@ export function Lab() {
   const waiting = API_MODE ? (summaryRes.data?.waiting ?? 0) : labResults.filter(r => decidable(r) && !demo.labs[r.id]).length;
   const released = API_MODE ? (summaryRes.data?.released ?? 0) : labResults.filter(r => r.kind === "penerimaan" && (r.status === "lulus" || demo.labs[r.id]?.status === "dirilis")).length;
   const avgWait = API_MODE ? (summaryRes.data?.avgWaitMin ?? 0) : 52;
+  const intake = kind === "penerimaan";
+  const metrics = intake
+    ? [{ icon: FlaskConical, label: "Menunggu keputusan QA", value: waiting, unit: "RT" }, { icon: CircleCheck, label: "Dirilis hari ini", value: released, unit: "RT" }, { icon: CircleDashed, label: "Rata-rata tunggu lab", value: avgWait, unit: "menit" }]
+    : [{ icon: FlaskConical, label: "Lot diuji", value: rows.length, unit: "lot" }, { icon: CircleX, label: "Out-of-spec", value: rows.filter(r => r.status === "positif").length, unit: "lot" }, { icon: CircleCheck, label: "Lulus", value: rows.filter(r => r.status === "lulus").length, unit: "lot" }];
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -73,15 +77,11 @@ export function Lab() {
   }
 
   return <div className="page-enter">
-    <PageHeading title="Hasil Lab" subtitle="Hasil lab test penerimaan RT dan QC barang jadi dari LIMS. Lab test adalah gerbang antrean receiving." />
-    <div className="metrics-grid three">
-      <Card className="metric-card"><span className="metric-label"><Icon icon={FlaskConical} size={15} />Menunggu keputusan QA</span><p className="metric-value">{waiting}<span>RT</span></p></Card>
-      <Card className="metric-card"><span className="metric-label"><Icon icon={CircleCheck} size={15} />Dirilis hari ini</span><p className="metric-value">{released}<span>RT</span></p></Card>
-      <Card className="metric-card"><span className="metric-label"><Icon icon={CircleDashed} size={15} />Rata-rata tunggu lab</span><p className="metric-value">{avgWait}<span>menit</span></p></Card>
-    </div>
+    <PageHeading title={intake ? "Tes Lab" : "QC Barang Jadi"} subtitle={intake ? "Hasil lab test road tanker dari LIMS. RT baru masuk antrean bongkar setelah dirilis QA." : "Hasil QC lot barang jadi dari LIMS sebelum lot dikirim dari gudang."} />
+    <div className="metrics-grid three">{metrics.map(m => <Card key={m.label} className="metric-card"><span className="metric-label"><Icon icon={m.icon} size={15} />{m.label}</span><p className="metric-value">{m.value}<span>{m.unit}</span></p></Card>)}</div>
     <div className="kg-layout">
-      <Card><SectionTitle title={kind === "penerimaan" ? "Lab test penerimaan RT" : "QC barang jadi"} subtitle="Pilih baris untuk melihat parameter dan batasnya." action={<Toggle label="Jenis uji" value={kind} onChange={k => { setKind(k); setOpenId(null); }} options={[{ value: "penerimaan", label: "Penerimaan RT" }, { value: "qc-fg", label: "QC barang jadi" }]} />} />
-        <div className="table-wrap"><table className="select-table"><thead><tr><th>Sampel</th><th>{kind === "penerimaan" ? "RT" : "Lot"}</th><th>Diambil</th><th>Status</th></tr></thead><tbody>{rows.map(r => <tr key={r.id} className={openId === r.id ? "selected" : ""}><td><button className="row-button" aria-pressed={openId === r.id} onClick={() => setOpenId(r.id)}><strong className="mono">{r.id}</strong></button></td><td data-label={kind === "penerimaan" ? "RT" : "Lot"}><strong className="mono">{r.subject}</strong><span className="table-sub">{r.detail}</span></td><td data-label="Diambil">{r.sampled}</td><td data-label="Status"><Badge tone={badge(r).tone}>{badge(r).label}</Badge></td></tr>)}</tbody></table></div>
+      <Card><SectionTitle title={intake ? "Sampel road tanker" : "Sampel lot barang jadi"} subtitle="Pilih baris untuk melihat parameter dan batasnya." />
+        <div className="table-wrap"><table className="select-table"><thead><tr><th>Sampel</th><th>{intake ? "RT" : "Lot"}</th><th>Diambil</th><th>Status</th></tr></thead><tbody>{rows.map(r => <tr key={r.id} className={openId === r.id ? "selected" : ""}><td><button className="row-button" aria-pressed={openId === r.id} onClick={() => setOpenId(r.id)}><strong className="mono">{r.id}</strong></button></td><td data-label={intake ? "RT" : "Lot"}><strong className="mono">{r.subject}</strong><span className="table-sub">{r.detail}</span></td><td data-label="Diambil">{r.sampled}</td><td data-label="Status"><Badge tone={badge(r).tone}>{badge(r).label}</Badge></td></tr>)}</tbody></table></div>
       </Card>
       <aside className="kg-detail" aria-live="polite">{open ? <>
         <div className="kg-detail-top"><Badge tone={badge(open).tone}>{badge(open).label}</Badge><SourceButton id={open.source} onSelect={setSource} compact /></div>
@@ -92,7 +92,7 @@ export function Lab() {
           : decidable(open) ? <><div className="page-actions"><button className="button secondary" disabled={!allowed || submitting} onClick={() => { setNote(""); setSubmitError(null); setDialog("ditolak"); }}><Icon icon={X} size={16} />Tolak RT</button><button className="button primary" disabled={!allowed || open.status === "uji-ulang" || submitting} onClick={() => { setNote(""); setSubmitError(null); setDialog("dirilis"); }}><Icon icon={Check} size={16} />Rilis ke receiving</button></div>{open.status === "uji-ulang" && <p className="small muted">Rilis menunggu hasil uji ulang alcohol test, perkiraan {open.eta || "15.30"}. Penolakan tetap bisa dilakukan.</p>}<RoleNote permission="lab.decide" /></>
           : open.status === "positif" ? <Link className="button primary" href="/trace">Telusuri lot ini<Icon icon={ArrowRight} size={16} /></Link>
           : <p className="small muted">{open.status === "dalam-uji" ? "Uji masih berjalan. Keputusan QA tersedia setelah semua parameter selesai." : "Sudah dirilis sebelum snapshot 14.42."}</p>}
-      </> : <><p className="small with-icon"><Icon icon={FlaskConical} size={14} />Pilih sampel untuk melihat parameternya.</p><p className="small muted">QA/Lab merilis RT ke antrean bongkar atau menolaknya. Penolakan wajib disertai alasan dan tercatat di Riwayat Persetujuan.</p></>}</aside>
+      </> : <><p className="small with-icon"><Icon icon={FlaskConical} size={14} />Pilih sampel untuk melihat parameternya.</p><p className="small muted">{intake ? "QA/Lab merilis RT ke antrean bongkar atau menolaknya. Penolakan wajib disertai alasan dan tercatat di Riwayat Persetujuan." : "Lot out-of-spec ditelusuri asalnya di Traceability, lalu diajukan hold."}</p></>}</aside>
     </div>
     {dialog && open && <Modal title={dialog === "dirilis" ? `Rilis ${open.subject} ke receiving?` : `Tolak ${open.subject}?`} onClose={() => { setDialog(null); setSubmitError(null); }}><form onSubmit={submit}><Badge>Data simulasi</Badge><p className="dialog-summary">{dialog === "dirilis" ? `${open.subject} masuk antrean bongkar. Semua parameter dalam batas.` : `${open.subject} tidak dibongkar dan dikembalikan ke pemasok. Alasan diperlukan agar keputusan dapat ditelusuri.`}</p>{submitError && <p className="crit-text small">{submitError}</p>}<label className="field-label" htmlFor="lab-note">Catatan {dialog === "ditolak" ? "(wajib)" : "(opsional)"}</label><textarea id="lab-note" value={note} onChange={e => setNote(e.target.value)} required={dialog === "ditolak"} maxLength={500} placeholder={dialog === "ditolak" ? "Contoh: alcohol test positif pada uji ulang." : "Contoh: prioritaskan bongkar karena umur susu 7j 20m."} /><div className="dialog-actions"><button type="button" className="button secondary" onClick={() => { setDialog(null); setSubmitError(null); }} disabled={submitting}>Batal</button><button className="button primary" disabled={submitting || (dialog === "ditolak" && !note.trim())}>{submitting ? "Memproses…" : (dialog === "dirilis" ? "Konfirmasi rilis" : "Konfirmasi penolakan")}<Icon icon={Check} size={16} /></button></div></form></Modal>}
     <SourceModal id={source} onClose={() => setSource(null)} />

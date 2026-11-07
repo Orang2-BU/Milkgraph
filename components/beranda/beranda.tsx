@@ -3,14 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { ArrowRight, ArrowUpRight, Box, CalendarClock, ChevronRight, CircleCheck, CircleX, Container, Factory, FlaskConical, GitBranch, Hourglass, PackageX, Settings, TriangleAlert, Wrench, type LucideIcon } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Box, CalendarClock, ChevronRight, CircleCheck, CircleX, Container, Factory, FlaskConical, GitBranch, Hourglass, PackageX, Settings, TriangleAlert, Truck, Wrench, type LucideIcon } from "lucide-react";
 import { scenario } from "@/lib/data";
 import { duration, number } from "@/lib/format";
 import { useDemo } from "@/lib/demo";
 import { navigation } from "@/lib/nav";
 import { ROLES } from "@/lib/roles";
 import { evaluate, holdingLeft, starvation, violations, type ConstraintId } from "@/lib/rules";
-import { dataSources, farms, fillers, labResults, pastLog, UNIT_STATE } from "@/mock/ops";
+import { dataSources, farms, fillers, labResults, pastLog, UNIT_STATE, type LabResult } from "@/mock/ops";
 import { BOTTLENECKS } from "@/mock/site";
 import type { Tone } from "@/mock/types";
 import { Badge, Card, Icon, PageHeading, SectionTitle, SourceModal } from "@/components/ui";
@@ -21,6 +21,9 @@ type Item = { icon: LucideIcon; title: string; meta: string; tone: Tone; href: s
 const plan = scenario.plans[0];
 const forward = scenario.answers.find(a => a.id === "forward")!;
 const lotPacks = forward.lots!.reduce((sum, l) => sum + l.packs, 0);
+const LAB_STATE: Record<LabResult["status"], { label: string; tone: Tone }> = { "hasil-siap": { label: "Menunggu rilis QA", tone: "warn" }, "uji-ulang": { label: "Uji ulang", tone: "warn" }, "dalam-uji": { label: "Dalam uji", tone: "neutral" }, lulus: { label: "Lulus", tone: "ok" }, positif: { label: "Out-of-spec", tone: "crit" } };
+const intakeLabs = labResults.filter(r => r.kind === "penerimaan" && r.status !== "lulus");
+const qcLabs = labResults.filter(r => r.kind === "qc-fg");
 const tabsOf = (label: string) => navigation.find(n => n.label === label)!.tabs;
 
 /** Kartu satu menu: fungsi menu dalam satu kalimat, cuplikan isinya, lalu pintasan ke setiap tab. */
@@ -45,7 +48,6 @@ export function Beranda() {
   const left = Math.max(0, holdingLeft(demo.limits));
   const hold = demo.holds.find(h => h.trigger === scenario.qcEvent.lot && h.status !== "ditolak");
   const labPending = labResults.filter(r => r.kind === "penerimaan" && (r.status === "hasil-siap" || r.status === "uji-ulang") && !demo.labs[r.id]).length;
-  const labTesting = labResults.filter(r => r.status === "dalam-uji").length;
   const broke = fillers.filter(f => f.state === "breakdown");
   const fillCount = (Object.keys(UNIT_STATE) as (keyof typeof UNIT_STATE)[]).map(k => ({ k, n: fillers.filter(f => f.state === k).length })).filter(x => x.n);
   const bottlenecks = BOTTLENECKS[approved ? "after" : "before"];
@@ -82,22 +84,30 @@ export function Beranda() {
 
     <div className="home-section-head"><h2>Isi setiap menu</h2><p>Ringkasan dan pintasan ke semua halaman.</p></div>
     <div className="module-grid">
-      <ModuleCard icon={Factory} menu="Operasional" description="Kondisi fisik plant saat ini: antrean road tanker, kondisi setiap alat, dan master alat." wide>
+      <ModuleCard icon={Truck} menu="Penerimaan" description="Susu masuk: antrean road tanker dari farm sampai tes lab, sebelum masuk produksi." wide>
         <div className="module-cols">
           <div><h4>Antrean RT per tahap</h4><ol className="home-flow">{scenario.stages.map(s => <li key={s.id} className={s.tone}><strong>{s.count}</strong><span>{s.label}</span></li>)}</ol><p className="module-note">{scenario.tankers.length} RT di plant, tunggu lab {lab.value} {lab.unit}.</p></div>
+          <div><h4>Tes lab RT</h4><ul className="source-list">{intakeLabs.map(r => <li key={r.id}><span className={`status-dot tone-${LAB_STATE[r.status].tone}`} aria-hidden="true" /><strong className="mono">{r.subject}</strong><span>{LAB_STATE[r.status].label}</span></li>)}</ul></div>
+          <div><h4>RT tiba hari ini</h4><p className="module-big"><strong>{arrived}</strong> / {plannedRt}</p><p className="module-note">Sesuai rencana kirim farm.</p></div>
+        </div>
+      </ModuleCard>
+
+      <ModuleCard icon={Factory} menu="Operasional" description="Proses produksi saat ini: kondisi setiap alat, QC barang jadi, dan master alat." wide>
+        <div className="module-cols">
           <div><h4>Bay dan tangki raw milk</h4><ul className="mini-bars">{scenario.assets.map(a => <li key={a.id}><span className="mono">{a.id}</span><span className={`capacity-bar ${a.tone}`}><span style={{ width: `${a.fill / a.capacity * 100}%` }} /></span><span className={`mini-status ${a.tone}`}>{a.status}</span></li>)}</ul></div>
           <div><h4>Lini filling</h4><ul className="line-chips">{fillers.map(f => <li key={f.id} className={UNIT_STATE[f.state].tone} title={`${f.id}: ${UNIT_STATE[f.state].label}, ${f.product}`}>{f.id}</li>)}</ul><p className="module-note">{fillCount.map(x => `${x.n} ${UNIT_STATE[x.k].label.toLowerCase()}`).join(" · ")}</p></div>
+          <div><h4>QC barang jadi</h4><ul className="source-list">{qcLabs.map(r => <li key={r.id}><span className={`status-dot tone-${LAB_STATE[r.status].tone}`} aria-hidden="true" /><strong className="mono">{r.subject}</strong><span>{LAB_STATE[r.status].label}</span></li>)}</ul></div>
         </div>
       </ModuleCard>
 
       <ModuleCard icon={CalendarClock} menu="Rencana" description="Cek kelayakan rencana shift terhadap 6 constraint, bandingkan rekomendasi solver, lalu putuskan.">
         <ul className="check-list">{plan.constraints.map(c => { const r = checks[c.id as ConstraintId]; return <li key={c.id} className={r.ok ? "ok" : "crit"}><Icon icon={r.ok ? CircleCheck : CircleX} size={16} />{c.label}</li>; })}</ul>
-        <dl className="compare-row"><div><dt>Constraint dilanggar</dt><dd>{broken} <ArrowRight size={14} aria-hidden /> <strong>{after}</strong></dd></div><div><dt>Starvation filling</dt><dd>{starvation(plan.before)} <ArrowRight size={14} aria-hidden /> <strong>{starvation(plan.after)}</strong> mnt</dd></div><div><dt>RT tiba hari ini</dt><dd><strong>{arrived}</strong> / {plannedRt}</dd></div></dl>
+        <dl className="compare-row"><div><dt>Constraint dilanggar</dt><dd>{broken} <ArrowRight size={14} aria-hidden /> <strong>{after}</strong></dd></div><div><dt>Starvation filling</dt><dd>{starvation(plan.before)} <ArrowRight size={14} aria-hidden /> <strong>{starvation(plan.after)}</strong> mnt</dd></div></dl>
       </ModuleCard>
 
-      <ModuleCard icon={GitBranch} menu="Traceability" description="Telusuri asal dan sebaran volume susu per lot, lalu kelola hasil lab dan hold.">
+      <ModuleCard icon={GitBranch} menu="Traceability" description="Telusuri asal dan sebaran volume susu per lot, lalu kelola hold.">
         <ol className="mini-chain" aria-label="Jalur genealogi FG-1013-07">{[["Farm", "Farm"], ["RT", "RT-04"], ["Buffer", "RMT-2"], ["Sterilisasi", "UHT-2"], ["Filling", "F2"], ["Lot", "FG-07"]].map(([kind, label]) => <li key={label}><Equipment kind={kind} size={40} /><span className="mono">{label}</span></li>)}</ol>
-        <dl className="compare-row"><div><dt>QC out-of-spec</dt><dd><strong className="mono">{scenario.qcEvent.lot}</strong></dd></div><div><dt>Lot terdampak</dt><dd><strong>{forward.lots!.length}</strong> lot · {number(lotPacks)} pak</dd></div><div><dt>Hasil lab</dt><dd><strong>{labPending}</strong> menunggu · {labTesting} diuji</dd></div><div><dt>Hold</dt><dd>{hold ? <strong className="mono">{hold.id}</strong> : "Belum diajukan"}</dd></div></dl>
+        <dl className="compare-row"><div><dt>QC out-of-spec</dt><dd><strong className="mono">{scenario.qcEvent.lot}</strong></dd></div><div><dt>Lot terdampak</dt><dd><strong>{forward.lots!.length}</strong> lot · {number(lotPacks)} pak</dd></div><div><dt>Hold</dt><dd>{hold ? <strong className="mono">{hold.id}</strong> : "Belum diajukan"}</dd></div></dl>
       </ModuleCard>
 
       <ModuleCard icon={Box} menu="Simulasi 3D" description="Model plant dari tata letak nyata: alur susu, kondisi aset, dan lokasi bottleneck.">
