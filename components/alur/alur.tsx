@@ -56,7 +56,7 @@ export function Alur() {
   // Layar penuh dirender ke body: Card memakai backdrop-filter, jadi position: fixed di dalamnya terkurung di kartu.
   const portal = (frame: ReactNode) => full ? createPortal(frame, document.body) : frame;
   return <div className="page-enter">
-    <PageHeading title="Alur Produksi" subtitle="Alur susu dari bay bongkar sampai mesin filling, snapshot 14.42." />
+    <PageHeading title="Alur Produksi" subtitle="Alur susu dari bay bongkar sampai mesin filling, sesuai snapshot pukul 14.42." />
     <Card className="flow-card">
       {portal(<div className={`flow-frame ${full ? "is-full" : ""}`} role={full ? "dialog" : undefined} aria-modal={full || undefined} aria-label={full ? "Alur produksi layar penuh" : undefined}>
         <div className="flow-toolbar">

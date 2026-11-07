@@ -253,13 +253,13 @@ export function Tangki() {
   const ganttSubtitle = approved
     ? "Rekomendasi solver yang sudah disetujui planner."
     : checkResult?.before?.cip?.text
-    ? `Rencana awal. ${checkResult.before.cip.text}`
-    : "Rencana awal. Blok merah bentrok dengan CIP Bay 2.";
+    ? `Ini rencana awal. ${checkResult.before.cip.text}`
+    : "Ini rencana awal. Blok merah bentrok dengan CIP Bay 2.";
 
   return (
     <div className="page-enter">
       <PageHeading title="Bay & Tangki" subtitle="Status bay, level Raw Milk Buffer, suhu, dan jadwal CIP per aset.">
-        <Badge>{approved ? "Mengikuti rekomendasi disetujui" : "Mengikuti rencana awal (FIFO)"}</Badge>
+        <Badge>{approved ? "Mengikuti rekomendasi yang disetujui" : "Mengikuti rencana awal (FIFO)"}</Badge>
       </PageHeading>
       <Instructions role="receiving" />
       <div className="tanks-grid assets-grid page-block">
@@ -302,7 +302,7 @@ export function Tangki() {
       </Card>
       <div className="split-even">
         <section className="panel">
-          <SectionTitle title="Raw Milk Buffer" subtitle={`Level dan suhu tangki susu mentah, kapasitas ${number(bufferCap)} L per tangki.`} />
+          <SectionTitle title="Raw Milk Buffer" subtitle={`Level dan suhu tangki susu mentah. Kapasitasnya ${number(bufferCap)} L per tangki.`} />
           <div className="tanks-grid single">
             {buffers.map(tank => {
               const pct = Math.round((tank.fill / tank.capacity) * 100);
@@ -334,7 +334,7 @@ export function Tangki() {
         <Card>
           <SectionTitle
             title="Log CIP per aset"
-            subtitle={`Batas antar-CIP tangki ${cipInterval} jam [asumsi].`}
+            subtitle={`Jarak maksimal antar-CIP tiap tangki ${cipInterval} jam [asumsi].`}
             action={<button className="icon-button" aria-label="Lihat log CIP Bay 2" onClick={() => setSource("CIP-LOG")}><Icon icon={SprayCan} size={17} /></button>}
           />
           <div className="table-wrap">

@@ -51,7 +51,7 @@ export function Beranda() {
   };
 
   const attention: Item[] = [
-    ...(!approved ? [{ icon: Hourglass, title: "RT-26 mendekati batas holding time", meta: `${duration(left)} tersisa, menunggu bay`, tone: "crit" as Tone, href: "/receiving" }] : []),
+    ...(!approved ? [{ icon: Hourglass, title: "RT-26 mendekati batas holding time", meta: `Sisa ${duration(left)}, masih menunggu bay`, tone: "crit" as Tone, href: "/receiving" }] : []),
     hold ? { icon: PackageX, title: `${hold.id} ${hold.status === "diajukan" ? "menunggu keputusan QA" : hold.status === "aktif" ? "hold aktif" : "hold dilepas"}`, meta: `${hold.lots.length} lot dari ${scenario.qcEvent.lot}`, tone: hold.status === "diajukan" ? "warn" : "neutral", href: "/hold" }
       : { icon: FlaskConical, title: `${scenario.qcEvent.lot} QC out-of-spec`, meta: `${scenario.qcEvent.test}, perlu trace`, tone: "crit", href: "/trace" },
     ...broke.map(f => ({ icon: Wrench, title: `${f.id} breakdown`, meta: f.note, tone: "crit" as Tone, href: "/filling" })),
@@ -66,7 +66,7 @@ export function Beranda() {
     <div className="home-top">
       <section className="incident-card home-plan"><div className="incident-top"><span className="incident-status"><Icon icon={TriangleAlert} size={17} />Rencana shift</span><span className="mono">PLAN-FIFO</span></div>
         <h2>{approved ? <>Rekomendasi disetujui,<br />RT-26 pindah ke Bay 1.</> : <>Rencana tidak layak,<br />{broken} constraint dilanggar.</>}</h2>
-        <div className="incident-time"><span><Icon icon={Hourglass} size={15} />RT-26 tersisa</span><strong>{duration(left)} <span>holding</span></strong></div>
+        <div className="incident-time"><span><Icon icon={Hourglass} size={15} />Sisa holding time RT-26</span><strong>{duration(left)}</strong></div>
         <p className="inverse-muted">{approved ? `Disetujui ${approved.by}, ${approved.at}.` : `Lab test ${lab.value} ${lab.unit} dan ${bay.delta}.`}</p>
         <Link href="/rencana" className="button inverse">{approved ? "Lihat rencana" : "Periksa rencana"}<span className="button-circle"><Icon icon={ArrowUpRight} /></span></Link>
       </section>

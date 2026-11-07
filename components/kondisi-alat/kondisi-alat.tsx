@@ -17,7 +17,7 @@ export function KondisiAlat() {
   const rows = (view === "semua" ? ASSETS : ATTENTION).filter(a => !q || `${a.id} ${a.group} ${a.status} ${a.note}`.toLowerCase().includes(q));
 
   return <div className="page-enter">
-    <PageHeading title="Kondisi Alat" subtitle="Status setiap alat pada snapshot 14.42, urut sesuai alur produksi." />
+    <PageHeading title="Kondisi Alat" subtitle="Kondisi setiap alat pada snapshot pukul 14.42, diurutkan sesuai alur produksi." />
     <Card>
       <div className="asset-toolbar">
         <Toggle label="Tampilan alat" value={view} onChange={setView} options={[{ value: "semua", label: `Semua (${ASSETS.length})` }, { value: "perhatian", label: `Perlu diperhatikan (${ATTENTION.length})` }]} />

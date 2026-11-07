@@ -57,7 +57,7 @@ export function Receiving() {
 
   if (!data || (API_MODE && (!meta.data || !checked))) {
     const error = receiving.error ?? meta.error ?? checkError;
-    return <div className="page-enter" role="status">{error ? `Gagal memuat Receiving Flow: ${error.message}` : "Memuat Receiving Flow…"}</div>;
+    return <div className="page-enter" role="status">{error ? `Gagal memuat antrean truk: ${error.message}` : "Memuat antrean truk…"}</div>;
   }
 
   return (
@@ -166,7 +166,7 @@ function ReceivingContent({
             </table>
           </div>
           <div className="table-footer">
-            <span>{tankers.length} dari {scenarioData.tankers.length} RT di plant · batas holding {Math.floor(demo.limits.holdingMin / 60)}j {String(demo.limits.holdingMin % 60).padStart(2, "0")}m [asumsi]</span>
+            <span>{tankers.length} dari {scenarioData.tankers.length} RT di plant. Batas holding time {duration(demo.limits.holdingMin)} [asumsi].</span>
             <Link href="/rencana" className="text-link">Susun ulang antrean<Icon icon={ArrowRight} size={14} /></Link>
           </div>
         </Card>
@@ -177,11 +177,11 @@ function ReceivingContent({
           </div>
           <h2>{receivingHeadline(check, demo.decisions, scenarioData.incident)}</h2>
           <div className="incident-time">
-            <span><Icon icon={Hourglass} size={15} />{scenarioData.incident.rt} tersisa</span>
-            <strong>{duration(Math.max(0, scenarioData.incident.holdingLeftMin))} <span>holding</span></strong>
+            <span><Icon icon={Hourglass} size={15} />Sisa holding time {scenarioData.incident.rt}</span>
+            <strong>{duration(Math.max(0, scenarioData.incident.holdingLeftMin))}</strong>
           </div>
           <p className="inverse-muted">
-            {scenarioData.incident.summary} {approved ? `Disetujui ${approved.by} pukul ${approved.at}; koordinator receiving tinggal mengonfirmasi instruksi.` : "Periksa rencana sebelum RT berikutnya tiba."}
+            {scenarioData.incident.summary} {approved ? `Disetujui ${approved.by} pukul ${approved.at}. Koordinator receiving tinggal mengonfirmasi instruksinya.` : "Periksa rencana sebelum RT berikutnya tiba."}
           </p>
           <div className="incident-factors">
             {scenarioData.incident.factors.map(factor => (
@@ -192,7 +192,7 @@ function ReceivingContent({
               </button>
             ))}
           </div>
-          <p className="incident-links">Detail: <Link href="/lab">tunggu lab di Tes Lab</Link> · <Link href="/tangki">kondisi bay di Bay &amp; Tangki</Link></p>
+          <p className="incident-links">Rincian tunggu lab ada di <Link href="/lab">Tes Lab</Link>, dan kondisi bay di <Link href="/tangki">Bay &amp; Tangki</Link>.</p>
           <Link href="/rencana" className="button inverse">
             Periksa kelayakan rencana<span className="button-circle"><Icon icon={ArrowUpRight} /></span>
           </Link>

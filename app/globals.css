@@ -1198,3 +1198,6 @@ button.flow-node { pointer-events: all; font: inherit; cursor: pointer; }
   .rp-end { margin-left: 0; }
   .rp-summary dl { gap: 20px; }
 }
+/* Durasi ditulis lengkap ("1 jam 10 menit"): jangan dipatah; label turun ke atas bila kartunya sempit. */
+.incident-time { flex-wrap: wrap; gap: 4px 12px; }
+.incident-time strong { white-space: nowrap; letter-spacing: -.02em; }
