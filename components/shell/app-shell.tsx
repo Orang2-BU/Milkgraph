@@ -163,7 +163,6 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main id="main-content" tabIndex={-1}>
-        {current.item.tabs.length > 1 && <nav className="section-tabs sub-tabs" aria-label={`Bagian ${current.item.label}`}>{current.item.tabs.map(tab => <Link key={tab.href} href={tab.href} className={tab === current.tab ? "selected" : ""} aria-current={tab === current.tab ? "page" : undefined}>{tab.label}</Link>)}</nav>}
         {children}
       </main>
       <footer className="workspace-footer"><span>MilkGraph <span className="footer-divider">/</span> Context graph operasional pabrik susu</span><span>{snapshotFooter} <span className="status-dot" /></span></footer>
