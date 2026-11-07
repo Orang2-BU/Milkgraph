@@ -193,7 +193,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           ) : (
             <button className="shift-choice" onClick={() => setPanel(null)}>
               <strong>Shift Siang</strong>
-              <span>14.00 - 22.00 · Snapshot 14.42</span>
+              <span>Pukul 14.00 - 22.00, snapshot pukul 14.42</span>
               <Badge tone="ok">Dipilih</Badge>
             </button>
           )}
@@ -223,9 +223,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           ) : (
             <div className="notification-list">
               {[
-                { title: "Rencana shift tidak layak", subtitle: `${broken} constraint dilanggar · cek rekomendasi solver`, id: "PLAN-FIFO" },
-                { title: "RT-26 mendekati batas holding time", subtitle: "Tersisa 1j 10m · menunggu bay", id: "HOLD-RT26" },
-                { title: "QC FG out-of-spec FG-1013-07", subtitle: "Residu antibiotik · jalankan trace", id: "LAB-8812" },
+                { title: "Rencana shift tidak layak", subtitle: `${broken} constraint dilanggar, cek rekomendasi solver`, id: "PLAN-FIFO" },
+                { title: "RT-26 mendekati batas holding time", subtitle: "Sisa 1 jam 10 menit dan masih menunggu bay", id: "HOLD-RT26" },
+                { title: "QC FG out-of-spec FG-1013-07", subtitle: "Residu antibiotik terdeteksi, jalankan trace", id: "LAB-8812" },
               ].map(n => (
                 <button key={n.id} onClick={() => { setPanel(null); setSource(n.id); }}>
                   <span><strong>{n.title}</strong><span>{n.subtitle}</span></span>
@@ -237,7 +237,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </>
       )}
       {panel === "profile" && <>
-        <p className="muted">Peran menentukan tombol yang aktif. Planner menyetujui rencana, QA/Lab menyetujui hold dan hasil lab.</p>
+        <p className="muted">Peran menentukan tombol mana yang aktif. Planner menyetujui rencana, sedangkan QA/Lab menyetujui hold dan hasil lab.</p>
         {roleError && <p className="small crit-text" role="alert" style={{ marginBottom: "0.5rem" }}>{roleError}</p>}
         <div className="role-list">
           {roleIds.map(id => {
@@ -260,9 +260,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             );
           })}
         </div>
-        <p className="small muted">Persetujuan hanya berlaku dalam simulasi. Aplikasi tidak mengendalikan bay, mesin, atau stok nyata. <Link className="inline-link" href="/pengguna" onClick={() => setPanel(null)}>Lihat hak akses per peran</Link></p>
+        <p className="small muted">Persetujuan hanya berlaku dalam simulasi. Aplikasi tidak mengendalikan bay, mesin, atau stok yang sebenarnya. <Link className="inline-link" href="/pengguna" onClick={() => setPanel(null)}>Lihat hak akses per peran</Link></p>
       </>}
-      {panel === "help" && <><p>Dua skenario demo dari proposal, dari temuan sampai keputusan.</p><ol className="guide-list"><li><strong>Antrean Truk</strong><p>Lihat antrean RT menumpuk di lab test dan Bay 2 yang sedang CIP.</p></li><li><strong>Rencana & What-if</strong><p>Rencana FIFO ditandai tidak layak. Bandingkan rekomendasi solver, lalu setujui atau tolak.</p></li><li><strong>Simulasi 3D</strong><p>Bandingkan lokasi bottleneck sebelum dan sesudah rekomendasi.</p></li><li><strong>Traceability</strong><p>Dari QC FG out-of-spec, trace mundur ke RT dan farm, lalu trace maju untuk daftar hold.</p></li></ol><Badge>Semua data adalah simulasi</Badge><button className="button secondary wide reset-demo" disabled={resetting} onClick={() => void handleResetDemo()}><Icon icon={RotateCcw} size={16} />{resetting ? "Mengatur ulang demo…" : "Atur ulang demo"}</button>{resetError && <p className="small crit-text" role="alert">{resetError}</p>}<p className="small muted">Menghapus keputusan, hold, konfirmasi, dan perubahan constraint yang tersimpan di browser ini.</p></>}
+      {panel === "help" && <><p>Ada dua skenario demo dari proposal, mulai dari temuan sampai keputusan.</p><ol className="guide-list"><li><strong>Antrean Truk</strong><p>Lihat antrean RT menumpuk di lab test dan Bay 2 yang sedang CIP.</p></li><li><strong>Rencana & What-if</strong><p>Rencana FIFO ditandai tidak layak. Bandingkan rekomendasi solver, lalu setujui atau tolak.</p></li><li><strong>Simulasi 3D</strong><p>Bandingkan lokasi bottleneck sebelum dan sesudah rekomendasi.</p></li><li><strong>Traceability</strong><p>Di Riwayat Produksi, pilih lot FG-1013-07 yang out-of-spec. Dari sana, telusuri mundur ke RT dan farm, lalu maju ke lot lain untuk daftar hold.</p></li></ol><Badge>Semua data adalah simulasi</Badge><button className="button secondary wide reset-demo" disabled={resetting} onClick={() => void handleResetDemo()}><Icon icon={RotateCcw} size={16} />{resetting ? "Mengatur ulang demo…" : "Atur ulang demo"}</button>{resetError && <p className="small crit-text" role="alert">{resetError}</p>}<p className="small muted">Menghapus keputusan, hold, konfirmasi, dan perubahan constraint yang tersimpan di browser ini.</p></>}
     </Modal>}
     <SourceModal id={source} onClose={() => setSource(null)} />
   </div>;
