@@ -147,7 +147,7 @@ export function Trace() {
   }
 
   return <div className="page-enter">
-    <div className="page-heading trace-heading"><div><h1>Traceability</h1><p>Asal dan sebaran volume susu per lot.</p></div>
+    <div className="page-heading trace-heading"><div><h1>Traceability</h1><p>Asal dan sebaran volume susu di setiap lot.</p></div>
       <form className="trace-ask" onSubmit={e => { e.preventDefault(); ask(question); }}><label htmlFor="question" className="sr-only">Pertanyaan tentang genealogi atau rencana</label><div className="question-field"><Icon icon={Search} /><input id="question" value={question} onChange={e => setQuestion(e.target.value)} placeholder="Tanya asal lot, RT, atau aset..." autoComplete="off" list="trace-examples" /><button aria-label="Kirim pertanyaan" className="send-button" disabled={!question.trim() || loading}><Icon icon={Send} size={18} /></button></div><datalist id="trace-examples">{templates.map(a => <option key={a.id} value={a.question} />)}</datalist></form>
       <button className="button primary" disabled={!!holdSent || !mayHold || submittingHold} title={mayHold ? undefined : whoCan("hold.submit")} onClick={() => { setHoldNote(""); setHoldError(null); setHoldDialog(true); }}><Icon icon={PackageX} />Ajukan daftar hold</button>
     </div>
@@ -159,7 +159,7 @@ export function Trace() {
         <h2>{answer.title}</h2><p className="answer-conclusion">{answer.conclusion}</p>
         <div className="trace-evidence"><span className="query-chip"><Icon icon={Braces} size={14} /><span className="mono">{answer.template}({answer.params})</span></span>{answer.factors.map(f => <SourceButton key={f.source + f.title} id={f.source} onSelect={setSource} onHighlight={setHighlighted} compact />)}</div>
         <p className="evidence-note"><Icon icon={CircleHelp} size={15} />{answer.note}</p>
-      </> : <div className="empty-answer"><h2>Tidak ada query template yang cocok</h2><p>Asisten tidak menebak. Coba trace mundur atau trace maju.</p></div>}</div>
+      </> : <div className="empty-answer"><h2>Belum ada query template yang cocok dengan pertanyaan ini</h2><p>Asisten tidak akan menebak jawabannya. Coba trace mundur atau trace maju.</p></div>}</div>
       {view === "graph" || !genealogy ? <><EvidenceGraph answer={answer} highlighted={highlighted} selected={node} onSelect={selectNode} onSource={setSource} /><NodeDetail id={node} onSource={setSource} /></>
         : view === "table" ? <TraceTable answer={answer!} onSource={setSource} onHighlight={setHighlighted} />
           : <MassBalance onSource={setSource} />}

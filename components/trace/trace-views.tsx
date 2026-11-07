@@ -75,7 +75,7 @@ export function MassBalance({ onSource }: { onSource: (id: string) => void }) {
       return <li key={s.step}>
         <div className="mass-label"><strong>{s.step}</strong><span className="mono small">{s.to}</span></div>
         <div className="mass-bar">{s.liters ? <span style={{ width: `${s.liters / max * 100}%` }} /> : null}</div>
-        <div className="mass-value"><strong>{s.liters ? `${number(s.liters)} L` : s.volume}</strong>{delta !== null && <span className={delta < 0 ? (DELTA_NOTE[s.step] ? "muted" : "warn-text") : "muted"}>{delta > 0 ? "+" : ""}{number(delta)} L{DELTA_NOTE[s.step] ? `, ${DELTA_NOTE[s.step]}` : delta < 0 ? ", belum ada catatan penyebab" : ""}</span>}{!s.liters && <span className="muted">satuan pak, tidak dibandingkan</span>}</div>
+        <div className="mass-value"><strong>{s.liters ? `${number(s.liters)} L` : s.volume}</strong>{delta !== null && <span className={delta < 0 ? (DELTA_NOTE[s.step] ? "muted" : "warn-text") : "muted"}>{delta > 0 ? "+" : ""}{number(delta)} L{DELTA_NOTE[s.step] ? `, ${DELTA_NOTE[s.step]}` : delta < 0 ? ", belum ada catatan penyebab" : ""}</span>}{!s.liters && <span className="muted">dalam satuan pak, jadi tidak dibandingkan</span>}</div>
         <SourceButton id={s.source} onSelect={onSource} compact />
       </li>;
     })}</ol>

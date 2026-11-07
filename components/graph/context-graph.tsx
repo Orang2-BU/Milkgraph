@@ -198,7 +198,7 @@ export function ContextGraph() {
           </> : <>
             <p className="small with-icon"><Icon icon={Pin} size={14} />Pilih node untuk melihat hubungannya.</p>
             <ul className="kg-legend">{KINDS.map(k => <li key={k.kind}><span className={`kg-key kg-${k.kind}`} aria-hidden="true" /><span>{k.label} <span className="muted">({k.hint})</span></span></li>)}</ul>
-            <p className="small muted">Garis putus-putus = relasi rencana yang belum terjadi. Node besar adalah simpul yang paling banyak dilalui susu, titik yang paling berdampak saat ada gangguan.</p>
+            <p className="small muted">Garis putus-putus menandai relasi rencana yang belum terjadi. Node besar adalah simpul yang paling banyak dilalui susu, jadi paling berdampak saat ada gangguan.</p>
           </>}
         </aside>
       </div>

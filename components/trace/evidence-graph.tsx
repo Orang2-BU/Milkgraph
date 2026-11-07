@@ -147,7 +147,7 @@ export function EvidenceGraph({
       <div className="graph-legend">
         <span><i className="legend-square accent" />Jalur bukti</span>
         <span><i className="legend-square neutral" />Konteks lain</span>
-        <span className="small muted">Klik alat untuk detail · ilustrasi skematik</span>
+        <span className="small muted">Klik alat untuk melihat detailnya. Gambar alat berupa ilustrasi skematik.</span>
       </div>
       {expanded && (
         <Modal title="Graph genealogi" onClose={() => setExpanded(false)} className="graph-modal">

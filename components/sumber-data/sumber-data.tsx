@@ -25,7 +25,7 @@ export function SumberData() {
   if (API_MODE && sourcesRes.loading && !sourcesRes.data) {
     return (
       <div className="page-enter" role="status">
-        <PageHeading title="Sumber Data" subtitle="Sistem pabrik yang mengisi context graph. Semua koneksi read-only: MilkGraph membaca data, tidak mengendalikan mesin." />
+        <PageHeading title="Sumber Data" subtitle="Sistem pabrik yang mengisi context graph. Semua koneksi bersifat read-only, jadi MilkGraph hanya membaca data dan tidak mengendalikan mesin." />
         <p className="muted">Memuat sumber data…</p>
       </div>
     );
@@ -34,7 +34,7 @@ export function SumberData() {
   if (API_MODE && sourcesRes.error) {
     return (
       <div className="page-enter" role="alert">
-        <PageHeading title="Sumber Data" subtitle="Sistem pabrik yang mengisi context graph. Semua koneksi read-only: MilkGraph membaca data, tidak mengendalikan mesin." />
+        <PageHeading title="Sumber Data" subtitle="Sistem pabrik yang mengisi context graph. Semua koneksi bersifat read-only, jadi MilkGraph hanya membaca data dan tidak mengendalikan mesin." />
         <p className="crit-text">Gagal memuat sumber data: {sourcesRes.error.message}</p>
       </div>
     );
@@ -45,7 +45,7 @@ export function SumberData() {
   if (API_MODE && sources.length === 0) {
     return (
       <div className="page-enter" role="status">
-        <PageHeading title="Sumber Data" subtitle="Sistem pabrik yang mengisi context graph. Semua koneksi read-only: MilkGraph membaca data, tidak mengendalikan mesin." />
+        <PageHeading title="Sumber Data" subtitle="Sistem pabrik yang mengisi context graph. Semua koneksi bersifat read-only, jadi MilkGraph hanya membaca data dan tidak mengendalikan mesin." />
         <p className="muted">Tidak ada sumber data yang tersedia.</p>
       </div>
     );
@@ -63,7 +63,7 @@ export function SumberData() {
               ...c,
               [id]:
                 source.status === "terhubung"
-                  ? { state: "done", ok: true, text: `Terhubung, ${source.latencyMs} ms, hak akses baca saja` }
+                  ? { state: "done", ok: true, text: `Terhubung dalam ${source.latencyMs} ms, dengan hak akses baca saja` }
                   : { state: "done", ok: false, text: "Batch harian, data berikutnya 06.00 besok" },
             })),
           700
@@ -115,12 +115,12 @@ export function SumberData() {
 
   return (
     <div className="page-enter">
-      <PageHeading title="Sumber Data" subtitle="Sistem pabrik yang mengisi context graph. Semua koneksi read-only: MilkGraph membaca data, tidak mengendalikan mesin." />
+      <PageHeading title="Sumber Data" subtitle="Sistem pabrik yang mengisi context graph. Semua koneksi bersifat read-only, jadi MilkGraph hanya membaca data dan tidak mengendalikan mesin." />
       <section className="callout">
         <Icon icon={ShieldCheck} size={18} />
         <div>
           <strong>Konektor simulasi</strong>
-          <p>Di mockup, setiap konektor membaca data skenario. Integrasi SCADA, LIMS, dan weighbridge nyata ada di tahap prototipe.</p>
+          <p>Di mockup ini, setiap konektor membaca data skenario. Integrasi dengan SCADA, LIMS, dan weighbridge yang sebenarnya dikerjakan di tahap prototipe.</p>
         </div>
         <Link className="text-link" href="/graph">
           Lihat context graph

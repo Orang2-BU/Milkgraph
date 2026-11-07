@@ -72,7 +72,7 @@ export function GenealogyReport({ hold, onClose }: { hold: Hold; onClose: () => 
       <HandoffChain onSource={() => {}} handoffs={handoffs} />
       <h3 className="report-title">Uji lab terkait</h3>
       <ul className="hold-list">{labTests.map(t => <li key={t.id}><span className="mono">{t.id}</span><span>{t.subject}</span><span>{t.result}</span></li>)}</ul>
-    </> : <p className="small muted">Rantai batch untuk pengajuan sebelum demo tidak dimuat di mockup.</p>}
+    </> : <p className="small muted">Rantai batch untuk pengajuan dari sebelum demo tidak dimuat di mockup.</p>}
     <h3 className="report-title">Lot</h3>
     <ul className="hold-list">{lots.map(l => <li key={l.id}><span className="mono">{l.id}</span><span>{l.percent}% {hold.rt} · {number(l.packs)} pak</span><span className={l.shipped ? "crit-text" : ""}>{l.shipped ? "Recall: " : "Hold: "}{l.place}</span></li>)}</ul>
     <div className="dialog-actions"><button type="button" className="button secondary" onClick={() => window.print()}><Icon icon={Printer} size={16} />Cetak</button><button type="button" className="button primary" onClick={onClose}>Selesai</button></div>
