@@ -28,6 +28,8 @@ const FACTS: Record<View, { finish: number; transfer: number; bufferAge: number;
   before: { finish: 195, transfer: 10_200, bufferAge: 970, tankPeak: 91 },
   after: { finish: 170, transfer: 8_540, bufferAge: 905, tankPeak: 94 },
 };
+/** Laju transfer UHT-2 ke AT-2 yang dibutuhkan per versi rencana, dipakai juga oleh pratinjau di Rencana > Alur rencana. */
+export const transferNeed = (view: View) => FACTS[view].transfer;
 const MAINTENANCE = { bay: "Bay 3", start: 180, end: 210 };
 const BREAKDOWN = { line: "Filling F1", start: 210, end: 240 };
 /** Matriks SOP changeover (menit) per transisi produk [asumsi], sama dengan halaman Lini Filling. */

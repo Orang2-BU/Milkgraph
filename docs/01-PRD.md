@@ -118,6 +118,8 @@ Pengguna demo: Rino Akbar Hanif (Planner PPIC), Dimas Prasetyo (Koordinator rece
 - Tabel 6 constraint (flow rate, maintenance, holding time, downtime & CIP, kapasitas tangki, changeover SOP) untuk rencana awal vs rekomendasi, dihitung dari batas tersimpan.
 - Gantt Lab test, Bay 1-3, Filling F1/F2/F4; toggle rencana awal / rekomendasi; alasan perubahan bersumber.
 - Setujui (catatan opsional) atau tolak (catatan wajib); hanya Planner PPIC.
+- Sejak revisi 7 Nov 2026 (poin 9), halaman ini punya dua tab. Tab "Alur rencana" jadi tampilan awal: konsep alur yang sama dengan Operasional > Alur (komponen bersama `FlowCanvas`), tetapi status tiap alat mengikuti jadwal rencana pada jam yang dipilih lewat slider (13.00-20.00). Pilih versi rencana awal atau rekomendasi solver; kejadian penting (bongkar bentrok, filling berhenti, maintenance) bisa diklik untuk melompat ke jamnya. Klik alat untuk mengatur upgrade kapasitas (+10/25/50%) atau maintenance (mulai, durasi), dan efeknya langsung terlihat di alur serta jumlah constraint yang dilanggar: upgrade UHT-2 yang cukup menghapus jeda F2/F4, maintenance pada Bay 1-3 atau F1/F2/F4 masuk ke jadwal sehingga bongkar yang terkena jadi bentrok. Alat lain hanya berubah status saat maintenance, dengan label "efek lanjutan belum dimodelkan". Pengaturan ini pratinjau dan tidak mengubah batas di halaman Constraint.
+- Tab "Kelayakan & keputusan" berisi kartu rekomendasi solver, tabel 6 constraint, Gantt, alasan perubahan, dan keputusan seperti sebelumnya. Tombol Setujui/Tolak tetap di judul halaman, jadi alur demo langkah 2 tetap jalan.
 
 **Pasokan & Permintaan (`/pasokan`)**
 - Alur Farms ↔ PPIC ↔ Produksi dengan nilai saat ini.
@@ -318,7 +320,7 @@ Model graph, tabel relasional, dan aturan waktu ada di `03-ARCHITECTURE.md` §4.
 ## 7. Alur demo
 
 1. **Receiving Flow:** antrean RT menumpuk karena lab test 52 menit, Bay 2 sedang CIP, RT-26 mendekati batas holding time.
-2. **Rencana & What-if:** rencana FIFO tidak layak (3 constraint dilanggar); rekomendasi memindahkan RT-26 ke Bay 1 dan menjaga F2/F4; planner menyetujui. Coba what-if CIP molor.
+2. **Rencana & What-if:** (buka tab Kelayakan & keputusan) rencana FIFO tidak layak (3 constraint dilanggar); rekomendasi memindahkan RT-26 ke Bay 1 dan menjaga F2/F4; planner menyetujui. Coba what-if CIP molor.
 3. **Bay & Tangki / Lini Filling:** instruksi muncul; koordinator receiving dan supervisor mengonfirmasi.
 4. **Simulasi 3D:** bandingkan lokasi bottleneck sebelum dan sesudah rekomendasi di tata letak nyata.
 5. **Traceability:** Riwayat Produksi (FG-1013-07 terpilih, jalur produksinya tampil) → Mutu & tindak lanjut → QC FG out-of-spec → trace mundur ke RT-04 dan Farm Ngadirejo (12%) → trace maju ke 5 lot (1 recall) → rantai serah-terima batch → ajukan hold.
