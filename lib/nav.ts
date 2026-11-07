@@ -1,16 +1,21 @@
-import { LayoutDashboard, Box, Factory, CalendarClock, GitBranch, Settings, type LucideIcon } from "lucide-react";
+import {
+  LayoutDashboard, Box, Factory, CalendarClock, GitBranch, Settings,
+  Truck, Container, PackageCheck, SlidersHorizontal, Milk, ListChecks, ClipboardCheck,
+  Route, Share2, FlaskConical, PackageX, Database, Library, Users,
+  type LucideIcon,
+} from "lucide-react";
 
-export type NavTab = { label: string; href: string };
+export type NavTab = { label: string; href: string; icon?: LucideIcon };
 export type NavItem = { label: string; hint: string; icon: LucideIcon; tabs: NavTab[] };
 
-/** Enam menu utama. Menu dengan lebih dari satu tab menampilkan bar tab di atas halaman; URL tiap tab tetap sama seperti sebelumnya. */
+/** Enam menu utama. Menu dengan lebih dari satu tab tampil sebagai sub-menu bercabang di sidebar; URL tiap tab tetap sama seperti sebelumnya. */
 export const navigation: NavItem[] = [
   { label: "Beranda", hint: "Ringkasan semua area", icon: LayoutDashboard, tabs: [{ label: "Beranda", href: "/" }] },
   { label: "Simulasi 3D", hint: "Plant dan bottleneck", icon: Box, tabs: [{ label: "Simulasi 3D", href: "/simulasi" }] },
-  { label: "Pabrik", hint: "RT, tangki, filling", icon: Factory, tabs: [{ label: "Receiving", href: "/receiving" }, { label: "Bay & Tangki", href: "/tangki" }, { label: "Lini Filling", href: "/filling" }] },
-  { label: "Rencana", hint: "Kelayakan dan solver", icon: CalendarClock, tabs: [{ label: "Rencana & What-if", href: "/rencana" }, { label: "Pasokan", href: "/pasokan" }, { label: "Constraint", href: "/constraint" }, { label: "Riwayat", href: "/persetujuan" }] },
-  { label: "Traceability", hint: "Lot, lab, dan hold", icon: GitBranch, tabs: [{ label: "Telusur", href: "/trace" }, { label: "Context Graph", href: "/graph" }, { label: "Hasil Lab", href: "/lab" }, { label: "Hold", href: "/hold" }] },
-  { label: "Pengaturan", hint: "Data dan peran", icon: Settings, tabs: [{ label: "Sumber Data", href: "/sumber-data" }, { label: "Katalog Master", href: "/master-data" }, { label: "Pengguna & Peran", href: "/pengguna" }] },
+  { label: "Pabrik", hint: "RT, tangki, filling", icon: Factory, tabs: [{ label: "Receiving", href: "/receiving", icon: Truck }, { label: "Bay & Tangki", href: "/tangki", icon: Container }, { label: "Lini Filling", href: "/filling", icon: PackageCheck }] },
+  { label: "Rencana", hint: "Kelayakan dan solver", icon: CalendarClock, tabs: [{ label: "Rencana & What-if", href: "/rencana", icon: SlidersHorizontal }, { label: "Pasokan", href: "/pasokan", icon: Milk }, { label: "Constraint", href: "/constraint", icon: ListChecks }, { label: "Riwayat", href: "/persetujuan", icon: ClipboardCheck }] },
+  { label: "Traceability", hint: "Lot, lab, dan hold", icon: GitBranch, tabs: [{ label: "Telusur", href: "/trace", icon: Route }, { label: "Context Graph", href: "/graph", icon: Share2 }, { label: "Hasil Lab", href: "/lab", icon: FlaskConical }, { label: "Hold", href: "/hold", icon: PackageX }] },
+  { label: "Pengaturan", hint: "Data dan peran", icon: Settings, tabs: [{ label: "Sumber Data", href: "/sumber-data", icon: Database }, { label: "Katalog Master", href: "/master-data", icon: Library }, { label: "Pengguna & Peran", href: "/pengguna", icon: Users }] },
 ];
 
 /** Menu dan tab yang cocok dengan path; jatuh ke Beranda bila tidak ada. */
