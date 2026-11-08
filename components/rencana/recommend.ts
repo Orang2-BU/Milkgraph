@@ -37,3 +37,22 @@ export function rankUpgrades(tanks: AsepticTank[], fillers: Filler[]) {
 }
 
 const fmt = (n: number) => new Intl.NumberFormat("id-ID").format(n);
+
+/**
+ * Dasar atur kapasitas satu alat di panel Alur rencana (poin 16): kapasitas sekarang (`from`, L/jam) dan berapa tambahan yang
+ * benar-benar terpakai jalurnya (`room`). Di atas `room`, kapasitas ekstra tidak menambah produksi. null bila datanya belum ada
+ * (mis. tangki dan bay tidak punya laju L/jam di data).
+ */
+export function capacityRoom(tanks: AsepticTank[], fillers: Filler[], id: string) {
+  const t = tanks.find(x => x.sterilizer === id || x.fillers.includes(id));
+  if (!t) return null;
+  const running = t.fillers.map(f => fillers.find(x => x.id === f)).filter((f): f is Filler => !!f && f.state === "jalan");
+  const supply = t.inflow.before, need = running.reduce((s, f) => s + f.litres, 0);
+  if (id === t.sterilizer) {
+    if (t.sterilizerState !== "jalan" || !running.length) return { from: supply, room: 0, line: t.id, why: `${id} atau mesin filling di jalur ${t.id} sedang tidak jalan.` };
+    return { from: supply, room: Math.max(0, need - supply), line: t.id, why: supply >= need ? `Pasokan ${id} sudah cukup untuk ${running.map(f => f.id).join(" dan ")}.` : "" };
+  }
+  const f = fillers.find(x => x.id === id);
+  if (!f || f.state !== "jalan" || t.sterilizerState !== "jalan") return { from: f?.litres ?? 0, room: 0, line: t.id, why: `${id} sedang tidak jalan.` };
+  return { from: f.litres, room: Math.max(0, supply - need), line: t.id, why: supply <= need ? `Pasokan ${t.id} dari ${t.sterilizer} sudah kurang.` : "" };
+}

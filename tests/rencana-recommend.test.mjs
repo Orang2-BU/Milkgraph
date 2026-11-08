@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { rankUpgrades } from "../components/rencana/recommend.ts";
+import { capacityRoom, rankUpgrades } from "../components/rencana/recommend.ts";
 
 // Potongan data Lini Filling (mock/ops.ts): pasokan aseptic tank dan kebutuhan mesin filling dalam L/jam.
 const tanks = [
@@ -32,4 +32,13 @@ test("jalur yang tidak jalan dilewati; urutan dari tambahan terbesar", () => {
   const { picks } = rankUpgrades(tanks, fillers);
   assert.ok(!picks.some(p => p.id === "UHT-3"));
   assert.deepEqual(picks.map(p => p.id), ["UHT-2", "F1"]);
+});
+
+test("atur kapasitas: tambahan yang terpakai jalurnya, dan alasan bila tidak ada", () => {
+  assert.deepEqual({ ...capacityRoom(tanks, fillers, "UHT-2"), why: undefined }, { from: 6990, room: 1300, line: "AT-2", why: undefined });
+  assert.equal(capacityRoom(tanks, fillers, "F1").room, 350);
+  assert.equal(capacityRoom(tanks, fillers, "F2").room, 0);
+  assert.match(capacityRoom(tanks, fillers, "F2").why, /AT-2.*kurang/);
+  assert.equal(capacityRoom(tanks, fillers, "UHT-3").room, 0);   // sedang CIP
+  assert.equal(capacityRoom(tanks, fillers, "ST-3"), null);      // tangki: belum ada laju L/jam
 });

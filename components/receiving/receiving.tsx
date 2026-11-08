@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, ArrowUpRight, CalendarClock, ChevronDown, Droplets, FlaskConical, Hourglass, MapPin, PackageCheck, PackageOpen, ShieldCheck, TriangleAlert, Truck } from "lucide-react";
 import { scenario } from "@/lib/data";
 import { API_MODE } from "@/lib/api/client";
@@ -12,8 +12,10 @@ import type { Scenario } from "@/mock/types";
 import { duration, number } from "@/lib/format";
 import { useDemo } from "@/lib/demo";
 import { holdingLeft, violations } from "@/lib/rules";
-import { Badge, Card, Icon, SectionTitle, SourceModal } from "@/components/ui";
+import { Badge, Card, Icon, SectionTitle, SourceModal, Toggle } from "@/components/ui";
 import { MetricGrid } from "./metric-grid";
+import { Queue3D } from "./queue-3d";
+import { queueLayout } from "./queue-layout";
 
 const stageIcons = [MapPin, Truck, Droplets, FlaskConical, ShieldCheck, PackageOpen, PackageCheck];
 type ReceivingData = Pick<Scenario, "metrics" | "stages" | "tankers" | "assets" | "labHistory"> & {
@@ -96,6 +98,15 @@ function ReceivingContent({
   const stages = ["Semua tahap", ...new Set(scenarioData.tankers.map(t => t.stage))];
   const approved = demo.decisions.find(d => d.plan === "current" && d.status === "approved");
   const tankers = scenarioData.tankers.filter(t => filter === stages[0] || t.stage === filter);
+  // Next phase PDF: antrean juga bisa dilihat dalam 3D, dari data yang sama dengan tabel.
+  const [mode, setMode] = useState<"tabel" | "3d">("tabel");
+  const [picked, setPicked] = useState<string | null>(null);
+  const layout = useMemo(() => {
+    const bays = scenarioData.assets.filter(a => a.kind === "Bay").map(a => ({ id: a.id, status: a.status, tone: a.tone, note: a.info }));
+    const at = Object.fromEntries(bays.flatMap(b => { const rt = b.status.match(/RT-\d+/)?.[0]; return rt ? [[rt, b.id]] : []; }));
+    return queueLayout(scenarioData.tankers, scenarioData.stages.find(st => st.id === "otw")?.count ?? 0, bays, at);
+  }, [scenarioData]);
+  const pickedRt = scenarioData.tankers.find(t => t.id === picked);
 
   return (
     <div className="page-enter">
@@ -127,13 +138,21 @@ function ReceivingContent({
           ))}
         </ol>
       </Card>
-      <div className="monitor-bottom">
+      <div className={`monitor-bottom ${mode === "3d" ? "wide" : ""}`}>
         <Card id="antrean-rt" className="truck-card">
           <SectionTitle
             title="Antrean Road Tanker"
-            action={<label className="filter-select"><span className="sr-only">Filter tahap RT</span><select value={filter} onChange={e => setFilter(e.target.value)}>{stages.map(s => <option key={s} value={s}>{s}</option>)}</select><Icon icon={ChevronDown} size={14} /></label>}
+            action={<div className="page-actions"><Toggle label="Tampilan antrean" value={mode} onChange={m => { setMode(m); setPicked(null); }} options={[{ value: "tabel", label: "Tabel" }, { value: "3d", label: "Antrean 3D" }]} />{mode === "tabel" && <label className="filter-select"><span className="sr-only">Filter tahap RT</span><select value={filter} onChange={e => setFilter(e.target.value)}>{stages.map(s => <option key={s} value={s}>{s}</option>)}</select><Icon icon={ChevronDown} size={14} /></label>}</div>}
           />
-          <div className="table-wrap">
+          {mode === "3d" ? <>
+            <Queue3D tankers={scenarioData.tankers} assets={scenarioData.assets} layout={layout} picked={picked} onPick={setPicked} label="Antrean road tanker dalam 3D, dari kedatangan sampai bay bongkar" />
+            {pickedRt ? <div className="queue-detail">
+              <div><strong className="mono">{pickedRt.id}</strong> <span className="muted">{pickedRt.farm}</span></div>
+              <Badge tone={pickedRt.tone}>{pickedRt.stage}</Badge>
+              <span>{number(pickedRt.volume)} L</span><span>Tunggu {pickedRt.wait} mnt</span><span className={pickedRt.tone === "crit" ? "crit-text" : ""}>Umur susu {pickedRt.age}</span><span>{number(pickedRt.temperature)} °C</span>
+              <button className="text-link" onClick={() => setSource(pickedRt.source)}>Lihat bukti<Icon icon={ArrowUpRight} size={14} /></button>
+            </div> : <p className="small muted queue-hint">Klik truk untuk melihat rinciannya. Denyut merah: RT mendekati batas holding time. Seret untuk menggeser, klik kanan untuk memutar.</p>}
+          </> : <div className="table-wrap">
             <table>
               <thead>
                 <tr>
@@ -164,7 +183,7 @@ function ReceivingContent({
                 ))}
               </tbody>
             </table>
-          </div>
+          </div>}
           <div className="table-footer">
             <span>{tankers.length} dari {scenarioData.tankers.length} RT di plant. Batas holding time {duration(demo.limits.holdingMin)} [asumsi].</span>
             <Link href="/rencana" className="text-link">Susun ulang antrean<Icon icon={ArrowRight} size={14} /></Link>

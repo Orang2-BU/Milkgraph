@@ -1,7 +1,8 @@
 import type { Limits } from "../../lib/rules";
 
 /** Pengaturan rencana per alat di tab Alur rencana (poin 9). Logika murni, dites lewat tests/rencana-adjust.test.mjs. */
-export type Adjust = { upgrade?: number; maintenance?: { start: string; minutes: number } };
+/** upgrade: kenaikan kapasitas dalam persen; upgradeTo: kapasitas baru (L/jam) yang diisi planner, untuk label. */
+export type Adjust = { upgrade?: number; upgradeTo?: number; maintenance?: { start: string; minutes: number } };
 export type Adjustments = Record<string, Adjust>;
 
 const SCHEDULED = new Set(["Bay 1", "Bay 2", "Bay 3", "F1", "F2", "F4"]);
@@ -25,5 +26,5 @@ export function applyToLimits(base: Limits, adj: Adjustments): Limits {
 
 /** Label singkat di kartu alat. */
 export function badgeOf(a: Adjust) {
-  return [a.upgrade && `Upgrade +${a.upgrade}%`, a.maintenance && `Maintenance ${a.maintenance.start}, ${a.maintenance.minutes} menit`].filter(Boolean).join(" · ") || undefined;
+  return [a.upgrade && (a.upgradeTo ? `Kapasitas ${new Intl.NumberFormat("id-ID").format(a.upgradeTo)} L/jam` : `Upgrade +${a.upgrade}%`), a.maintenance && `Maintenance ${a.maintenance.start}, ${a.maintenance.minutes} menit`].filter(Boolean).join(" · ") || undefined;
 }

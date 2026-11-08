@@ -12,7 +12,7 @@ export const UPGRADES = rankUpgrades(asepticTanks, fillers);
 const fmt = (n: number) => new Intl.NumberFormat("id-ID").format(n);
 
 /** Tab Rekomendasi upgrade (poin 10): alat mana yang paling menambah produksi bila di-upgrade, berurutan dari yang terbesar. */
-export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number) => void }) {
+export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number, to: number) => void }) {
   const { picks, skips } = UPGRADES;
   const kind = (id: string) => ASSETS.find(a => a.id === id)?.kind ?? "filler";
 
@@ -37,7 +37,7 @@ export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number) => vo
           <span>{fmt(p.from)} ke {fmt(p.from + p.gain)} L/jam (naik {p.pct}%)</span>
           <span>sekitar +{fmt(p.gain * 8)} L per shift 8 jam</span>
         </div>
-        <button type="button" className="button secondary" onClick={() => onTry(p.id, p.pct)}>Coba di Alur rencana<Icon icon={ArrowRight} size={16} /></button>
+        <button type="button" className="button secondary" onClick={() => onTry(p.id, p.pct, p.from + p.gain)}>Coba di Alur rencana<Icon icon={ArrowRight} size={16} /></button>
       </li>)}
     </ol>
 

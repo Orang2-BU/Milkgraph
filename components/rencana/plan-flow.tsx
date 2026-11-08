@@ -9,12 +9,15 @@ import { useDemo } from "@/lib/demo";
 import { evaluate, transferNeed } from "@/lib/rules";
 import type { Plan } from "@/mock/types";
 import { applyToLimits, badgeOf, effectNote, isModelled, type Adjust, type Adjustments } from "./adjust";
-import { UPGRADES } from "./upgrade-picks";
-import { HORIZON, clock, events, projectBlocks, projectChecks, statusAt, type View } from "./projection";
+import { capacityRoom } from "./recommend";
+import { asepticTanks, fillers } from "@/mock/ops";
+import { ASSETS, LINKS, STAGES } from "@/lib/assets";
+import { PlanChat } from "./plan-chat";
+import { answer } from "./plan-answer";
+import { HORIZON, NOW, clock, toOffset, events, projectBlocks, projectChecks, statusAt, type View } from "./projection";
 
 const STARTS = ["13.30", "14.00", "14.30", "15.00", "15.30", "16.00", "16.30", "17.00", "17.30", "18.00", "18.30", "19.00"];
 const DURATIONS = [15, 30, 45, 60, 90];
-const NOW = 102;
 const fmt = (n: number) => new Intl.NumberFormat("id-ID").format(n);
 
 const Ctx = createContext<{ adj: Adjustments; set: (id: string, a: Adjust) => void; jump: (t: number) => void }>({ adj: {}, set: () => {}, jump: () => {} });
@@ -26,7 +29,13 @@ function PlanEditor({ asset, onClose }: AsideProps) {
   const update = (patch: Partial<Adjust>) => set(asset.id, { ...a, ...patch });
   const setMaint = (m: Adjust["maintenance"]) => { update({ maintenance: m }); if (m) jump(Number(m.start.slice(0, 2)) * 60 + Number(m.start.slice(3)) - 780 + 5); };
   const up = effectNote(asset.id, "upgrade"), mt = effectNote(asset.id, "maintenance");
-  const pick = UPGRADES.picks.find(p => p.id === asset.id), skip = UPGRADES.skips.find(s => s.id === asset.id);
+  // Poin 16: planner mengisi kapasitas baru sendiri; angka awal dan batas yang terpakai dihitung dari data jalur.
+  const room = capacityRoom(asepticTanks, fillers, asset.id);
+  const [draft, setDraft] = useState<string | null>(null);
+  const cap = room ? a.upgradeTo ?? room.from : 0;
+  const extra = room ? Math.max(0, cap - room.from) : 0, used = room ? Math.min(extra, room.room) : 0;
+  const pctText = room ? new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(extra / room.from * 100) : "0";
+  const setCap = (v: number) => { if (!room || !Number.isFinite(v)) return; update(v > room.from ? { upgrade: (v - room.from) / room.from * 100, upgradeTo: v } : { upgrade: undefined, upgradeTo: undefined }); };
   return <aside className="flow-inspector plan-editor" aria-label={`Atur rencana ${asset.id}`}>
     <header>
       <Equipment kind={asset.kind} size={44} />
@@ -36,14 +45,22 @@ function PlanEditor({ asset, onClose }: AsideProps) {
     <Badge tone={asset.tone}>Di jam ini: {asset.status}</Badge>
 
     <fieldset className="plan-field">
-      <legend><Icon icon={Zap} size={15} />Upgrade kapasitas</legend>
-      {pick ? <>
-        <div className="toggle plan-seg" role="radiogroup" aria-label="Kenaikan kapasitas">
-          {[0, pick.pct].map(u => <button key={u} type="button" role="radio" aria-checked={(a.upgrade ?? 0) === u} className={(a.upgrade ?? 0) === u ? "selected" : ""} onClick={() => update({ upgrade: u || undefined })}>{u ? `+${fmt(pick.gain)} L/jam` : "Tidak"}</button>)}
+      <legend><Icon icon={Zap} size={15} />Kapasitas</legend>
+      {room ? <>
+        <div className="plan-cap">
+          <label htmlFor={`cap-${asset.id}`}>Kapasitas baru</label>
+          <div><input id={`cap-${asset.id}`} type="number" inputMode="numeric" min={room.from} step={10} value={draft ?? String(cap)} onChange={e => { setDraft(e.target.value); if (Number(e.target.value) >= room.from) setCap(Number(e.target.value)); }} onBlur={() => setDraft(null)} /><span>L/jam</span></div>
+          <small>Sekarang {fmt(room.from)} L/jam</small>
         </div>
-        <p className="small muted">Dari {fmt(pick.from)} ke {fmt(pick.from + pick.gain)} L/jam (naik {pick.pct}%), sesuai kebutuhan jalur {pick.line}.{a.upgrade && !up ? " Efeknya ke jadwal belum dimodelkan [simulasi]." : ""}</p>
-        {a.upgrade && up ? <p className="small muted">{up}</p> : null}
-      </> : <p className="small muted">{skip?.reason ?? "Belum ada dasar data untuk menghitung upgrade alat ini."}</p>}
+        <div className="plan-chips">
+          {room.room > 0 && <button type="button" className={cap === room.from + room.room ? "selected" : ""} onClick={() => { setDraft(null); setCap(room.from + room.room); }}>Sesuai kebutuhan: {fmt(room.from + room.room)}</button>}
+          <button type="button" className={cap === room.from ? "selected" : ""} onClick={() => { setDraft(null); setCap(room.from); }}>Tanpa upgrade</button>
+        </div>
+        <p className="small muted">{extra > 0
+          ? `Naik ${fmt(extra)} L/jam (${pctText}%). Yang terpakai jalur ${room.line}: +${fmt(used)} L/jam, sekitar +${fmt(used * 8)} L per shift.${extra > used ? ` Sisa ${fmt(extra - used)} L/jam tidak terpakai.` : ""}${room.why ? ` ${room.why}` : ""}`
+          : room.room > 0 ? `Jalur ${room.line} masih bisa memakai tambahan sampai ${fmt(room.room)} L/jam.` : room.why || "Upgrade tidak menambah produksi."}</p>
+        {extra > 0 && <p className="small muted">{up ?? "Efeknya ke jadwal belum dimodelkan [simulasi]."}</p>}
+      </> : <p className="small muted">Laju alat ini (L/jam) belum ada di data, jadi kapasitasnya belum bisa diatur [simulasi].</p>}
     </fieldset>
 
     <fieldset className="plan-field">
@@ -67,10 +84,10 @@ function PlanEditor({ asset, onClose }: AsideProps) {
  * pada jam yang dipilih. Pengaturan alat langsung mengubah alur: bongkar yang bentrok dan filling yang berhenti tampil merah.
  * Ini pratinjau di halaman Rencana saja; batas di halaman Constraint dan keputusan rencana tidak berubah.
  */
-export function PlanFlow({ plan, adj, setAdj }: { plan: Plan; adj: Adjustments; setAdj: React.Dispatch<React.SetStateAction<Adjustments>> }) {
+export function PlanFlow({ plan, adj, setAdj, view, setView, mode = "2d" }: { plan: Plan; adj: Adjustments; setAdj: React.Dispatch<React.SetStateAction<Adjustments>>; view: View; setView: (v: View) => void; mode?: "2d" | "3d" }) {
   const demo = useDemo();
-  const [view, setView] = useState<View>("before");
   const [t, setT] = useState(NOW);
+  const [picked, setPicked] = useState<string | null>(null);
   const set = (id: string, a: Adjust) => setAdj(prev => {
     const next = { ...prev };
     if (a.upgrade || a.maintenance) next[id] = a; else delete next[id];
@@ -92,8 +109,12 @@ export function PlanFlow({ plan, adj, setAdj }: { plan: Plan; adj: Adjustments; 
   const unmodelled = ids.filter(id => !isModelled(id, adj[id]));
 
   const toolbar = <div className="plan-controls">
+    <label className="plan-pick"><span>Alat</span><select value={picked ?? ""} onChange={e => setPicked(e.target.value || null)}>
+      <option value="">Pilih alat untuk diatur...</option>
+      {STAGES.map(st => <optgroup key={st} label={st}>{ASSETS.filter(x => x.stage === st).map(x => <option key={x.id} value={x.id}>{x.id}{adj[x.id] ? " (diatur)" : ""}</option>)}</optgroup>)}
+    </select></label>
     <div className="plan-time">
-      <label htmlFor="plan-time"><Icon icon={Clock3} size={15} />Jam <strong>{clock(t)}</strong>{t === NOW && <span className="muted">(snapshot)</span>}</label>
+      <label htmlFor="plan-time"><Icon icon={Clock3} size={15} />Jam <strong>{clock(t)}</strong>{t === NOW ? <span className="muted">(sama dengan operasi sekarang)</span> : <button type="button" className="inline-link" onClick={() => setT(NOW)}>Kembali ke {clock(NOW)}</button>}</label>
       <input id="plan-time" type="range" min={0} max={HORIZON} step={5} value={t} onChange={e => setT(Number(e.target.value))} aria-valuetext={`Pukul ${clock(t)}`} />
       <div className="plan-ticks" aria-hidden="true"><span>13.00</span><span>16.30</span><span>20.00</span></div>
     </div>
@@ -102,7 +123,12 @@ export function PlanFlow({ plan, adj, setAdj }: { plan: Plan; adj: Adjustments; 
     </div>}
   </div>;
 
+  // Usulan dari chat: gabungkan ke pengaturan alat, pilih alatnya, dan lompat ke jam maintenance bila ada.
+  const apply = (id: string, a: Adjust) => { set(id, { ...adj[id], ...a }); setPicked(id); if (a.maintenance) setT(toOffset(a.maintenance.start) + 5); };
   return <Ctx.Provider value={{ adj, set, jump: setT }}>
+    <div className="plan-layout">
+    <PlanChat onAsk={(q, d) => answer({ plan, adj, limits: demo.limits, evaluate, need: { before: transferNeed("before"), after: transferNeed("after") }, tanks: asepticTanks, fillers, links: LINKS, assets: ASSETS }, view, q, d)} onApply={apply} />
+    <div className="plan-main">
     <section className="plan-summary" aria-live="polite">
       {(["before", "after"] as const).map(v => <button key={v} type="button" className={`card plan-metric ${view === v ? "selected" : ""}`} aria-pressed={view === v} onClick={() => setView(v)}>
         <span>{v === "before" ? "Rencana awal (FIFO)" : "Rekomendasi solver"}</span>
@@ -115,8 +141,10 @@ export function PlanFlow({ plan, adj, setAdj }: { plan: Plan; adj: Adjustments; 
         {ids.length > 0 && <button type="button" className="inline-link" onClick={() => setAdj({})}><Icon icon={RotateCcw} size={14} />Kembalikan seperti operasional</button>}
       </div>
     </section>
-    <FlowCanvas label="Alur rencana produksi" badges={badges} overrides={overrides} aside={PlanEditor} toolbar={toolbar}
+    <FlowCanvas mode={mode} picked={picked} onPickedChange={setPicked} label="Alur rencana produksi" badges={badges} overrides={overrides} aside={PlanEditor} toolbar={toolbar}
       hint={unmodelled.length ? `${unmodelled.length} pengaturan efek lanjutannya belum dimodelkan [simulasi]` : "Geser jam untuk melihat kondisi alat. Klik alat untuk mengaturnya."} />
     <p className="small muted plan-note">Ini pratinjau di halaman Rencana saja [simulasi]. Batas di halaman Constraint dan keputusan rencana tidak ikut berubah.</p>
+    </div>
+    </div>
   </Ctx.Provider>;
 }
