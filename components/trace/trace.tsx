@@ -39,6 +39,9 @@ export function Trace() {
   const qcRes = useResource<Scenario["qcEvent"]>(API_MODE ? "/quality/active-event" : null);
   const templatesRes = useResource<{ id: string; question: string }[]>(API_MODE ? "/assistant/templates" : null);
   const forwardRes = useResource<TraceAnswer>(API_MODE ? "/trace/forward?rtId=RT-04&date=2026-10-13" : null);
+  // Trace mundur adalah tampilan awal, jadi jawabannya diambil saat halaman dibuka (tanpa ini halaman awal kosong sampai toggle diklik).
+  const initialLot = qcRes.data?.lot || "FG-1013-07";
+  const backwardRes = useResource<TraceAnswer>(API_MODE ? `/trace/backward?lotId=${initialLot}` : null);
   const summaryRes = useResource<{ baseline: { lots: number; packs: number } }>(API_MODE ? "/holds/summary" : null);
   const holdsRes = useResource<Hold[]>(API_MODE ? "/holds" : null);
   const _handoffsRes = useResource<typeof scenario.handoffs>(API_MODE ? "/trace/handoffs?lotId=FG-1013-07" : null);
@@ -65,9 +68,9 @@ export function Trace() {
   const selectNode = useCallback((id: string) => setNode(id), []);
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
 
-  if (API_MODE && (!qcRes.data || !templatesRes.data || !forwardRes.data || !summaryRes.data || !holdsRes.data)) {
-    if (qcRes.error || templatesRes.error || forwardRes.error || summaryRes.error || holdsRes.error) {
-      const err = qcRes.error ?? templatesRes.error ?? forwardRes.error ?? summaryRes.error ?? holdsRes.error;
+  if (API_MODE && (!qcRes.data || !templatesRes.data || !forwardRes.data || !backwardRes.data || !summaryRes.data || !holdsRes.data)) {
+    if (qcRes.error || templatesRes.error || forwardRes.error || backwardRes.error || summaryRes.error || holdsRes.error) {
+      const err = qcRes.error ?? templatesRes.error ?? forwardRes.error ?? backwardRes.error ?? summaryRes.error ?? holdsRes.error;
       return (
         <div className="page-enter" role="status">
           <p className="crit-text">Gagal memuat Traceability: {err?.message}</p>
@@ -84,7 +87,7 @@ export function Trace() {
   const holdsList = API_MODE ? (holdsRes.data ?? demo.holds) : demo.holds;
   const holdSent = holdsList.find(h => h.trigger === qcEvent.lot && h.status !== "ditolak");
   const mayHold = can(demo.role, "hold.submit");
-  const answer: TraceAnswer | null = API_MODE ? currentAnswer : (scenario.answers.find(a => a.id === selected) ?? null);
+  const answer: TraceAnswer | null = API_MODE ? (currentAnswer ?? (selected === "backward" ? backwardRes.data ?? null : null)) : (scenario.answers.find(a => a.id === selected) ?? null);
   const genealogy = answer?.id === "backward" || answer?.id === "forward";
 
   async function ask(text: string, id?: string) {

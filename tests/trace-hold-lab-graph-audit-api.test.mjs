@@ -70,3 +70,9 @@ test('context graph and audit consume server data without mock fallback', () => 
   assert.match(audit, /\/api\/v1\/audit\.csv/);
 });
 
+
+test('trace mundur awal di mode API langsung diambil, bukan menunggu toggle diklik', () => {
+  const trace = read('trace/trace.tsx');
+  assert.match(trace, /useResource<TraceAnswer>\(API_MODE \? `\/trace\/backward/);
+  assert.match(trace, /currentAnswer \?\? \(selected === "backward"/);
+});
