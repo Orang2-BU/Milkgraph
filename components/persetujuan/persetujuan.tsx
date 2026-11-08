@@ -63,7 +63,7 @@ export function Persetujuan() {
 
   return <div className="page-enter">
     <PageHeading title="Riwayat Persetujuan" subtitle="Jejak audit keputusan planner, QA, dan tim lapangan beserta catatan dan perannya."><button className="button secondary" onClick={exportCsv} disabled={!rows.length}><Icon icon={Download} size={16} />Unduh CSV</button></PageHeading>
-    <div className="scenario-bar"><Toggle label="Jenis keputusan" value={filter} onChange={setFilter} options={[{ value: "semua", label: `Semua (${all.length})` }, ...(Object.keys(KINDS) as LogKind[]).map(k => ({ value: k, label: `${KINDS[k].label} (${all.filter(e => e.kind === k).length})` }))]} /></div>
+    <div className="page-tabs"><Toggle label="Jenis keputusan" value={filter} onChange={setFilter} options={[{ value: "semua", label: `Semua (${all.length})` }, ...(Object.keys(KINDS) as LogKind[]).map(k => ({ value: k, label: `${KINDS[k].label} (${all.filter(e => e.kind === k).length})` }))]} /></div>
     <Card>{rows.length ? <ol className="audit-list">{rows.map(e => <li key={`${e.id}-${e.at}`}>
       <span className={`audit-icon ${e.tone}`}><Icon icon={KINDS[e.kind].icon} size={16} /></span>
       <div><div className="audit-top"><strong>{e.title}</strong><Badge tone={e.tone}>{KINDS[e.kind].label}</Badge></div><p>{e.detail}</p>{e.note && <p className="audit-note">&ldquo;{e.note}&rdquo;</p>}<span className="small muted">{e.by} · {e.role} · {e.at}</span></div>

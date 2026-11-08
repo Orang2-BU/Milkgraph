@@ -10,6 +10,8 @@ import type { Adjustments } from "./adjust";
 export type View = "before" | "after";
 export type PBlock = Omit<Block, "type"> & { type: Block["type"] | "maintenance" };
 export const HORIZON = 420;
+/** Snapshot operasi yang sedang berjalan (14.42). Pada jam ini alur rencana sama dengan Operasional > Alur (poin 15). */
+export const NOW = 102;
 export const clock = (o: number) => `${String(13 + Math.floor(o / 60)).padStart(2, "0")}.${String(o % 60).padStart(2, "0")}`;
 export const toOffset = (hhmm: string) => { const [h, m] = hhmm.split(".").map(Number); return h * 60 + m - 13 * 60; };
 
@@ -64,10 +66,12 @@ export function statusAt(blocks: PBlock[], t: number, adj: Adjustments): Record<
       : b.type === "maintenance" ? { status: "Maintenance", tone: "warn", active: false }
       : b.type === "cip" ? { status: "CIP", tone: "warn", active: false }
       : b.type === "changeover" ? { status: "Ganti format", tone: "warn", active: false }
-      : b.type === "unload" ? { status: `Bongkar ${b.label}`, tone: "ok", active: true }
+      : b.type === "unload" ? { status: `Unloading ${b.label}`, tone: "ok", active: true }
       : { status: "Jalan", tone: "ok", active: true };
   }
-  out["AT-2"] = out.F2.status.startsWith("Berhenti") ? { status: "Kosong", tone: "crit", active: false } : { status: "Terisi", tone: "ok", active: true };
+  // AT-2 mengikuti operasi (pasokan menipis) sampai rencana membuatnya kosong, atau setelah snapshot rencana menjaga pasokannya.
+  if (out.F2.status.startsWith("Berhenti")) out["AT-2"] = { status: "Kosong", tone: "crit", active: false };
+  else if (t > NOW && !blocks.some(b => b.type === "starvation")) out["AT-2"] = { status: "Terisi", tone: "ok", active: true };
   for (const [id, a] of Object.entries(adj)) {
     if (RESOURCE[id] || !a.maintenance) continue;
     const s = toOffset(a.maintenance.start);

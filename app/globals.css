@@ -466,7 +466,7 @@ tbody tr:hover { background: color-mix(in oklab, var(--color-surface) 70%, trans
 .recommendation-card { background: var(--color-surface-inverse); color: var(--color-on-inverse); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 16px; }
 .recommendation-card .section-heading p { color: var(--color-on-inverse-muted); }
 .recommendation-saving { display: inline-flex; align-items: center; gap: 6px; border-radius: var(--radius-full); background: color-mix(in srgb,var(--color-on-inverse) 9%,transparent); color: var(--color-on-inverse); padding: 8px 12px; font-size: 11px; white-space: nowrap; }
-.comparison-grid { display: grid; grid-template-columns: .9fr .7fr 1fr 1.45fr; gap: 20px; margin: 30px 0 24px; }
+.comparison-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 20px; margin: 30px 0 24px; }
 .comparison-metric { min-width: 0; }
 .comparison-metric > div:first-child { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-on-inverse-muted); }
 .source-help { min-width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
@@ -499,21 +499,21 @@ tbody tr:hover { background: color-mix(in oklab, var(--color-surface) 70%, trans
 .now-line > span { position: absolute; top: -8px; transform: translate(-50%,-100%); background: var(--color-accent-soft); color: var(--color-primary); padding: 4px 8px; border-radius: var(--radius-full); font-size: 9px; white-space: nowrap; }
 .gantt-legend { margin: 16px 0; }
 .gantt-card .small { font-size: 11px; }
-.schedule-bottom { display: grid; grid-template-columns: minmax(0,1.65fr) minmax(0,1fr); gap: 16px; align-items: start; }
+.schedule-bottom { display: grid; grid-template-columns: minmax(0,1.65fr) minmax(0,1fr); gap: 16px; align-items: start; margin-bottom: 16px; }
 .reasons { gap: 24px; }
 .reasons .factor-number { background: var(--color-accent-soft); color: var(--color-primary); }
 .approval-state { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; padding: 16px 8px 24px; }
 .approval-state p { font-size: 12px; color: var(--color-on-surface-muted); max-width: 36ch; }
 .approval-history { border-top: 1px solid var(--color-border); padding-top: 20px; }
 .approval-history > p { padding-top: 10px; }
+.approval-actions { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.approval-history summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+.approval-history[open] summary { margin-bottom: 12px; }
+.approval-history .text-link { margin-top: 12px; }
 .history-item { display: flex; align-items: start; gap: 8px; padding-top: 16px; font-size: 11px; }
 .history-item p { font-size: 11px; color: var(--color-on-surface-muted); padding-top: 3px; overflow-wrap: anywhere; }
 .history-item svg { color: var(--color-status-ok); }
 .reset-demo { background: var(--color-canvas); margin: 24px 0 10px; }
-.decision-banner { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-radius: var(--radius-md); margin-bottom: 16px; background: var(--color-status-ok-soft); color: var(--color-status-ok); }
-.decision-banner.warn { background: var(--color-status-warn-soft); color: var(--color-status-warn); }
-.decision-banner > span { display: flex; flex-direction: column; gap: 4px; }
-.decision-banner > span > span { font-size: 12px; }
 .dialog-summary { padding: 20px 0; color: var(--color-on-surface-muted); }
 .field-label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 10px; }
 textarea { width: 100%; resize: vertical; min-height: 110px; border: 1px solid var(--color-on-surface-muted); background: var(--color-canvas); border-radius: var(--radius-md); padding: 14px; font-size: 13px; }
@@ -785,8 +785,8 @@ button.recommendation-saving { min-height: 36px; }
 .kg-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .kg-toolbar .toggle button { display: inline-flex; align-items: center; gap: 8px; }
 .kg-layout { display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 20px; align-items: stretch; }
-.kg-scroll { border-radius: var(--radius-md); background: var(--color-canvas); overflow-x: auto; overscroll-behavior-x: contain; }
-.kg { display: block; width: 100%; min-width: 560px; height: auto; aspect-ratio: 900 / 560; touch-action: pan-x pan-y; user-select: none; }
+.kg-scroll { display: flex; align-items: center; border-radius: var(--radius-md); background: var(--color-canvas); overflow-x: auto; overscroll-behavior-x: contain; }
+.kg { display: block; flex: 1 0 auto; width: 100%; min-width: 560px; height: auto; aspect-ratio: 900 / 560; touch-action: pan-x pan-y; user-select: none; }
 .kg-edge line { stroke: var(--color-border); stroke-width: 1.25; stroke-linecap: round; transition: stroke 200ms var(--ease); }
 .kg-edge.planned line { stroke-dasharray: 4 4; }
 .kg-edge { transition: opacity 200ms var(--ease); }
@@ -810,6 +810,16 @@ button.recommendation-saving { min-height: 36px; }
 .kg-lot .kg-shape { fill: var(--color-on-surface-muted); }
 .kg-label { font-size: 11px; font-weight: 500; fill: var(--color-on-surface); paint-order: stroke; stroke: var(--color-canvas); stroke-width: 3px; pointer-events: none; }
 .kg-key { display: inline-block; width: 10px; height: 10px; flex-shrink: 0; }
+.kg-icon { color: #fff; pointer-events: none; }
+.kg-mutu .kg-icon { color: var(--color-on-surface); }
+.kg-chip { display: inline-grid; place-items: center; width: 22px; height: 22px; flex-shrink: 0; color: #fff; border-radius: 6px; }
+.kg-chip.kg-asal, .kg-chip.kg-lot { border-radius: 50%; }
+.kg-chip.kg-asal { background: var(--color-primary); }
+.kg-chip.kg-mutu { background: var(--color-accent-fill); color: var(--color-on-surface); }
+.kg-chip.kg-proses { background: var(--color-surface-inverse); }
+.kg-chip.kg-lot { background: var(--color-on-surface-muted); }
+.kg-type { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
+.kg-legend-title { margin: 12px 0 8px; font-size: 13px; }
 .kg-key.kg-asal { border-radius: 50%; background: var(--color-primary); }
 .kg-key.kg-mutu { transform: rotate(45deg) scale(.85); border-radius: 2px; background: var(--color-accent-fill); }
 .kg-key.kg-proses { border-radius: 3px; background: var(--color-surface-inverse); }
@@ -847,10 +857,6 @@ button.recommendation-saving { min-height: 36px; }
 .split-even { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-bottom: 16px; align-items: start; }
 .tanks-grid.single { grid-template-columns: minmax(0,1fr); }
 .page-enter > .kg-layout { margin-top: 16px; }
-.callout { display: flex; align-items: center; gap: 14px; padding: 16px 20px; margin-bottom: 16px; border-radius: var(--radius-md); background: var(--glass-chip); box-shadow: var(--glass-rim), var(--shadow-chip); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
-.callout > svg { color: var(--color-primary); }
-.callout > div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.callout p { font-size: 12px; color: var(--color-on-surface-muted); }
 .role-note { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0; font-size: 12px; color: var(--color-status-warn); }
 .role-note svg { margin-top: 2px; }
 .instruction-card { margin-bottom: 16px; }
@@ -1217,7 +1223,7 @@ button.flow-node { pointer-events: all; font: inherit; cursor: pointer; }
 /* Rencana > Alur rencana (poin 9): ringkasan dampak, label di kartu alat, panel atur alat */
 .page-enter > .toggle { margin-bottom: 16px; }
 .plan-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 1.4fr); gap: 12px; margin-bottom: 16px; }
-.plan-metric, .plan-changes { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; border-radius: var(--radius-lg); background: color-mix(in oklab, var(--color-surface) 64%, transparent); box-shadow: var(--glass-rim), var(--shadow-soft); }
+.plan-metric, .plan-changes { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; }
 .plan-metric > span, .plan-changes > span { font-size: 12px; color: var(--color-on-surface-muted); }
 .plan-metric strong { font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
 .plan-metric small { font-size: 12px; font-weight: 400; color: var(--color-on-surface-muted); }
@@ -1243,13 +1249,14 @@ button.plan-metric { text-align: left; border: 0; font: inherit; color: inherit;
 button.plan-metric:hover { box-shadow: var(--glass-rim), 0 0 0 1.5px color-mix(in oklab, var(--color-accent-fill) 35%, transparent), var(--shadow-soft); }
 button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--color-primary), var(--shadow-soft); }
 .plan-metric em.muted { color: var(--color-on-surface-muted); }
-.plan-controls { display: grid; grid-template-columns: minmax(220px, 320px) minmax(0, 1fr); gap: 16px; align-items: start; padding: 12px 14px; border-radius: var(--radius-md); background: var(--color-canvas); }
-.plan-time label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-on-surface-muted); }
+.plan-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 24px; align-items: end; padding: 14px 16px; border-radius: var(--radius-md); background: var(--color-canvas); }
+.plan-time label { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; min-height: 22px; font-size: 13px; color: var(--color-on-surface-muted); }
 .plan-time label strong { color: var(--color-on-surface); font-size: 15px; font-variant-numeric: tabular-nums; }
-.plan-time input[type="range"] { width: 100%; margin: 10px 0 4px; accent-color: var(--color-primary); min-height: 24px; }
+.plan-time input[type="range"] { width: 100%; margin: 6px 0 2px; accent-color: var(--color-primary); min-height: 24px; }
 .plan-ticks { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--color-on-surface-muted); font-variant-numeric: tabular-nums; }
-.plan-events { display: flex; flex-wrap: wrap; gap: 6px; }
-.plan-event { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; border-radius: var(--radius-full); border: 1px solid var(--color-border); background: var(--color-surface); font-size: 12px; color: var(--color-on-surface); cursor: pointer; text-align: left; }
+.plan-events { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 12px; border-top: 1px solid var(--color-border); }
+.plan-events-label { font-size: 12px; color: var(--color-on-surface-muted); margin-right: 4px; }
+.plan-event { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 0 12px; border-radius: var(--radius-full); border: 1px solid var(--color-border); background: var(--color-surface); font-size: 12px; color: var(--color-on-surface); cursor: pointer; text-align: left; white-space: nowrap; }
 .plan-event strong { font-variant-numeric: tabular-nums; }
 .plan-event.crit svg { color: var(--color-status-crit); }
 .plan-event.warn svg { color: var(--color-status-warn); }
@@ -1264,8 +1271,8 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
 .upgrade-head h2 { margin: 0 0 4px; font-size: 20px; }
 .upgrade-head p { margin: 0; max-width: 62ch; color: var(--color-on-surface-muted); }
 .upgrade-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.upgrade-item { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto auto; align-items: center; gap: 16px; padding: 16px 18px; border-radius: var(--radius-lg); background: color-mix(in oklab, var(--color-surface) 64%, transparent); box-shadow: var(--glass-rim), var(--shadow-soft); }
-.upgrade-item:first-child { box-shadow: var(--glass-rim), var(--shadow-soft), inset 0 0 0 1.5px color-mix(in oklab, var(--color-primary) 45%, transparent); }
+.upgrade-item { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto auto; align-items: center; gap: 16px; padding: 16px 18px; }
+.card.upgrade-item:first-child { box-shadow: var(--glass-rim), var(--shadow-soft), inset 0 0 0 1.5px color-mix(in oklab, var(--color-primary) 45%, transparent); }
 .upgrade-rank { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 999px; background: var(--glass-chip); font-weight: 600; font-variant-numeric: tabular-nums; }
 .upgrade-item:first-child .upgrade-rank { background: var(--color-primary); color: var(--color-on-primary, #fff); }
 .upgrade-body h3 { margin: 0 0 2px; font-size: 16px; }
@@ -1274,7 +1281,16 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
 .upgrade-gain { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; white-space: nowrap; }
 .upgrade-gain strong { display: inline-flex; align-items: center; gap: 6px; font-size: 18px; color: var(--color-primary); font-variant-numeric: tabular-nums; }
 .upgrade-gain span { font-size: 12px; color: var(--color-on-surface-muted); }
-.upgrade-skips { padding: 12px 18px; border-radius: var(--radius-lg); background: var(--glass-chip); }
+.upgrade-skips { padding: 12px 18px; }
+.upgrade-effect { margin-top: 6px !important; font-size: 13px !important; font-weight: 550; color: var(--color-on-surface) !important; }
+.upgrade-effect.ok { color: var(--color-status-ok) !important; }
+.upgrade-tried { padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--glass-rim), var(--shadow-soft), inset 0 0 0 1.5px color-mix(in oklab, var(--color-primary) 45%, transparent); }
+.upgrade-tried h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 16px; }
+.upgrade-tried ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.upgrade-tried li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; font-size: 14px; }
+.upgrade-tried-actions { display: flex; gap: 14px; }
+.upgrade-tried-actions button { display: inline-flex; align-items: center; gap: 4px; }
+.upgrade-empty { padding: 16px 18px; color: var(--color-on-surface-muted); }
 .upgrade-skips summary { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; }
 .upgrade-skips ul { margin: 10px 0 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--color-on-surface-muted); }
 .upgrade-skips strong { color: var(--color-on-surface); margin-right: 4px; }
@@ -1284,7 +1300,7 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
   .upgrade-gain { grid-column: 2; align-items: flex-start; }
   .upgrade-item .button { grid-column: 1 / -1; justify-self: stretch; }
 }
-.plan-next { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-top: 16px; padding: 14px 18px; border-radius: var(--radius-lg); background: var(--glass-chip); }
+.plan-next { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-top: 16px; padding: 14px 18px; }
 .plan-next span { color: var(--color-on-surface-muted); font-size: 14px; }
 
 /* Kondisi Alat: grup di tab Perlu diperhatikan (poin 12) */
@@ -1299,3 +1315,102 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
 .back-link { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px; padding: 6px 12px 6px 8px; border: 0; border-radius: 999px; background: var(--glass-chip); color: var(--color-on-surface); font: inherit; font-size: 14px; text-decoration: none; cursor: pointer; transition: background-color .15s ease; }
 .back-link:hover { background: var(--color-accent-soft); color: var(--color-primary); }
 .back-link:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+/* Poin 13: tab halaman selalu satu baris di bawah judul (dan pemberitahuan halaman), di luar card. */
+.page-tabs { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; margin-bottom: 20px; }
+.page-tabs > span { display: flex; align-items: center; gap: 6px; }
+
+/* Poin 13: kotak sejajar memakai sudut dan isi yang sama dengan Card. */
+.assets-grid > .tank-card { border-radius: var(--radius-lg); padding: 20px; }
+
+/* Poin 13: satu gaya kotak pemberitahuan. Netral = kaca; ok/warn/crit = warna status lembut, ikon berwarna status. */
+.callout, .decision-banner, .qc-trigger, .qc-trigger.compact { display: flex; align-items: center; gap: 14px; padding: 16px 20px; margin-bottom: 16px; border-radius: var(--radius-lg); background: var(--glass); box-shadow: var(--glass-rim), var(--shadow-soft); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); color: var(--color-on-surface); }
+.callout > svg, .decision-banner > svg { flex-shrink: 0; color: var(--color-primary); }
+.callout > div, .decision-banner > span { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.callout p, .decision-banner > span > span { font-size: 13px; color: var(--color-on-surface-muted); }
+.callout.ok, .decision-banner, .decision-banner.ok { background: color-mix(in oklab, var(--color-status-ok-soft) 85%, transparent); }
+.callout.ok > svg, .decision-banner > svg, .decision-banner.ok > svg { color: var(--color-status-ok); }
+.callout.warn, .decision-banner.warn { background: color-mix(in oklab, var(--color-status-warn-soft) 85%, transparent); }
+.callout.warn > svg, .decision-banner.warn > svg { color: var(--color-status-warn); }
+.callout.crit, .qc-trigger, .qc-trigger.compact { background: color-mix(in oklab, var(--color-status-crit-soft) 85%, transparent); }
+.callout.crit > svg { color: var(--color-status-crit); }
+.scenario-bar .scenario-pick { display: flex; align-items: center; gap: 10px; }
+
+/* Alur 3D (poin 14) */
+.flow-3d { position: relative; width: 100%; height: 100%; touch-action: none; outline: none; }
+.flow-3d canvas { display: block; }
+.flow-3d:focus-visible { box-shadow: inset 0 0 0 2px var(--color-focus); }
+.flow3d-stage { padding: 3px 10px; border-radius: var(--radius-full); background: var(--color-surface-inverse); color: var(--color-on-inverse); font-size: 11px; font-weight: 600; white-space: nowrap; pointer-events: none; }
+.flow3d-tag { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 11px; font-weight: 450; }
+.flow3d-tag span { font-size: 10px; color: var(--color-primary); font-weight: 600; }
+.flow3d-tag.picked { outline: 2px solid var(--color-primary); }
+.scene-labels[data-zoom] .flow3d-tag.picked { display: flex; }
+.legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.legend-dot.crit { background: var(--color-status-crit); box-shadow: 0 0 0 3px var(--color-status-crit-soft); }
+.flow3d-tag small { font-size: 10px; font-weight: 400; opacity: .85; }
+
+/* Rencana: atur kapasitas dan pilih alat (poin 16) */
+.plan-pick { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--color-on-surface-muted); }
+.plan-pick select { width: 100%; }
+.plan-cap { display: grid; gap: 4px; }
+.plan-cap label { font-size: 12px; color: var(--color-on-surface-muted); }
+.plan-cap > div { display: flex; align-items: center; gap: 8px; }
+.plan-cap input { width: 100%; font: inherit; font-variant-numeric: tabular-nums; }
+.plan-cap small { font-size: 12px; color: var(--color-on-surface-muted); }
+.plan-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+.plan-chips button { padding: 5px 10px; border: 0; border-radius: var(--radius-full); background: var(--glass-chip); font: inherit; font-size: 12px; cursor: pointer; }
+.plan-chips button.selected { background: var(--color-accent-soft); color: var(--color-primary); font-weight: 600; }
+.plan-pick select, .plan-cap input { min-height: 44px; padding: 0 10px; border: 1px solid color-mix(in oklab, var(--color-on-surface-muted) 45%, transparent); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-on-surface); font-size: 14px; }
+
+/* Rencana: panel Tanya rencana di samping alur (poin 16-17) */
+.plan-layout { display: grid; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.plan-main { min-width: 0; }
+.plan-chat { position: sticky; top: 88px; display: flex; flex-direction: column; gap: 14px; max-height: calc(100dvh - 112px); }
+.plan-chat-head { display: flex; gap: 12px; align-items: flex-start; }
+.plan-chat-head h2 { margin: 0; font-size: 18px; }
+.plan-chat-head p { margin: 2px 0 0; font-size: 13px; color: var(--color-on-surface-muted); }
+.plan-chat-icon { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--color-accent-soft); color: var(--color-primary); }
+.plan-chat-pick { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 8px; }
+.plan-chat-pick label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--color-on-surface-muted); }
+.plan-chat-pick select { min-height: 40px; padding: 0 8px; border: 1px solid color-mix(in oklab, var(--color-on-surface-muted) 45%, transparent); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-on-surface); font-size: 14px; }
+.plan-chat-log { list-style: none; margin: 0; padding: 4px 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; min-height: 140px; flex: 1; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
+.plan-chat-empty { display: flex; flex-direction: column; gap: 6px; padding: 12px 4px; color: var(--color-primary); }
+.plan-chat-empty strong { color: var(--color-on-surface); font-size: 16px; }
+.plan-chat-empty p { margin: 0; font-size: 13px; color: var(--color-on-surface-muted); line-height: 1.55; }
+.plan-msg { max-width: 92%; padding: 10px 12px; border-radius: var(--radius-md); font-size: 14px; line-height: 1.5; }
+.plan-msg p { margin: 0; white-space: pre-wrap; }
+.plan-msg.user { align-self: flex-end; background: var(--color-surface-inverse); color: var(--color-on-inverse); }
+.plan-msg.assistant { align-self: flex-start; background: var(--glass-chip); }
+.plan-proposal { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding: 10px; border-radius: var(--radius-sm); background: var(--color-surface); }
+.plan-proposal small { display: block; margin-top: 2px; color: var(--color-on-surface-muted); }
+.plan-chat-quick { display: flex; flex-wrap: wrap; gap: 6px; }
+.plan-chat-quick button { padding: 6px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-full); background: var(--color-surface); font-size: 12px; }
+.plan-chat-quick button:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+.plan-chat-input { display: flex; align-items: flex-end; gap: 8px; padding: 8px; border: 1px solid color-mix(in oklab, var(--color-on-surface-muted) 45%, transparent); border-radius: var(--radius-md); background: var(--color-surface); }
+.plan-chat-input:focus-within { border-color: var(--color-primary); }
+.plan-chat-input textarea { flex: 1; border: 0; outline: none; resize: none; background: transparent; color: var(--color-on-surface); font-size: 14px; line-height: 1.45; }
+.plan-chat-send { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: var(--radius-sm); background: var(--color-primary); color: var(--color-on-primary); }
+.plan-chat-send:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 1099px) { .plan-layout { grid-template-columns: minmax(0, 1fr); } .plan-chat { position: static; max-height: none; } .plan-chat-log { max-height: 360px; } }
+
+/* Antrean Truk 3D (next phase PDF) */
+.queue-3d { position: relative; height: clamp(460px, 62dvh, 680px); border-radius: var(--radius-md); overflow: hidden; background: var(--color-canvas); touch-action: none; outline: none; }
+.queue-3d canvas { display: block; }
+.queue-3d:focus-visible { box-shadow: inset 0 0 0 2px var(--color-focus); }
+.queue-detail { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-md); background: var(--glass-chip); font-size: 14px; }
+.queue-hint { margin-top: 10px; }
+.flow3d-stage { display: flex; flex-direction: column; align-items: center; }
+.flow3d-stage small { font-size: 10px; font-weight: 400; opacity: .8; }
+.flow3d-stage.warn { background: var(--color-status-warn); }
+.flow3d-stage.crit { background: var(--color-status-crit); }
+
+/* Label 3D ringkas: status hanya untuk yang bermasalah/dipilih, atau saat kursor di atasnya */
+.peek-tag small { display: none; }
+.peek-tag.open small, .peek-tag.hover small { display: block; }
+.peek-tag.hover { z-index: 2; box-shadow: 0 4px 14px rgb(20 20 20 / .16); }
+.scene-labels[data-zoom] .peek-tag.hover, .scene-labels[data-zoom] .peek-tag.planned { display: flex; }
+.scene-labels[data-zoom="far"] .flow3d-stage:not(.crit) { display: none; }
+.monitor-bottom.wide { grid-template-columns: minmax(0, 1fr); }
+.plan-adjusted { flex-wrap: wrap; }
+.plan-adjusted-actions { display: flex; gap: 14px; }
+.plan-adjusted-actions button { display: inline-flex; align-items: center; gap: 4px; }

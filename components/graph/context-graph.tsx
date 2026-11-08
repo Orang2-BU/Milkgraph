@@ -1,13 +1,13 @@
 "use client";
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Pin } from "lucide-react";
+import { ArrowLeft, ArrowRight, Blend, Boxes, Container, Cylinder, Droplets, Factory, Flame, FlaskConical, FlaskRound, Funnel, Milk, Package, Pin, Thermometer, Tractor, Truck, Warehouse, type LucideIcon } from "lucide-react";
 import { scenario } from "@/lib/data";
 import type { Scenario } from "@/mock/types";
 import { API_MODE } from "@/lib/api/client";
 import { useResource } from "@/lib/api/resource";
 import { buildGraph, connections, layoutStep, settle, type Graph, type GraphNode, type NodeKind } from "@/lib/graph";
-import { Badge, Icon, SourceButton, SourceModal } from "@/components/ui";
+import { Icon, SourceButton, SourceModal } from "@/components/ui";
 
 const SIZE = { w: 900, h: 560 };
 const KINDS: { kind: NodeKind; label: string; hint: string }[] = [
@@ -17,12 +17,32 @@ const KINDS: { kind: NodeKind; label: string; hint: string }[] = [
   { kind: "lot", label: "Lot", hint: "Barang jadi" },
 ];
 
-/** Bentuk node berbeda per jenis (bukan hanya warna): asal lingkaran, mutu belah ketupat, proses kotak, lot lingkaran kecil. */
+/** Ikon dan nama tiap jenis node, supaya node terbaca tanpa harus mengingat arti bentuk dan warnanya. */
+const TYPES: Record<string, { icon: LucideIcon; label: string }> = {
+  Farm: { icon: Tractor, label: "Farm" }, RT: { icon: Truck, label: "Road tanker (RT)" },
+  LabResult: { icon: FlaskConical, label: "Hasil lab" }, CIPEvent: { icon: Droplets, label: "CIP" },
+  Bay: { icon: Warehouse, label: "Bay bongkar" }, Buffer: { icon: Container, label: "Raw milk buffer" },
+  Thermal: { icon: Flame, label: "Thermizer" }, Separator: { icon: Funnel, label: "Separator" },
+  Storage: { icon: Cylinder, label: "Tangki storage" }, Cream: { icon: Milk, label: "Tangki cream" },
+  Premix: { icon: FlaskRound, label: "Premix" }, Mixing: { icon: Blend, label: "Mixing" },
+  Sterilisasi: { icon: Thermometer, label: "Sterilisasi (UHT)" }, Aseptic: { icon: Boxes, label: "Aseptic tank" },
+  Filling: { icon: Factory, label: "Mesin filling" }, Lot: { icon: Package, label: "Lot barang jadi" },
+};
+const typeOf = (type: string) => TYPES[type] ?? { icon: Factory, label: type };
+
+/** Bentuk menandai kelompok (asal lingkaran, mutu belah ketupat, proses kotak, lot lingkaran); ikon di dalamnya menandai jenis alatnya. */
 function Shape({ node }: { node: GraphNode }) {
-  const r = node.r;
-  if (node.kind === "mutu") return <rect className="kg-shape" x={-r * 0.8} y={-r * 0.8} width={r * 1.6} height={r * 1.6} rx={2} />;
-  if (node.kind === "proses") return <rect className="kg-shape" x={-r} y={-r} width={r * 2} height={r * 2} rx={5} />;
-  return <circle className="kg-shape" r={r} />;
+  const r = node.r, I = typeOf(node.type).icon, s = Math.round(r * (node.kind === "mutu" ? 1 : 1.15));
+  const base = node.kind === "mutu" ? <rect className="kg-shape" x={-r * 0.85} y={-r * 0.85} width={r * 1.7} height={r * 1.7} rx={3} />
+    : node.kind === "proses" ? <rect className="kg-shape" x={-r} y={-r} width={r * 2} height={r * 2} rx={6} />
+    : <circle className="kg-shape" r={r} />;
+  return <>{base}<I className="kg-icon" x={-s / 2} y={-s / 2} width={s} height={s} strokeWidth={2.2} aria-hidden="true" /></>;
+}
+
+/** Penanda kecil di daftar: bentuk kelompok berisi ikon jenis. */
+function Chip({ node }: { node: Pick<GraphNode, "kind" | "type"> }) {
+  const I = typeOf(node.type).icon;
+  return <span className={`kg-chip kg-${node.kind}`} aria-hidden="true"><I size={12} strokeWidth={2.4} /></span>;
 }
 
 /** Pemanasan: penataan dihitung sebelum frame pertama sampai `alpha` ini; sisanya jadi animasi singkat. */
@@ -187,17 +207,19 @@ export function ContextGraph() {
         <GraphCanvas graph={graph} hidden={hidden} picked={picked} onPick={id => setPicked(p => (p === id ? null : id))} />
         <aside className="kg-detail" aria-live="polite">
           {sel ? <>
-            <div className="kg-detail-top"><Badge>{sel.type}</Badge><SourceButton id={sel.source} onSelect={setSource} compact /></div>
+            <div className="kg-detail-top"><span className="kg-type"><Chip node={sel} />{typeOf(sel.type).label}</span><SourceButton id={sel.source} onSelect={setSource} compact /></div>
             <h2>{sel.label}</h2>
             <p className="small muted">{list.length} relasi</p>
             <ul className="kg-list">{list.map((c, i) => <li key={`${c.node.id}-${i}`}>
               <button type="button" onClick={() => setPicked(c.node.id)}>
-                <span className={`kg-key kg-${c.node.kind}`} aria-hidden="true" /><span><strong>{c.node.label}</strong><small className="with-icon"><Icon icon={c.out ? ArrowRight : ArrowLeft} size={11} />{c.label}</small></span>
+                <Chip node={c.node} /><span><strong>{c.node.label}</strong><small className="with-icon"><Icon icon={c.out ? ArrowRight : ArrowLeft} size={11} />{c.label}</small></span>
               </button>
             </li>)}</ul>
           </> : <>
             <p className="small with-icon"><Icon icon={Pin} size={14} />Pilih node untuk melihat hubungannya.</p>
-            <ul className="kg-legend">{KINDS.map(k => <li key={k.kind}><span className={`kg-key kg-${k.kind}`} aria-hidden="true" /><span>{k.label} <span className="muted">({k.hint})</span></span></li>)}</ul>
+            <h3 className="kg-legend-title">Arti ikon</h3>
+            <ul className="kg-legend">{[...new Set(graph.nodes.map(n => n.type))].map(t => { const n = graph.nodes.find(x => x.type === t)!; return <li key={t}><Chip node={n} /><span>{typeOf(t).label} <span className="muted">({graph.nodes.filter(x => x.type === t).length})</span></span></li>; })}</ul>
+            <p className="small muted">Bentuk menandai kelompok: lingkaran hijau asal susu, belah ketupat mutu dan CIP, kotak gelap aset proses, lingkaran abu lot.</p>
             <p className="small muted">Garis putus-putus menandai relasi rencana yang belum terjadi. Node besar adalah simpul yang paling banyak dilalui susu, jadi paling berdampak saat ada gangguan.</p>
           </>}
         </aside>

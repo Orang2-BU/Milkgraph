@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { rankUpgrades } from "../components/rencana/recommend.ts";
+import { capacityRoom, rankUpgrades } from "../components/rencana/recommend.ts";
 
 // Potongan data Lini Filling (mock/ops.ts): pasokan aseptic tank dan kebutuhan mesin filling dalam L/jam.
 const tanks = [
@@ -32,4 +32,31 @@ test("jalur yang tidak jalan dilewati; urutan dari tambahan terbesar", () => {
   const { picks } = rankUpgrades(tanks, fillers);
   assert.ok(!picks.some(p => p.id === "UHT-3"));
   assert.deepEqual(picks.map(p => p.id), ["UHT-2", "F1"]);
+});
+
+test("atur kapasitas: tambahan yang terpakai jalurnya, dan alasan bila tidak ada", () => {
+  assert.deepEqual({ ...capacityRoom(tanks, fillers, "UHT-2"), why: undefined }, { from: 6990, room: 1300, line: "AT-2", why: undefined });
+  assert.equal(capacityRoom(tanks, fillers, "F1").room, 350);
+  assert.equal(capacityRoom(tanks, fillers, "F2").room, 0);
+  assert.match(capacityRoom(tanks, fillers, "F2").why, /AT-2.*kurang/);
+  assert.equal(capacityRoom(tanks, fillers, "UHT-3").room, 0);   // sedang CIP
+  assert.equal(capacityRoom(tanks, fillers, "ST-3"), null);      // tangki: belum ada laju L/jam
+});
+
+test("dinamis: upgrade yang sedang dicoba dipakai sebagai kapasitas baru, lalu peringkat dihitung ulang", () => {
+  // UHT-2 dicoba ke 8.290 L/jam: jalur AT-2 pas, jadi UHT-2 keluar dari daftar saran dan ditandai sedang dicoba.
+  const { picks, skips, tried } = rankUpgrades(tanks, fillers, { "UHT-2": { upgrade: 19, upgradeTo: 8290 } });
+  assert.ok(!picks.some(p => p.id === "UHT-2"));
+  assert.ok(!skips.some(s => s.id === "UHT-2"));
+  assert.deepEqual(tried, [{ id: "UHT-2", line: "AT-2", from: 6990, to: 8290 }]);
+  assert.equal(picks[0].id, "F1");
+  // Dicoba melebihi kebutuhan: F2/F4 bisa naik memakai sisa pasokan baru.
+  const over = rankUpgrades(tanks, fillers, { "UHT-2": { upgrade: 30, upgradeTo: 8790 } });
+  assert.equal(over.picks.find(p => p.id === "F2").gain, 500);
+});
+
+test("dinamis: mesin filling yang dicoba ikut mengubah kebutuhan jalurnya", () => {
+  const { picks, tried } = rankUpgrades(tanks, fillers, { F1: { upgrade: 6, upgradeTo: 6900 } });
+  assert.ok(!picks.some(p => p.id === "F1"));
+  assert.equal(tried[0].to, 6900);
 });
