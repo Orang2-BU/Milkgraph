@@ -1311,3 +1311,79 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
 .callout.crit, .qc-trigger, .qc-trigger.compact { background: color-mix(in oklab, var(--color-status-crit-soft) 85%, transparent); }
 .callout.crit > svg { color: var(--color-status-crit); }
 .scenario-bar .scenario-pick { display: flex; align-items: center; gap: 10px; }
+
+/* Alur 3D (poin 14) */
+.flow-3d { position: relative; width: 100%; height: 100%; touch-action: none; outline: none; }
+.flow-3d canvas { display: block; }
+.flow-3d:focus-visible { box-shadow: inset 0 0 0 2px var(--color-focus); }
+.flow3d-stage { padding: 3px 10px; border-radius: var(--radius-full); background: var(--color-surface-inverse); color: var(--color-on-inverse); font-size: 11px; font-weight: 600; white-space: nowrap; pointer-events: none; }
+.flow3d-tag { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 11px; font-weight: 450; }
+.flow3d-tag span { font-size: 10px; color: var(--color-primary); font-weight: 600; }
+.flow3d-tag.picked { outline: 2px solid var(--color-primary); }
+.scene-labels[data-zoom] .flow3d-tag.picked { display: flex; }
+.legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
+.legend-dot.crit { background: var(--color-status-crit); box-shadow: 0 0 0 3px var(--color-status-crit-soft); }
+.flow3d-tag small { font-size: 10px; font-weight: 400; opacity: .85; }
+
+/* Rencana: atur kapasitas dan pilih alat (poin 16) */
+.plan-pick { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--color-on-surface-muted); }
+.plan-pick select { min-width: 220px; }
+.plan-cap { display: grid; gap: 4px; }
+.plan-cap label { font-size: 12px; color: var(--color-on-surface-muted); }
+.plan-cap > div { display: flex; align-items: center; gap: 8px; }
+.plan-cap input { width: 100%; font: inherit; font-variant-numeric: tabular-nums; }
+.plan-cap small { font-size: 12px; color: var(--color-on-surface-muted); }
+.plan-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+.plan-chips button { padding: 5px 10px; border: 0; border-radius: var(--radius-full); background: var(--glass-chip); font: inherit; font-size: 12px; cursor: pointer; }
+.plan-chips button.selected { background: var(--color-accent-soft); color: var(--color-primary); font-weight: 600; }
+.plan-pick select, .plan-cap input { min-height: 44px; padding: 0 10px; border: 1px solid color-mix(in oklab, var(--color-on-surface-muted) 45%, transparent); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-on-surface); font-size: 14px; }
+
+/* Rencana: panel Tanya rencana di samping alur (poin 16-17) */
+.plan-layout { display: grid; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.plan-main { min-width: 0; }
+.plan-chat { position: sticky; top: 88px; display: flex; flex-direction: column; gap: 14px; max-height: calc(100dvh - 112px); }
+.plan-chat-head { display: flex; gap: 12px; align-items: flex-start; }
+.plan-chat-head h2 { margin: 0; font-size: 18px; }
+.plan-chat-head p { margin: 2px 0 0; font-size: 13px; color: var(--color-on-surface-muted); }
+.plan-chat-icon { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--color-accent-soft); color: var(--color-primary); }
+.plan-chat-pick { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 8px; }
+.plan-chat-pick label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--color-on-surface-muted); }
+.plan-chat-pick select { min-height: 40px; padding: 0 8px; border: 1px solid color-mix(in oklab, var(--color-on-surface-muted) 45%, transparent); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-on-surface); font-size: 14px; }
+.plan-chat-log { list-style: none; margin: 0; padding: 4px 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; min-height: 140px; flex: 1; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
+.plan-chat-empty { display: flex; flex-direction: column; gap: 6px; padding: 12px 4px; color: var(--color-primary); }
+.plan-chat-empty strong { color: var(--color-on-surface); font-size: 16px; }
+.plan-chat-empty p { margin: 0; font-size: 13px; color: var(--color-on-surface-muted); line-height: 1.55; }
+.plan-msg { max-width: 92%; padding: 10px 12px; border-radius: var(--radius-md); font-size: 14px; line-height: 1.5; }
+.plan-msg p { margin: 0; white-space: pre-wrap; }
+.plan-msg.user { align-self: flex-end; background: var(--color-surface-inverse); color: var(--color-on-inverse); }
+.plan-msg.assistant { align-self: flex-start; background: var(--glass-chip); }
+.plan-proposal { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding: 10px; border-radius: var(--radius-sm); background: var(--color-surface); }
+.plan-proposal small { display: block; margin-top: 2px; color: var(--color-on-surface-muted); }
+.plan-chat-quick { display: flex; flex-wrap: wrap; gap: 6px; }
+.plan-chat-quick button { padding: 6px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-full); background: var(--color-surface); font-size: 12px; }
+.plan-chat-quick button:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+.plan-chat-input { display: flex; align-items: flex-end; gap: 8px; padding: 8px; border: 1px solid color-mix(in oklab, var(--color-on-surface-muted) 45%, transparent); border-radius: var(--radius-md); background: var(--color-surface); }
+.plan-chat-input:focus-within { border-color: var(--color-primary); }
+.plan-chat-input textarea { flex: 1; border: 0; outline: none; resize: none; background: transparent; color: var(--color-on-surface); font-size: 14px; line-height: 1.45; }
+.plan-chat-send { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: var(--radius-sm); background: var(--color-primary); color: var(--color-on-primary); }
+.plan-chat-send:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 1099px) { .plan-layout { grid-template-columns: minmax(0, 1fr); } .plan-chat { position: static; max-height: none; } .plan-chat-log { max-height: 360px; } }
+
+/* Antrean Truk 3D (next phase PDF) */
+.queue-3d { position: relative; height: clamp(460px, 62dvh, 680px); border-radius: var(--radius-md); overflow: hidden; background: var(--color-canvas); touch-action: none; outline: none; }
+.queue-3d canvas { display: block; }
+.queue-3d:focus-visible { box-shadow: inset 0 0 0 2px var(--color-focus); }
+.queue-detail { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 12px; padding: 12px 14px; border-radius: var(--radius-md); background: var(--glass-chip); font-size: 14px; }
+.queue-hint { margin-top: 10px; }
+.flow3d-stage { display: flex; flex-direction: column; align-items: center; }
+.flow3d-stage small { font-size: 10px; font-weight: 400; opacity: .8; }
+.flow3d-stage.warn { background: var(--color-status-warn); }
+.flow3d-stage.crit { background: var(--color-status-crit); }
+
+/* Label 3D ringkas: status hanya untuk yang bermasalah/dipilih, atau saat kursor di atasnya */
+.peek-tag small { display: none; }
+.peek-tag.open small, .peek-tag.hover small { display: block; }
+.peek-tag.hover { z-index: 2; box-shadow: 0 4px 14px rgb(20 20 20 / .16); }
+.scene-labels[data-zoom] .peek-tag.hover, .scene-labels[data-zoom] .peek-tag.planned { display: flex; }
+.scene-labels[data-zoom="far"] .flow3d-stage:not(.crit) { display: none; }
+.monitor-bottom.wide { grid-template-columns: minmax(0, 1fr); }

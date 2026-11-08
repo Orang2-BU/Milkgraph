@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { DEFAULT_LIMITS, evaluate, transferNeed } from "../lib/rules.ts";
 import { applyToLimits, badgeOf, isModelled } from "../components/rencana/adjust.ts";
-import { events, projectBlocks, projectChecks, statusAt } from "../components/rencana/projection.ts";
+import { NOW, events, projectBlocks, projectChecks, statusAt } from "../components/rencana/projection.ts";
 
 const { plans } = JSON.parse(readFileSync(new URL("../mock/scenario.json", import.meta.url), "utf8"));
 const current = plans[0];
@@ -51,4 +51,15 @@ test("alat di luar jadwal: status berubah saat maintenance, efek lanjutannya dit
   assert.equal(isModelled("UHT-2", { upgrade: 25 }), true);
   assert.equal(badgeOf({ upgrade: 25, maintenance: { start: "15.00", minutes: 45 } }), "Upgrade +25% · Maintenance 15.00, 45 menit");
   assert.equal(badgeOf({}), undefined);
+});
+
+test("default rencana = operasi sekarang: pada snapshot 14.42 status alat sama dengan Operasional", () => {
+  for (const view of ["before", "after"]) {
+    const now = statusAt(project(view, {}).blocks, NOW, {});
+    assert.equal(now["AT-2"], undefined);                // tetap "Pasokan menipis" dari data operasi
+    assert.equal(now["Bay 1"].status, "Unloading RT-23"); // kata yang sama dengan Bay & Tangki
+    assert.equal(now["Bay 2"].status, "CIP");
+  }
+  // Setelah snapshot, rekomendasi solver menjaga pasokan AT-2.
+  assert.equal(statusAt(project("after", {}).blocks, 180, {})["AT-2"].status, "Terisi");
 });
