@@ -59,7 +59,7 @@ export function Simulasi() {
         </Link>
       </div>
 
-      <div className="scenario-bar">
+      <div className="page-tabs">
         <Toggle
           label="Kondisi simulasi"
           value={state}

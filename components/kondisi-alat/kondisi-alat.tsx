@@ -34,9 +34,9 @@ export function KondisiAlat() {
 
   return <div className="page-enter">
     <PageHeading title="Kondisi Alat" subtitle="Kondisi setiap alat pada snapshot pukul 14.42, diurutkan sesuai alur produksi." />
+    <div className="page-tabs"><Toggle label="Tampilan alat" value={view} onChange={setView} options={[{ value: "semua", label: `Semua (${ALL.length})` }, { value: "perhatian", label: `Perlu diperhatikan (${ATTENTION_COUNT})` }]} /></div>
     <Card>
       <div className="asset-toolbar">
-        <Toggle label="Tampilan alat" value={view} onChange={setView} options={[{ value: "semua", label: `Semua (${ALL.length})` }, { value: "perhatian", label: `Perlu diperhatikan (${ATTENTION_COUNT})` }]} />
         <label className="asset-search"><Icon icon={Search} size={16} /><span className="sr-only">Cari alat</span><input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Cari nama, kode, atau kondisi..." autoComplete="off" /></label>
       </div>
       {empty ? <p className="muted asset-empty">{q ? <>Tidak ada alat yang cocok dengan &quot;{query}&quot;.</> : "Semua alat dalam kondisi normal."}</p>

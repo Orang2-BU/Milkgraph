@@ -104,12 +104,12 @@ export function PlanFlow({ plan, adj, setAdj }: { plan: Plan; adj: Adjustments; 
 
   return <Ctx.Provider value={{ adj, set, jump: setT }}>
     <section className="plan-summary" aria-live="polite">
-      {(["before", "after"] as const).map(v => <button key={v} type="button" className={`plan-metric ${view === v ? "selected" : ""}`} aria-pressed={view === v} onClick={() => setView(v)}>
+      {(["before", "after"] as const).map(v => <button key={v} type="button" className={`card plan-metric ${view === v ? "selected" : ""}`} aria-pressed={view === v} onClick={() => setView(v)}>
         <span>{v === "before" ? "Rencana awal (FIFO)" : "Rekomendasi solver"}</span>
         <strong>{proj[v].broken} <small>dari 6 constraint dilanggar</small></strong>
         {proj[v].broken !== base(v) ? <em>sebelum diatur: {base(v)}</em> : <em className="muted">{view === v ? "Sedang ditampilkan di alur" : "Klik untuk melihat di alur"}</em>}
       </button>)}
-      <div className="plan-changes">
+      <div className="card plan-changes">
         <span>{ids.length ? `${ids.length} alat diatur` : "Klik alat di alur untuk mengatur upgrade atau maintenance"}</span>
         {ids.length > 0 && <ul>{ids.map(id => <li key={id}><strong className="mono">{id}</strong> {badges[id]}{!isModelled(id, adj[id]) && <span className="muted"> (efek lanjutan belum dimodelkan)</span>}</li>)}</ul>}
         {ids.length > 0 && <button type="button" className="inline-link" onClick={() => setAdj({})}><Icon icon={RotateCcw} size={14} />Kembalikan seperti operasional</button>}

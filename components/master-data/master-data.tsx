@@ -176,8 +176,8 @@ export function MasterDataView() {
         subtitle="Spesifikasi resmi pabrik: 13 tabel master relasional, 73 aset, 118 rute aliran, 44 SKU, dan aturan transisi CIP."
       />
 
-      <section className="callout" style={{ borderLeft: "4px solid var(--color-primary, #00782A)" }}>
-        <Icon icon={CheckCircle2} size={20} style={{ color: "#00782A" }} />
+      <section className="callout ok">
+        <Icon icon={CheckCircle2} size={20} />
         <div>
           <strong>Status Integritas Dataset v2.1: {summary.validationStatus}</strong>
           <p>
@@ -186,7 +186,7 @@ export function MasterDataView() {
         </div>
       </section>
 
-      <div style={{ margin: "20px 0" }}>
+      <div className="page-tabs">
         <Toggle
           label="Pilih tampilan katalog master"
           value={tab}
