@@ -31,7 +31,7 @@ export function autoLayout(assets: Asset[], stages: string[]) {
 
 /**
  * Jalur yang tampil untuk alat yang terlihat. Sambungan langsung: "flow" bila kedua alat aktif, selain itu "idle".
- * Bila alat di antaranya disembunyikan (Fokus Shift), jalur diringkas jadi satu garis "summary" dengan jumlah alat yang dilewati.
+ * Bila alat di antaranya disembunyikan, jalur diringkas jadi satu garis "summary" dengan jumlah alat yang dilewati.
  */
 export function visibleEdges(assets: Asset[], links: [string, string][], visible: Set<string>): FlowEdge[] {
   const byId = new Map(assets.map(a => [a.id, a]));
@@ -60,3 +60,4 @@ export function visibleEdges(assets: Asset[], links: [string, string][], visible
   }
   return edges;
 }
+

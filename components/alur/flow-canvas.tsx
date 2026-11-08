@@ -5,8 +5,8 @@ import { createPortal } from "react-dom";
 import { ReactFlow, Background, Controls, MarkerType, type Edge, type ReactFlowInstance } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Maximize2, Minimize2, MousePointer2 } from "lucide-react";
-import { Card, Icon, Toggle } from "@/components/ui";
-import { ASSETS, FOCUS, LINKS, STAGES, type Asset } from "@/lib/assets";
+import { Card, Icon } from "@/components/ui";
+import { ASSETS, LINKS, STAGES, type Asset } from "@/lib/assets";
 import { autoLayout, visibleEdges, CARD } from "./graph";
 import { nodeTypes, type AssetNode, type StageNode } from "./flow-nodes";
 import { Flow3D } from "./flow-3d";
@@ -31,7 +31,6 @@ export function FlowCanvas({ aside: Aside, badges = {}, overrides, hint, label, 
   hint: string;
   label: string;
 }) {
-  const [view, setView] = useState<"fokus" | "semua">("fokus");
   const [ownPicked, setOwnPicked] = useState<string | null>(null);
   const picked = pickedProp !== undefined ? pickedProp : ownPicked;
   const setPicked = onPickedChange ?? setOwnPicked;
@@ -49,7 +48,7 @@ export function FlowCanvas({ aside: Aside, badges = {}, overrides, hint, label, 
   }, [picked]);
 
   const all = useMemo(() => overrides ? ASSETS.map(a => ({ ...a, ...overrides[a.id] })) : ASSETS, [overrides]);
-  const visible = useMemo(() => view === "semua" ? all : all.filter(a => FOCUS.has(a.id)), [view, all]);
+  const visible = all;
   const graph = useMemo(() => {
     const ids = new Set(visible.map(a => a.id));
     const { pos, columns } = autoLayout(visible, STAGES);
@@ -84,14 +83,14 @@ export function FlowCanvas({ aside: Aside, badges = {}, overrides, hint, label, 
   return <Card className="flow-card">
     {portal(<div className={`flow-frame ${full ? "is-full" : ""}`} role={full ? "dialog" : undefined} aria-modal={full || undefined} aria-label={full ? `${label} layar penuh` : undefined}>
       <div className="flow-toolbar">
-        <Toggle label="Alat yang ditampilkan" value={view} onChange={v => { setView(v); setPicked(null); }} options={[{ value: "fokus", label: "Fokus Shift" }, { value: "semua", label: `Semua Alat (${ASSETS.length})` }]} />
+        <span className="small muted">{ASSETS.length} alat</span>
         <button className="icon-button" onClick={() => setFull(f => !f)} aria-label={full ? "Keluar dari layar penuh (Esc)" : "Tampilkan layar penuh"} title={full ? "Keluar dari layar penuh (Esc)" : "Layar penuh"}><Icon icon={full ? Minimize2 : Maximize2} size={18} /></button>
       </div>
       {toolbar}
       <div className={`flow-body ${asset ? "with-inspector" : ""}`}>
         <div className="flow-canvas">
           {mode === "3d" ? <Flow3D key={String(full)} assets={visible} edges={graph.raw} pos={graph.pos} columns={graph.columns} badges={badges} picked={picked} onPick={setPicked} onClear={() => setPicked(null)} label={`${label} 3D`} /> : <ReactFlow
-            key={`${view}-${full}`}
+            key={String(full)}
             nodes={nodes}
             edges={graph.edges}
             nodeTypes={nodeTypes}
@@ -123,7 +122,6 @@ export function FlowCanvas({ aside: Aside, badges = {}, overrides, hint, label, 
     <div className="flow-legend">
       <span><i className="legend-line" aria-hidden="true" />Mengalir</span>
       <span><i className="legend-line idle" aria-hidden="true" />Tidak mengalir</span>
-      {view === "fokus" && <span><i className="legend-line summary" aria-hidden="true" />Jalur diringkas</span>}
       {mode === "3d" && <span><i className="legend-dot crit" aria-hidden="true" />Denyut merah: alat bermasalah</span>}
       <span><Icon icon={MousePointer2} size={14} />{mode === "3d" ? `${hint.replace(/\.$/, "")}. Seret untuk menggeser, klik kanan untuk memutar, gulir untuk zoom.` : hint}</span>
     </div>
