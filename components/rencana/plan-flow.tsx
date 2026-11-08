@@ -114,11 +114,11 @@ export function PlanFlow({ plan, adj, setAdj, view, setView, mode = "2d" }: { pl
       {STAGES.map(st => <optgroup key={st} label={st}>{ASSETS.filter(x => x.stage === st).map(x => <option key={x.id} value={x.id}>{x.id}{adj[x.id] ? " (diatur)" : ""}</option>)}</optgroup>)}
     </select></label>
     <div className="plan-time">
-      <label htmlFor="plan-time"><Icon icon={Clock3} size={15} />Jam <strong>{clock(t)}</strong>{t === NOW ? <span className="muted">(sama dengan operasi sekarang)</span> : <button type="button" className="inline-link" onClick={() => setT(NOW)}>Kembali ke {clock(NOW)}</button>}</label>
+      <label htmlFor="plan-time"><Icon icon={Clock3} size={15} />Jam <strong>{clock(t)}</strong>{t === NOW ? <span className="muted">sama dengan operasi sekarang</span> : <button type="button" className="inline-link" onClick={() => setT(NOW)}>Kembali ke {clock(NOW)}</button>}</label>
       <input id="plan-time" type="range" min={0} max={HORIZON} step={5} value={t} onChange={e => setT(Number(e.target.value))} aria-valuetext={`Pukul ${clock(t)}`} />
       <div className="plan-ticks" aria-hidden="true"><span>13.00</span><span>16.30</span><span>20.00</span></div>
     </div>
-    {list.length > 0 && <div className="plan-events" aria-label="Kejadian penting">
+    {list.length > 0 && <div className="plan-events" aria-label="Kejadian penting"><span className="plan-events-label">Kejadian penting</span>
       {list.map(e => <button key={`${e.at}-${e.text}`} type="button" className={`plan-event ${e.tone} ${t >= e.at && t < e.at + 30 ? "is-now" : ""}`} onClick={() => setT(e.at + 5)}><Icon icon={e.tone === "crit" ? TriangleAlert : Wrench} size={13} /><strong>{clock(e.at)}</strong>{e.text}</button>)}
     </div>}
   </div>;

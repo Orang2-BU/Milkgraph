@@ -12,7 +12,8 @@ import { invalidateResources, onApiEvent, setActiveRole, startEventStream } from
 
 export type LogKind = "rencana" | "hold" | "lab" | "constraint" | "instruksi";
 export interface LogEntry { id: number; kind: LogKind; title: string; detail: string; note: string; by: string; role: string; at: string; tone: "ok" | "warn" | "crit" | "neutral" }
-export interface PlanDecision { plan: string; status: "approved" | "rejected"; note: string; by: string; at: string }
+/** adjust: pengaturan alat (mis. upgrade UHT-2) yang ikut dihitung saat keputusan diambil. */
+export interface PlanDecision { plan: string; status: "approved" | "rejected"; note: string; by: string; at: string; adjust?: string }
 export type HoldStatus = "diajukan" | "aktif" | "ditolak" | "dilepas";
 export interface Hold { id: string; trigger: string; rt: string; lots: Lot[]; note: string; status: HoldStatus; by: string; at: string; review?: { note: string; by: string; at: string } }
 export interface LabDecision { status: "dirilis" | "ditolak"; note: string; by: string; at: string }
@@ -132,16 +133,16 @@ export const resetDemo = async () => {
   save(initial(Date.now()));
 };
 
-export const decidePlan = async (plan: string, label: string, status: PlanDecision["status"], note: string) => {
+export const decidePlan = async (plan: string, label: string, status: PlanDecision["status"], note: string, adjust?: string) => {
   if (API_MODE) {
-    const res = await actions.decidePlan(plan, status, note);
+    const res = await actions.decidePlan(plan, status, adjust ? `${note}${note ? " " : ""}[Pengaturan alat: ${adjust}]` : note);
     await refreshApiState();
     invalidateResources(["/decisions", "/plans", "/site/status", "/site/bottlenecks", "/receiving", "/audit", "/notifications"]);
     return res;
   }
   act(
-    (s, at) => ({ decisions: [{ plan, status, note, by: ROLES[s.role].user, at }, ...s.decisions.filter(d => d.plan !== plan)] }),
-    { kind: "rencana", title: `Rekomendasi ${status === "approved" ? "disetujui" : "ditolak"}`, detail: label, note, tone: status === "approved" ? "ok" : "warn" },
+    (s, at) => ({ decisions: [{ plan, status, note, by: ROLES[s.role].user, at, ...(adjust ? { adjust } : {}) }, ...s.decisions.filter(d => d.plan !== plan)] }),
+    { kind: "rencana", title: `Rekomendasi ${status === "approved" ? "disetujui" : "ditolak"}`, detail: adjust ? `${label}, dengan ${adjust}` : label, note, tone: status === "approved" ? "ok" : "warn" },
   );
 };
 

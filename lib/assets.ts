@@ -48,5 +48,3 @@ export const LINKS: [string, string][] = [
   ...asepticTanks.flatMap(t => [[t.sterilizer, t.id] as [string, string], ...t.fillers.map(f => [t.id, f] as [string, string])]),
 ];
 
-/** Fokus shift: alat di jalur produk yang dijadwalkan shift ini (UHT Stroberi ke F2 dan F4). */
-export const FOCUS = new Set(["Bay 1", "Bay 2", "Bay 3", "RMT-1", "RMT-2", "ST-3", "MX-1", "UHT-2", "AT-2", "F2", "F4"]);
