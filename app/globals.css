@@ -510,10 +510,6 @@ tbody tr:hover { background: color-mix(in oklab, var(--color-surface) 70%, trans
 .history-item p { font-size: 11px; color: var(--color-on-surface-muted); padding-top: 3px; overflow-wrap: anywhere; }
 .history-item svg { color: var(--color-status-ok); }
 .reset-demo { background: var(--color-canvas); margin: 24px 0 10px; }
-.decision-banner { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-radius: var(--radius-md); margin-bottom: 16px; background: var(--color-status-ok-soft); color: var(--color-status-ok); }
-.decision-banner.warn { background: var(--color-status-warn-soft); color: var(--color-status-warn); }
-.decision-banner > span { display: flex; flex-direction: column; gap: 4px; }
-.decision-banner > span > span { font-size: 12px; }
 .dialog-summary { padding: 20px 0; color: var(--color-on-surface-muted); }
 .field-label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 10px; }
 textarea { width: 100%; resize: vertical; min-height: 110px; border: 1px solid var(--color-on-surface-muted); background: var(--color-canvas); border-radius: var(--radius-md); padding: 14px; font-size: 13px; }
@@ -847,10 +843,6 @@ button.recommendation-saving { min-height: 36px; }
 .split-even { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin-bottom: 16px; align-items: start; }
 .tanks-grid.single { grid-template-columns: minmax(0,1fr); }
 .page-enter > .kg-layout { margin-top: 16px; }
-.callout { display: flex; align-items: center; gap: 14px; padding: 16px 20px; margin-bottom: 16px; border-radius: var(--radius-md); background: var(--glass-chip); box-shadow: var(--glass-rim), var(--shadow-chip); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); }
-.callout > svg { color: var(--color-primary); }
-.callout > div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.callout p { font-size: 12px; color: var(--color-on-surface-muted); }
 .role-note { display: flex; align-items: flex-start; gap: 8px; margin: 12px 0; font-size: 12px; color: var(--color-status-warn); }
 .role-note svg { margin-top: 2px; }
 .instruction-card { margin-bottom: 16px; }
@@ -1217,7 +1209,7 @@ button.flow-node { pointer-events: all; font: inherit; cursor: pointer; }
 /* Rencana > Alur rencana (poin 9): ringkasan dampak, label di kartu alat, panel atur alat */
 .page-enter > .toggle { margin-bottom: 16px; }
 .plan-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 1.4fr); gap: 12px; margin-bottom: 16px; }
-.plan-metric, .plan-changes { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; border-radius: var(--radius-lg); background: color-mix(in oklab, var(--color-surface) 64%, transparent); box-shadow: var(--glass-rim), var(--shadow-soft); }
+.plan-metric, .plan-changes { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; }
 .plan-metric > span, .plan-changes > span { font-size: 12px; color: var(--color-on-surface-muted); }
 .plan-metric strong { font-size: 26px; font-weight: 600; letter-spacing: -.02em; }
 .plan-metric small { font-size: 12px; font-weight: 400; color: var(--color-on-surface-muted); }
@@ -1264,8 +1256,8 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
 .upgrade-head h2 { margin: 0 0 4px; font-size: 20px; }
 .upgrade-head p { margin: 0; max-width: 62ch; color: var(--color-on-surface-muted); }
 .upgrade-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.upgrade-item { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto auto; align-items: center; gap: 16px; padding: 16px 18px; border-radius: var(--radius-lg); background: color-mix(in oklab, var(--color-surface) 64%, transparent); box-shadow: var(--glass-rim), var(--shadow-soft); }
-.upgrade-item:first-child { box-shadow: var(--glass-rim), var(--shadow-soft), inset 0 0 0 1.5px color-mix(in oklab, var(--color-primary) 45%, transparent); }
+.upgrade-item { display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto auto; align-items: center; gap: 16px; padding: 16px 18px; }
+.card.upgrade-item:first-child { box-shadow: var(--glass-rim), var(--shadow-soft), inset 0 0 0 1.5px color-mix(in oklab, var(--color-primary) 45%, transparent); }
 .upgrade-rank { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 999px; background: var(--glass-chip); font-weight: 600; font-variant-numeric: tabular-nums; }
 .upgrade-item:first-child .upgrade-rank { background: var(--color-primary); color: var(--color-on-primary, #fff); }
 .upgrade-body h3 { margin: 0 0 2px; font-size: 16px; }
@@ -1274,7 +1266,7 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
 .upgrade-gain { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; white-space: nowrap; }
 .upgrade-gain strong { display: inline-flex; align-items: center; gap: 6px; font-size: 18px; color: var(--color-primary); font-variant-numeric: tabular-nums; }
 .upgrade-gain span { font-size: 12px; color: var(--color-on-surface-muted); }
-.upgrade-skips { padding: 12px 18px; border-radius: var(--radius-lg); background: var(--glass-chip); }
+.upgrade-skips { padding: 12px 18px; }
 .upgrade-skips summary { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; }
 .upgrade-skips ul { margin: 10px 0 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--color-on-surface-muted); }
 .upgrade-skips strong { color: var(--color-on-surface); margin-right: 4px; }
@@ -1284,7 +1276,7 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
   .upgrade-gain { grid-column: 2; align-items: flex-start; }
   .upgrade-item .button { grid-column: 1 / -1; justify-self: stretch; }
 }
-.plan-next { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-top: 16px; padding: 14px 18px; border-radius: var(--radius-lg); background: var(--glass-chip); }
+.plan-next { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-top: 16px; padding: 14px 18px; }
 .plan-next span { color: var(--color-on-surface-muted); font-size: 14px; }
 
 /* Kondisi Alat: grup di tab Perlu diperhatikan (poin 12) */
@@ -1299,3 +1291,23 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
 .back-link { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 12px; padding: 6px 12px 6px 8px; border: 0; border-radius: 999px; background: var(--glass-chip); color: var(--color-on-surface); font: inherit; font-size: 14px; text-decoration: none; cursor: pointer; transition: background-color .15s ease; }
 .back-link:hover { background: var(--color-accent-soft); color: var(--color-primary); }
 .back-link:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+/* Poin 13: tab halaman selalu satu baris di bawah judul (dan pemberitahuan halaman), di luar card. */
+.page-tabs { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 16px; margin-bottom: 20px; }
+.page-tabs > span { display: flex; align-items: center; gap: 6px; }
+
+/* Poin 13: kotak sejajar memakai sudut dan isi yang sama dengan Card. */
+.assets-grid > .tank-card { border-radius: var(--radius-lg); padding: 20px; }
+
+/* Poin 13: satu gaya kotak pemberitahuan. Netral = kaca; ok/warn/crit = warna status lembut, ikon berwarna status. */
+.callout, .decision-banner, .qc-trigger, .qc-trigger.compact { display: flex; align-items: center; gap: 14px; padding: 16px 20px; margin-bottom: 16px; border-radius: var(--radius-lg); background: var(--glass); box-shadow: var(--glass-rim), var(--shadow-soft); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); color: var(--color-on-surface); }
+.callout > svg, .decision-banner > svg { flex-shrink: 0; color: var(--color-primary); }
+.callout > div, .decision-banner > span { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.callout p, .decision-banner > span > span { font-size: 13px; color: var(--color-on-surface-muted); }
+.callout.ok, .decision-banner, .decision-banner.ok { background: color-mix(in oklab, var(--color-status-ok-soft) 85%, transparent); }
+.callout.ok > svg, .decision-banner > svg, .decision-banner.ok > svg { color: var(--color-status-ok); }
+.callout.warn, .decision-banner.warn { background: color-mix(in oklab, var(--color-status-warn-soft) 85%, transparent); }
+.callout.warn > svg, .decision-banner.warn > svg { color: var(--color-status-warn); }
+.callout.crit, .qc-trigger, .qc-trigger.compact { background: color-mix(in oklab, var(--color-status-crit-soft) 85%, transparent); }
+.callout.crit > svg { color: var(--color-status-crit); }
+.scenario-bar .scenario-pick { display: flex; align-items: center; gap: 10px; }

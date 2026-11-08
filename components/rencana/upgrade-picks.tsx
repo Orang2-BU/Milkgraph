@@ -25,7 +25,7 @@ export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number) => vo
     </header>
 
     <ol className="upgrade-list">
-      {picks.map((p, i) => <li key={p.id} className="upgrade-item">
+      {picks.map((p, i) => <li key={p.id} className="card upgrade-item">
         <span className="upgrade-rank" aria-label={`Peringkat ${i + 1}`}>{i + 1}</span>
         <Equipment kind={kind(p.id)} size={40} />
         <div className="upgrade-body">
@@ -41,7 +41,7 @@ export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number) => vo
       </li>)}
     </ol>
 
-    {skips.length > 0 && <details className="upgrade-skips">
+    {skips.length > 0 && <details className="card upgrade-skips">
       <summary><Icon icon={CircleMinus} size={15} />Tidak disarankan sekarang ({skips.length} alat)</summary>
       <ul>{skips.map(s => <li key={s.id}><strong className="mono">{s.id}</strong> {s.reason}</li>)}</ul>
     </details>}

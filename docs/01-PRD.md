@@ -86,6 +86,8 @@ Pengguna demo: Rino Akbar Hanif (Planner PPIC), Dimas Prasetyo (Koordinator rece
 - **Panduan demo:** urutan demo dua skenario proposal dan tombol "Atur ulang demo" yang menghapus semua keputusan, hold, konfirmasi, dan perubahan batas di browser.
 - **Bukti (`SourceModal`):** setiap chip sumber di halaman mana pun membuka detail bukti (ID, waktu, isi catatan).
 - **Footer:** "Snapshot 14.42 WIB".
+- **Pola tampilan (revisi 7 Nov 2026, poin 13):** urutan tiap halaman: judul, pemberitahuan halaman, satu baris tab halaman (di luar card), lalu isi. Toggle yang hanya mengubah satu card ada di baris atas card itu (mis. Fokus/Semua di Alur, versi rencana di Gantt, arah Trace). Semua kotak sejajar memakai Card (sudut 24 px, kaca). Semua pemberitahuan memakai satu gaya kotak dengan warna status: netral, ok, warn, crit. Di Rencana, pilihan skenario ada di dalam tab Alur rencana dan Kelayakan & keputusan, karena skenario hanya berpengaruh di sana.
+- **Tombol Kembali:** halaman yang dibuka dari tautan di halaman lain menampilkan "Kembali ke ..." di atas judul; halaman detail yang dibuka langsung kembali ke induknya.
 
 **Receiving Flow (`/`)**
 - 4 metrik: throughput receiving vs target 13,3 t/jam, waktu putar RT, tunggu lab test, bay aktif.
