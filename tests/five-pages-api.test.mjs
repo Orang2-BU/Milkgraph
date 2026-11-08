@@ -7,7 +7,8 @@ const read = path => readFileSync(new URL(`../components/${path}`, import.meta.u
 test('Rencana integrates with API mode: uses /plans and /plans/{id}/check, handles loading/error, awaits decidePlan', () => {
   const rencana = read('rencana/rencana.tsx');
   assert.match(rencana, /API_MODE/);
-  assert.match(rencana, /useResource.*"\/plans"/);
+  // Daftar rencana diambil sekali di state bersama sub halaman Rencana.
+  assert.match(read('rencana/rencana-state.tsx'), /useResource.*"\/plans"/);
   assert.match(rencana, /\/plans\/.*\/check/);
   assert.match(rencana, /await decidePlan\(/);
   assert.match(rencana, /catch/);

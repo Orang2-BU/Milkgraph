@@ -42,3 +42,21 @@ test("atur kapasitas: tambahan yang terpakai jalurnya, dan alasan bila tidak ada
   assert.equal(capacityRoom(tanks, fillers, "UHT-3").room, 0);   // sedang CIP
   assert.equal(capacityRoom(tanks, fillers, "ST-3"), null);      // tangki: belum ada laju L/jam
 });
+
+test("dinamis: upgrade yang sedang dicoba dipakai sebagai kapasitas baru, lalu peringkat dihitung ulang", () => {
+  // UHT-2 dicoba ke 8.290 L/jam: jalur AT-2 pas, jadi UHT-2 keluar dari daftar saran dan ditandai sedang dicoba.
+  const { picks, skips, tried } = rankUpgrades(tanks, fillers, { "UHT-2": { upgrade: 19, upgradeTo: 8290 } });
+  assert.ok(!picks.some(p => p.id === "UHT-2"));
+  assert.ok(!skips.some(s => s.id === "UHT-2"));
+  assert.deepEqual(tried, [{ id: "UHT-2", line: "AT-2", from: 6990, to: 8290 }]);
+  assert.equal(picks[0].id, "F1");
+  // Dicoba melebihi kebutuhan: F2/F4 bisa naik memakai sisa pasokan baru.
+  const over = rankUpgrades(tanks, fillers, { "UHT-2": { upgrade: 30, upgradeTo: 8790 } });
+  assert.equal(over.picks.find(p => p.id === "F2").gain, 500);
+});
+
+test("dinamis: mesin filling yang dicoba ikut mengubah kebutuhan jalurnya", () => {
+  const { picks, tried } = rankUpgrades(tanks, fillers, { F1: { upgrade: 6, upgradeTo: 6900 } });
+  assert.ok(!picks.some(p => p.id === "F1"));
+  assert.equal(tried[0].to, 6900);
+});
