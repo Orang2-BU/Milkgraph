@@ -174,6 +174,11 @@ main { padding-top: 28px; min-height: calc(100dvh - 160px); }
 .sparkline { width: 62px; height: 38px; position: absolute; bottom: 24px; right: 0; }
 .sparkline polygon { fill: var(--color-accent-soft); }
 .sparkline polyline { fill: none; stroke: var(--color-accent-fill); stroke-width: 1.5; stroke-linejoin: round; }
+/* Revisi 8 Nov poin 1: warna grafik ikut arah tren, hijau naik dan merah turun. */
+.metric-card.trend-up .metric-delta { color: var(--color-primary); }
+.metric-card.trend-down .metric-delta { color: var(--color-status-crit); }
+.metric-card.trend-down .sparkline polygon { fill: var(--color-status-crit-soft); }
+.metric-card.trend-down .sparkline polyline { stroke: var(--color-status-crit); }
 .flow-card { margin-bottom: 16px; }
 .flow-step { background: var(--color-canvas); border-radius: var(--radius-full); display: flex; gap: 9px; align-items: center; min-height: 64px; padding: 10px 14px; width: 100%; }
 .flow-step:hover { background: var(--color-surface-muted); transform: translateY(-2px); }
@@ -287,7 +292,7 @@ tbody tr:hover { background: color-mix(in oklab, var(--color-surface) 70%, trans
 .question-field { display: flex; align-items: center; gap: 8px; background: var(--color-canvas); border: 1px solid var(--color-border); padding: 4px 4px 4px 14px; border-radius: var(--radius-full); }
 .question-field > svg { color: var(--color-on-surface-muted); }
 .question-field input { min-width: 0; flex: 1; border: 0; background: transparent; outline: none; height: 40px; font-size: 12px; }
-.question-field:focus-within { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.question-field:focus-within { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 16%, transparent); }
 .send-button { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--color-surface-inverse); color: var(--color-on-inverse); }
 .answer-conclusion { margin-top: 12px; line-height: 1.75; font-size: 13px; }
 .factors-title { margin: 24px 0 20px; }
@@ -876,6 +881,8 @@ button.recommendation-saving { min-height: 36px; }
 .line-stats { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
 .line-stats .metric-value { margin-top: 8px; font-size: 24px; }
 .matrix-table td, .matrix-table th { white-space: nowrap; }
+.select-table tbody tr { cursor: pointer; }
+.select-table tbody tr:hover:not(.selected) td { background: color-mix(in oklab, var(--color-surface-muted) 60%, transparent); }
 .select-table tr.selected td { background: color-mix(in oklab, var(--color-accent-soft) 75%, transparent); }
 .row-button { padding: 0; min-height: 32px; text-align: left; }
 .row-button:hover strong, .row-button[aria-pressed=true] strong { color: var(--color-primary); }
@@ -1026,7 +1033,7 @@ main .icon-button { box-shadow: inset 0 0 0 1px var(--color-border); color: var(
 /* Kondisi Alat: tab tampilan + cari, satu tabel semua alat */
 .asset-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
 .asset-search { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; flex: 0 1 320px; border-radius: var(--radius-full); background: var(--glass-chip); box-shadow: var(--glass-rim), var(--shadow-chip); color: var(--color-on-surface-muted); }
-.asset-search:focus-within { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.asset-search:focus-within { outline: none; box-shadow: var(--glass-rim), 0 0 0 1px var(--color-primary), 0 0 0 4px color-mix(in oklab, var(--color-primary) 16%, transparent); }
 .asset-search input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: inherit; font-size: 13px; color: var(--color-on-surface); }
 .asset-table td { font-size: 12px; }
 .asset-table .asset-note { color: var(--color-on-surface-muted); }
@@ -1292,8 +1299,11 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
 .upgrade-tried-actions button { display: inline-flex; align-items: center; gap: 4px; }
 .upgrade-empty { padding: 16px 18px; color: var(--color-on-surface-muted); }
 .upgrade-skips summary { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; }
-.upgrade-skips ul { margin: 10px 0 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--color-on-surface-muted); }
-.upgrade-skips strong { color: var(--color-on-surface); margin-right: 4px; }
+.upgrade-skips > p { margin: 0; font-size: 14px; color: var(--color-on-surface); display: flex; align-items: center; gap: 8px; }
+.upgrade-skips > p svg { flex-shrink: 0; color: var(--color-on-surface-muted); }
+.upgrade-skips ul { margin: 12px 0 0; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--color-on-surface-muted); }
+.upgrade-skips li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: baseline; }
+.upgrade-skips strong { color: var(--color-on-surface); }
 @media (max-width: 899px) {
   .upgrade-item { grid-template-columns: auto minmax(0, 1fr); }
   .upgrade-item .equipment { display: none; }
@@ -1388,7 +1398,7 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
 .plan-chat-quick button { padding: 6px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-full); background: var(--color-surface); font-size: 12px; }
 .plan-chat-quick button:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
 .plan-chat-input { display: flex; align-items: flex-end; gap: 8px; padding: 8px; border: 1px solid color-mix(in oklab, var(--color-on-surface-muted) 45%, transparent); border-radius: var(--radius-md); background: var(--color-surface); }
-.plan-chat-input:focus-within { border-color: var(--color-primary); }
+.plan-chat-input:focus-within { border-color: var(--color-primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 16%, transparent); }
 .plan-chat-input textarea { flex: 1; border: 0; outline: none; resize: none; background: transparent; color: var(--color-on-surface); font-size: 14px; line-height: 1.45; }
 .plan-chat-send { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: var(--radius-sm); background: var(--color-primary); color: var(--color-on-primary); }
 .plan-chat-send:disabled { opacity: .45; cursor: not-allowed; }
@@ -1415,3 +1425,55 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
 .plan-adjusted { flex-wrap: wrap; }
 .plan-adjusted-actions { display: flex; gap: 14px; }
 .plan-adjusted-actions button { display: inline-flex; align-items: center; gap: 4px; }
+
+/* Revisi 8 Nov poin 5: kontrol form global (components/ui/fields.tsx) menggantikan select, date, dan time bawaan browser. */
+.field-control { display: inline-flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid color-mix(in oklab, var(--color-on-surface-muted) 45%, transparent); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-on-surface); font: inherit; font-size: 14px; text-align: left; }
+.field-control.compact { min-height: 36px; width: auto; border-radius: var(--radius-full); font-size: 12px; padding: 0 10px 0 14px; }
+.field-control:hover:not(:disabled) { border-color: color-mix(in oklab, var(--color-primary) 55%, transparent); }
+.field-control[aria-expanded=true] { border-color: var(--color-primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 16%, transparent); }
+.field-control:disabled { opacity: .55; cursor: not-allowed; }
+.field-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.field-value.placeholder { color: var(--color-on-surface-muted); }
+.field-caret { flex-shrink: 0; color: var(--color-on-surface-muted); transition: transform 180ms var(--ease); }
+.field-control[aria-expanded=true] .field-caret { transform: rotate(180deg); color: var(--color-primary); }
+.field-lead { flex-shrink: 0; color: var(--color-on-surface-muted); }
+.field-popover { position: fixed; z-index: 80; display: flex; flex-direction: column; overflow: hidden; padding: 6px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-on-surface); box-shadow: 0 18px 40px -16px color-mix(in oklab, var(--color-surface-inverse) 35%, transparent), 0 2px 6px -2px color-mix(in oklab, var(--color-surface-inverse) 12%, transparent); animation: field-in 140ms var(--ease); font-size: 14px; }
+.field-popover.up { animation-name: field-in-up; }
+@keyframes field-in { from { opacity: 0; transform: translateY(-4px); } }
+@keyframes field-in-up { from { opacity: 0; transform: translateY(4px); } }
+.field-search { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; padding: 0 10px; min-height: 38px; border-radius: var(--radius-sm); background: var(--color-canvas); color: var(--color-on-surface-muted); }
+.field-search input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--color-on-surface); font-size: 13px; }
+.field-options { list-style: none; margin: 0; padding: 0 2px 0 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--color-on-surface-muted) 40%, transparent) transparent; }
+.time-cols ul { scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--color-on-surface-muted) 40%, transparent) transparent; }
+.field-options [role=option] { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 36px; padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; }
+.field-options [role=option] > span { display: flex; flex-direction: column; min-width: 0; }
+.field-options [role=option] small { color: var(--color-on-surface-muted); font-size: 12px; }
+.field-options [role=option].active { background: var(--color-canvas); }
+.field-options [role=option][aria-selected=true] { color: var(--color-primary); font-weight: 600; background: var(--color-accent-soft); }
+.field-options [role=option] svg { flex-shrink: 0; }
+.field-group { padding: 10px 10px 4px; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--color-on-surface-muted); }
+.field-group:first-child { padding-top: 4px; }
+.field-empty { padding: 12px 10px; color: var(--color-on-surface-muted); font-size: 13px; }
+.field-calendar, .field-time { padding: 10px; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+.cal-head strong { font-size: 14px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-dow { display: block; padding: 4px 0; text-align: center; font-size: 11px; color: var(--color-on-surface-muted); }
+.cal-grid button { height: 34px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--color-on-surface); font-size: 13px; }
+.cal-grid button:hover { background: var(--color-canvas); }
+.cal-grid button.selected { background: var(--color-primary); color: var(--color-on-primary); font-weight: 600; }
+.cal-foot { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--color-border); }
+.time-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.time-cols ul { list-style: none; margin: 0; padding: 0; max-height: 220px; overflow-y: auto; overscroll-behavior: contain; }
+.time-cols li { padding: 7px 0; border-radius: var(--radius-sm); text-align: center; cursor: pointer; font-variant-numeric: tabular-nums; }
+.time-cols li:hover { background: var(--color-canvas); }
+.time-cols li.selected { background: var(--color-accent-soft); color: var(--color-primary); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .field-popover { animation: none; } .field-caret { transition: none; } }
+
+/* Revisi 8 Nov lanjutan: kolom teks memakai fokus hijau yang sama dengan Select/DateField/TimeField. */
+.rp-field input:focus, .rp-field input:focus-visible, .plan-cap input:focus, .plan-cap input:focus-visible, textarea:focus, textarea:focus-visible { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 16%, transparent); }
+.plan-chat-input textarea:focus, .plan-chat-input textarea:focus-visible { border: 0; box-shadow: none; }
+.rp-field input:hover:not(:focus), .plan-cap input:hover:not(:focus) { border-color: color-mix(in oklab, var(--color-primary) 55%, transparent); }
+.rp-field input, .plan-cap input, textarea { transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease); }
+/* Titik di depan label Snapshot diberi jarak dan rata tengah. */
+.flow-hint { display: inline-flex; align-items: center; gap: 6px; }

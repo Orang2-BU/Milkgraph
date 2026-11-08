@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { CircleMinus, FlaskConical, Plus, TrendingUp, X } from "lucide-react";
-import { Icon } from "@/components/ui";
+import { useState } from "react";
+import { Icon, Toggle } from "@/components/ui";
 import { Equipment } from "@/components/trace/equipment";
 import { ASSETS } from "@/lib/assets";
 import { useDemo } from "@/lib/demo";
@@ -28,6 +29,8 @@ export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number, to: n
   const broken = (a: Adjustments) => plan ? { before: withAdjust(plan, "before", a, demo.limits).broken, after: withAdjust(plan, "after", a, demo.limits).broken } : null;
   const now = broken(adj);
   const release = (id: string) => setAdj(prev => { const next = { ...prev }; delete next[id]; return next; });
+  // Revisi 8 Nov poin 7: "Tidak disarankan" jadi tab sendiri supaya mudah dibaca, bukan section lipat di bawah.
+  const [tab, setTab] = useState<"disarankan" | "tidak">("disarankan");
 
   return <section className="upgrade-picks" aria-label="Daftar rekomendasi upgrade">
     {tried.length > 0 && <div className="card upgrade-tried">
@@ -39,7 +42,9 @@ export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number, to: n
       {now && <p className="small muted">Dengan upgrade ini: rencana awal melanggar {now.before} dari 6 constraint, rekomendasi solver {now.after} dari 6. Angka yang sama dipakai di Kelayakan & keputusan.</p>}
     </div>}
 
-    {picks.length ? <ol className="upgrade-list">
+    <div className="page-tabs"><Toggle label="Jenis rekomendasi" value={tab} onChange={setTab} options={[{ value: "disarankan", label: `Disarankan (${picks.length})` }, { value: "tidak", label: `Tidak disarankan (${skips.length})` }]} /></div>
+
+    {tab === "disarankan" ? picks.length ? <ol className="upgrade-list">
       {picks.map((p, i) => {
         const next = broken({ ...adj, [p.id]: { upgrade: p.pct, upgradeTo: p.from + p.gain } });
         const same = now && next && next.before === now.before && next.after === now.after;
@@ -59,12 +64,11 @@ export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number, to: n
           <button type="button" className="button secondary" onClick={() => onTry(p.id, p.pct, p.from + p.gain)}><Icon icon={Plus} size={16} />Terapkan ke rencana</button>
         </li>;
       })}
-    </ol> : <p className="card upgrade-empty">Tidak ada upgrade lain yang menambah produksi dengan pengaturan sekarang.</p>}
-
-    {skips.length > 0 && <details className="card upgrade-skips">
-      <summary><Icon icon={CircleMinus} size={15} />Tidak disarankan sekarang ({skips.length} alat)</summary>
-      <ul>{skips.map(s => <li key={s.id}><strong className="mono">{s.id}</strong> {s.reason}</li>)}</ul>
-    </details>}
+    </ol> : <p className="card upgrade-empty">Tidak ada upgrade lain yang menambah produksi dengan pengaturan sekarang.</p>
+      : skips.length ? <div className="card upgrade-skips">
+        <p><Icon icon={CircleMinus} size={16} />Upgrade alat ini tidak menambah produksi pada pasokan sekarang, jadi sebaiknya tidak dilakukan.</p>
+        <ul>{skips.map(s => <li key={s.id}><strong className="mono">{s.id}</strong><span>{s.reason}</span></li>)}</ul>
+      </div> : <p className="card upgrade-empty">Tidak ada alat yang dikecualikan dengan pengaturan sekarang.</p>}
 
     <p className="small muted">Dihitung dari pasokan aseptic tank dan kebutuhan mesin filling yang jalan pada snapshot 14.42 [simulasi], ditambah upgrade yang sudah diterapkan ke rencana. Batas kapasitas mesin dari pabrikan belum ada di data, jadi kelayakan teknis upgrade-nya perlu dicek terpisah [asumsi]. Jalur yang sedang CIP atau siaga tidak dihitung.</p>
   </section>;

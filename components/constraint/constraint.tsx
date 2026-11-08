@@ -152,8 +152,8 @@ export function Constraint() {
 
   if (API_MODE) {
     if (
-      schemaResource.loading ||
-      plansResource.loading ||
+      (schemaResource.loading && !schemaResource.data && !schemaResource.error) ||
+      (plansResource.loading && !plansResource.data && !plansResource.error) ||
       (!schemaResource.data && !schemaResource.error) ||
       (!plansResource.data && !plansResource.error) ||
       (Object.keys(checkMap).length === 0 && !checkError)

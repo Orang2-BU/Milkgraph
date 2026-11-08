@@ -42,13 +42,20 @@ export function useRencana() {
   return c;
 }
 
-/** Baris skenario yang sama di Alur rencana dan Kelayakan & keputusan. */
-export function ScenarioBar({ withMode = false }: { withMode?: boolean }) {
+/** Rencana shift yang sedang berjalan: titik awal Alur rencana, sama dengan kondisi operasional. */
+export const BASE_PLAN = "current";
+
+/**
+ * Baris di atas Alur rencana dan Kelayakan & keputusan. Pilihan skenario hanya di Kelayakan & keputusan;
+ * Alur rencana selalu mulai dari rencana shift berjalan lalu diatur sendiri (revisi 8 Nov poin 6).
+ */
+export function ScenarioBar({ withMode = false, withScenario = true }: { withMode?: boolean; withScenario?: boolean }) {
   const { plans, planId, setPlanId, setView, mode, setMode } = useRencana();
-  const plan = plans?.find(p => p.id === planId) ?? plans?.[0];
+  const shownId = withScenario ? planId : BASE_PLAN;
+  const plan = plans?.find(p => p.id === shownId) ?? plans?.[0];
   const horizon = plan?.horizon ? `Horizon ${plan.horizon.start} - ${plan.horizon.end}` : "Horizon 13.00 - 20.00";
   return <div className="scenario-bar">
-    <span className="scenario-pick"><span className="small muted">Skenario</span><Toggle label="Pilih skenario" value={planId} onChange={id => { setPlanId(id); setView("before"); }} options={(plans ?? []).map(p => ({ value: p.id, label: p.label }))} /></span>
+    {withScenario && <span className="scenario-pick"><span className="small muted">Skenario</span><Toggle label="Pilih skenario" value={planId} onChange={id => { setPlanId(id); setView("before"); }} options={(plans ?? []).map(p => ({ value: p.id, label: p.label }))} /></span>}
     {withMode && <Toggle label="Jenis tampilan" value={mode} onChange={setMode} options={[{ value: "2d", label: "Alur 2D" }, { value: "3d", label: "Alur 3D" }]} />}
     <span className="small muted"><Icon icon={Clock3} size={15} />{horizon}</span>
   </div>;

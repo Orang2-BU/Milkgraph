@@ -72,9 +72,9 @@ export function Pasokan() {
 
   if (API_MODE) {
     if (
-      farmsRes.loading ||
-      demandPlanRes.loading ||
-      trendRes.loading ||
+      (farmsRes.loading && !farmsRes.data && !farmsRes.error) ||
+      (demandPlanRes.loading && !demandPlanRes.data && !demandPlanRes.error) ||
+      (trendRes.loading && !trendRes.data && !trendRes.error) ||
       (!farmsRes.data && !farmsRes.error) ||
       (!demandPlanRes.data && !demandPlanRes.error)
     ) {

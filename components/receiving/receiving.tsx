@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, ArrowUpRight, CalendarClock, ChevronDown, Droplets, FlaskConical, Hourglass, MapPin, PackageCheck, PackageOpen, ShieldCheck, TriangleAlert, Truck } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CalendarClock, Droplets, FlaskConical, Hourglass, MapPin, PackageCheck, PackageOpen, ShieldCheck, TriangleAlert, Truck } from "lucide-react";
 import { scenario } from "@/lib/data";
 import { API_MODE } from "@/lib/api/client";
 import { useResource } from "@/lib/api/resource";
@@ -13,6 +13,7 @@ import { duration, number } from "@/lib/format";
 import { useDemo } from "@/lib/demo";
 import { holdingLeft, violations } from "@/lib/rules";
 import { Badge, Card, Icon, SectionTitle, SourceModal, Toggle } from "@/components/ui";
+import { Select } from "@/components/ui/fields";
 import { MetricGrid } from "./metric-grid";
 import { Queue3D } from "./queue-3d";
 import { queueLayout } from "./queue-layout";
@@ -142,7 +143,7 @@ function ReceivingContent({
         <Card id="antrean-rt" className="truck-card">
           <SectionTitle
             title="Antrean Road Tanker"
-            action={<div className="page-actions"><Toggle label="Tampilan antrean" value={mode} onChange={m => { setMode(m); setPicked(null); }} options={[{ value: "tabel", label: "Tabel" }, { value: "3d", label: "Antrean 3D" }]} />{mode === "tabel" && <label className="filter-select"><span className="sr-only">Filter tahap RT</span><select value={filter} onChange={e => setFilter(e.target.value)}>{stages.map(s => <option key={s} value={s}>{s}</option>)}</select><Icon icon={ChevronDown} size={14} /></label>}</div>}
+            action={<div className="page-actions"><Toggle label="Tampilan antrean" value={mode} onChange={m => { setMode(m); setPicked(null); }} options={[{ value: "tabel", label: "Tabel" }, { value: "3d", label: "Antrean 3D" }]} />{mode === "tabel" && <Select compact label="Filter tahap RT" value={filter} onChange={setFilter} options={stages.map(s => ({ value: s, label: s }))} />}</div>}
           />
           {mode === "3d" ? <>
             <Queue3D tankers={scenarioData.tankers} assets={scenarioData.assets} layout={layout} picked={picked} onPick={setPicked} label="Antrean road tanker dalam 3D, dari kedatangan sampai bay bongkar" />
