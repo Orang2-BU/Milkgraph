@@ -30,7 +30,7 @@ export function buildGraph(graph: Scenario["graph"]): Graph {
     // Dibulatkan: Math.cos/sin berbeda di digit terakhir antara Node (server) dan browser, yang memicu galat hidrasi.
     const at = (v: number) => Math.round(v * 100) / 100;
     const d = degree.get(n.id) ?? 0;
-    return { id: n.id, kind, type: n.type, label: n.label, source: n.source, degree: d, r: 7 + Math.min(d, 6) * 2, x: at(Math.cos(angle) * RING[kind] * 900), y: at(Math.sin(angle) * RING[kind] * 560), vx: 0, vy: 0 };
+    return { id: n.id, kind, type: n.type, label: n.label, source: n.source, degree: d, r: 15 + Math.min(d, 6) * 1.5, x: at(Math.cos(angle) * RING[kind] * 900), y: at(Math.sin(angle) * RING[kind] * 560), vx: 0, vy: 0 };
   });
   const known = new Set(nodes.map(n => n.id));
   const edges = graph.edges.filter(e => known.has(e.source) && known.has(e.target)).map(e => ({ source: e.source, target: e.target, label: e.label, planned: e.planned }));

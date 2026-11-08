@@ -170,7 +170,7 @@ Pengguna demo: Rino Akbar Hanif (Planner PPIC), Dimas Prasetyo (Koordinator rece
 - QA menyetujui, menolak, atau melepas (alasan wajib untuk tolak dan lepas); laporan genealogi yang bisa dicetak.
 
 **Context Graph (`/graph`)**
-- Graf force-directed seluruh node dan relasi (asal susu, mutu & CIP, aset & proses, lot); ukuran node mengikuti jumlah relasi; panel detail dengan arah relasi dan sumber.
+- Graf force-directed seluruh node dan relasi (asal susu, mutu & CIP, aset & proses, lot); ukuran node mengikuti jumlah relasi; panel detail dengan arah relasi dan sumber. Sejak 8 Nov 2026 tiap node berisi ikon jenisnya (traktor farm, truk RT, labu hasil lab, tetes CIP, gudang bay, silinder tangki, pabrik mesin filling, paket lot, dan seterusnya) di dalam bentuk kelompoknya, dengan legenda "Arti ikon" dan ikon yang sama di daftar relasi.
 
 **Sumber Data (`/sumber-data`)**
 - Enam konektor read-only (Historian SCADA, LIMS, weighbridge, kontroler CIP, MES filling, ERP gudang) dengan uji koneksi, sinkron, dan pemetaan ke node graph.
