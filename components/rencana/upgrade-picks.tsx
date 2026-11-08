@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CircleMinus, FlaskConical, TrendingUp, X } from "lucide-react";
+import { CircleMinus, FlaskConical, Plus, TrendingUp, X } from "lucide-react";
 import { Icon } from "@/components/ui";
 import { Equipment } from "@/components/trace/equipment";
 import { ASSETS } from "@/lib/assets";
@@ -18,7 +18,7 @@ const kind = (id: string) => ASSETS.find(a => a.id === id)?.kind ?? "filler";
 
 /**
  * Daftar di Rencana > Rekomendasi upgrade (poin 10). Dihitung ulang dari upgrade yang sedang dicoba dan skenario terpilih:
- * tiap saran menampilkan efeknya ke constraint, dan upgrade yang sudah dicoba pindah ke "Sedang dicoba".
+ * tiap saran menampilkan efeknya ke constraint, dan upgrade yang sudah dicoba pindah ke "Diterapkan ke rencana".
  */
 export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number, to: number) => void }) {
   const { adj, setAdj, plans, planId } = useRencana();
@@ -31,7 +31,7 @@ export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number, to: n
 
   return <section className="upgrade-picks" aria-label="Daftar rekomendasi upgrade">
     {tried.length > 0 && <div className="card upgrade-tried">
-      <h2><Icon icon={FlaskConical} size={17} />Sedang dicoba ({tried.length})</h2>
+      <h2><Icon icon={FlaskConical} size={17} />Diterapkan ke rencana ({tried.length})</h2>
       <ul>{tried.map(x => <li key={x.id}>
         <span><strong className="mono">{x.id}</strong> {fmt(x.from)} ke {fmt(x.to)} L/jam <span className="muted">jalur {x.line}</span></span>
         <span className="upgrade-tried-actions"><Link className="text-link" href="/rencana/alur">Lihat di alur</Link><button type="button" className="text-link" onClick={() => release(x.id)}><Icon icon={X} size={14} />Lepas</button></span>
@@ -56,7 +56,7 @@ export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number, to: n
             <span>{fmt(p.from)} ke {fmt(p.from + p.gain)} L/jam (naik {p.pct}%)</span>
             <span>sekitar +{fmt(p.gain * 8)} L per shift 8 jam</span>
           </div>
-          <button type="button" className="button secondary" onClick={() => onTry(p.id, p.pct, p.from + p.gain)}>Coba di Alur rencana<Icon icon={ArrowRight} size={16} /></button>
+          <button type="button" className="button secondary" onClick={() => onTry(p.id, p.pct, p.from + p.gain)}><Icon icon={Plus} size={16} />Terapkan ke rencana</button>
         </li>;
       })}
     </ol> : <p className="card upgrade-empty">Tidak ada upgrade lain yang menambah produksi dengan pengaturan sekarang.</p>}
@@ -66,6 +66,6 @@ export function UpgradePicks({ onTry }: { onTry: (id: string, pct: number, to: n
       <ul>{skips.map(s => <li key={s.id}><strong className="mono">{s.id}</strong> {s.reason}</li>)}</ul>
     </details>}
 
-    <p className="small muted">Dihitung dari pasokan aseptic tank dan kebutuhan mesin filling yang jalan pada snapshot 14.42 [simulasi], ditambah upgrade yang sedang dicoba. Batas kapasitas mesin dari pabrikan belum ada di data, jadi kelayakan teknis upgrade-nya perlu dicek terpisah [asumsi]. Jalur yang sedang CIP atau siaga tidak dihitung.</p>
+    <p className="small muted">Dihitung dari pasokan aseptic tank dan kebutuhan mesin filling yang jalan pada snapshot 14.42 [simulasi], ditambah upgrade yang sudah diterapkan ke rencana. Batas kapasitas mesin dari pabrikan belum ada di data, jadi kelayakan teknis upgrade-nya perlu dicek terpisah [asumsi]. Jalur yang sedang CIP atau siaga tidak dihitung.</p>
   </section>;
 }
