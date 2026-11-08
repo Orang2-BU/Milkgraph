@@ -13,16 +13,16 @@ export type UnitState = "jalan" | "cip" | "siaga" | "breakdown" | "ganti-format"
 export interface Filler { id: string; resource: string; product: string; pack: Pack; speed: number; target: number; output: number; litres: number; state: UnitState; note: string; source: string }
 export interface AsepticTank { id: string; sterilizer: string; sterilizerState: UnitState; product: string; level: number; capacity: number; inflow: { before: number; after: number }; fillers: string[]; planned: boolean }
 export const fillers: Filler[] = [
-  { id: "F1", resource: "Filling F1", product: "UHT Full Cream 1 L", pack: "Big Pack", speed: 104, target: 110, output: 10_420, litres: 6_550, state: "jalan", note: "Changeover size 16.00, lalu UHT Cokelat 200 ml", source: "FILL-F1" },
-  { id: "F3", resource: "Filling F3", product: "UHT Full Cream 1 L", pack: "Big Pack", speed: 0, target: 110, output: 4_310, litres: 0, state: "siaga", note: "Siaga, AT-1 cukup untuk satu lini", source: "FILL-F1" },
+  { id: "F1", resource: "Filling F1", product: "UHT Full Cream 1 L", pack: "Big Pack", speed: 104, target: 110, output: 10_420, litres: 6_550, state: "jalan", note: "Ganti ukuran kemasan pukul 16.00, lalu lanjut UHT Cokelat 200 ml", source: "FILL-F1" },
+  { id: "F3", resource: "Filling F3", product: "UHT Full Cream 1 L", pack: "Big Pack", speed: 0, target: 110, output: 4_310, litres: 0, state: "siaga", note: "Siaga karena AT-1 hanya cukup untuk satu lini", source: "FILL-F1" },
   { id: "F2", resource: "Filling F2", product: "UHT Stroberi 200 ml", pack: "Medium Pack", speed: 518, target: 540, output: 51_870, litres: 6_400, state: "jalan", note: "Sepanjang shift", source: "FILL-F2" },
   { id: "F4", resource: "Filling F4", product: "UHT Stroberi Kids 105 ml", pack: "Small Pack", speed: 286, target: 300, output: 27_940, litres: 1_890, state: "jalan", note: "Berbagi AT-2 dengan F2", source: "FILL-F4" },
-  { id: "F5", resource: "Filling F5", product: "UHT Cokelat 200 ml", pack: "Medium Pack", speed: 0, target: 540, output: 38_200, litres: 0, state: "cip", note: "Ikut CIP UHT-3 sampai 15.10", source: "CIP-LOG" },
-  { id: "F6", resource: "Filling F6", product: "UHT Cokelat 200 ml", pack: "Medium Pack", speed: 0, target: 540, output: 36_950, litres: 0, state: "cip", note: "Ikut CIP UHT-3 sampai 15.10", source: "CIP-LOG" },
+  { id: "F5", resource: "Filling F5", product: "UHT Cokelat 200 ml", pack: "Medium Pack", speed: 0, target: 540, output: 38_200, litres: 0, state: "cip", note: "Ikut berhenti selama UHT-3 CIP sampai pukul 15.10", source: "CIP-LOG" },
+  { id: "F6", resource: "Filling F6", product: "UHT Cokelat 200 ml", pack: "Medium Pack", speed: 0, target: 540, output: 36_950, litres: 0, state: "cip", note: "Ikut berhenti selama UHT-3 CIP sampai pukul 15.10", source: "CIP-LOG" },
   { id: "F7", resource: "Filling F7", product: "UHT Low Fat 1 L", pack: "Big Pack", speed: 101, target: 110, output: 9_880, litres: 6_060, state: "jalan", note: "Sepanjang shift", source: "FILL-F1" },
-  { id: "F8", resource: "Filling F8", product: "UHT Low Fat 250 ml", pack: "Medium Pack", speed: 0, target: 420, output: 12_300, litres: 0, state: "ganti-format", note: "Ganti format 1 L ke 250 ml sampai 15.05", source: "FILL-F1" },
-  { id: "F9", resource: "Filling F9", product: "UHT Full Cream 200 ml", pack: "Medium Pack", speed: 0, target: 540, output: 0, litres: 0, state: "siaga", note: "Siaga, menunggu UHT-5", source: "FILL-F2" },
-  { id: "F10", resource: "Filling F10", product: "UHT Full Cream 200 ml", pack: "Medium Pack", speed: 0, target: 540, output: 0, litres: 0, state: "breakdown", note: "Seal jaw rusak, tiket MT-2231, perkiraan pulih 16.30", source: "FILL-F2" },
+  { id: "F8", resource: "Filling F8", product: "UHT Low Fat 250 ml", pack: "Medium Pack", speed: 0, target: 420, output: 12_300, litres: 0, state: "ganti-format", note: "Ganti format dari 1 L ke 250 ml sampai pukul 15.05", source: "FILL-F1" },
+  { id: "F9", resource: "Filling F9", product: "UHT Full Cream 200 ml", pack: "Medium Pack", speed: 0, target: 540, output: 0, litres: 0, state: "siaga", note: "Siaga sambil menunggu UHT-5", source: "FILL-F2" },
+  { id: "F10", resource: "Filling F10", product: "UHT Full Cream 200 ml", pack: "Medium Pack", speed: 0, target: 540, output: 0, litres: 0, state: "breakdown", note: "Seal jaw rusak. Tiket perbaikan MT-2231, perkiraan pulih pukul 16.30", source: "FILL-F2" },
 ];
 export const asepticTanks: AsepticTank[] = [
   { id: "AT-1", sterilizer: "UHT-1", sterilizerState: "jalan", product: "UHT Full Cream 1 L", level: 18_600, capacity: 30_000, inflow: { before: 6_900, after: 6_900 }, fillers: ["F1", "F3"], planned: true },
@@ -37,18 +37,18 @@ export const UNIT_STATE: Record<UnitState, { label: string; tone: Tone }> = { ja
 export const changeoverMatrix = {
   products: ["UHT Full Cream 1 L", "UHT Cokelat 200 ml", "UHT Stroberi 200 ml"],
   minutes: (["UHT Full Cream 1 L", "UHT Cokelat 200 ml", "UHT Stroberi 200 ml"] as const).map(from => ["UHT Full Cream 1 L", "UHT Cokelat 200 ml", "UHT Stroberi 200 ml"].map(to => from === to ? 0 : SOP_CHANGEOVER[`${from}>${to}`])),
-  note: "Ganti size (1 L ke 200 ml) butuh penggantian format; ganti rasa butuh bilas produk; dari rasa ke Full Cream wajib bilas lebih lama. Ganti roll kemasan (paper) 15 menit di semua kombinasi.",
+  note: "Ganti ukuran kemasan (1 L ke 200 ml) butuh penggantian format. Ganti rasa butuh bilas produk, dan dari rasa ke Full Cream bilasnya lebih lama. Ganti roll kemasan (paper) butuh 15 menit di semua kombinasi.",
 };
 
 /** Tangki tengah proses: tempat celah serah-terima batch Greenfields ("Tank not ready, CIP/occupied"). */
 export interface MidTank { id: string; group: "Storage" | "Cream" | "Premix" | "Mixing"; content: string; level: number; capacity: number; batch: string; state: "terisi" | "kosong" | "cip" | "tertahan"; note: string }
 export const midTanks: MidTank[] = [
   { id: "ST-1", group: "Storage", content: "Full Cream terstandar", level: 22_400, capacity: 40_000, batch: "STB-1014-01", state: "terisi", note: "Ke UHT-1" },
-  { id: "ST-2", group: "Storage", content: "Kosong", level: 0, capacity: 40_000, batch: "-", state: "cip", note: "CIP sampai 15.40, tidak bisa menerima" },
+  { id: "ST-2", group: "Storage", content: "Kosong", level: 0, capacity: 40_000, batch: "-", state: "cip", note: "Sedang CIP sampai pukul 15.40, belum bisa menerima susu" },
   { id: "ST-3", group: "Storage", content: "Stroberi base", level: 31_000, capacity: 40_000, batch: "STB-1014-03", state: "terisi", note: "Ke MX-1" },
-  { id: "ST-4", group: "Storage", content: "Kosong", level: 0, capacity: 40_000, batch: "-", state: "kosong", note: "Siap, CIP 12.10. Tujuan batch berikutnya dari SP-1" },
+  { id: "ST-4", group: "Storage", content: "Kosong", level: 0, capacity: 40_000, batch: "-", state: "kosong", note: "Siap menerima, terakhir CIP pukul 12.10. Jadi tujuan batch berikutnya dari SP-1" },
   { id: "ST-5", group: "Storage", content: "Low Fat terstandar", level: 18_200, capacity: 40_000, batch: "STB-1014-05", state: "terisi", note: "Ke UHT-4" },
-  { id: "ST-6", group: "Storage", content: "Full Cream terstandar", level: 36_900, capacity: 40_000, batch: "STB-1014-06", state: "tertahan", note: "Menunggu hasil uji lemak, tertahan sejak 13.55" },
+  { id: "ST-6", group: "Storage", content: "Full Cream terstandar", level: 36_900, capacity: 40_000, batch: "STB-1014-06", state: "tertahan", note: "Tertahan sejak pukul 13.55 sambil menunggu hasil uji lemak" },
   { id: "CT-1", group: "Cream", content: "Cream 38%", level: 9_800, capacity: 15_000, batch: "CRB-1014-01", state: "terisi", note: "Untuk standardisasi Full Cream" },
   { id: "CT-2", group: "Cream", content: "Cream 38%", level: 4_100, capacity: 15_000, batch: "CRB-1014-02", state: "terisi", note: "Untuk whipping cream" },
   { id: "CT-3", group: "Cream", content: "Kosong", level: 0, capacity: 15_000, batch: "-", state: "cip", note: "CIP sampai 15.00" },
@@ -59,7 +59,7 @@ export const midTanks: MidTank[] = [
 
 /** Posisi lot barang jadi dari ERP gudang: lot yang sudah dikirim butuh recall, yang masih di gudang cukup hold. */
 export const lotLocation: Record<string, { place: string; shipped: boolean }> = {
-  "FG-1013-05": { place: "Terkirim ke DC Sidoarjo, 14 Okt 06.10", shipped: true },
+  "FG-1013-05": { place: "Sudah dikirim ke DC Sidoarjo, 14 Okt pukul 06.10", shipped: true },
   "FG-1013-06": { place: "Gudang FG, rak C-12", shipped: false },
   "FG-1013-07": { place: "Gudang FG, rak C-14", shipped: false },
   "FG-1013-08": { place: "Gudang FG, rak C-15", shipped: false },
@@ -100,10 +100,10 @@ export const trend = {
 export interface CipRecord { asset: string; last: string; hoursSince: number; next: string; status: string; tone: Tone }
 export const cipLog: CipRecord[] = [
   { asset: "Bay 1", last: "06.10", hoursSince: 8.5, next: "18.30", status: "Siap", tone: "ok" },
-  { asset: "Bay 2", last: "14.10", hoursSince: 0, next: "Berjalan, selesai 15.20", status: "CIP berjalan", tone: "warn" },
+  { asset: "Bay 2", last: "14.10", hoursSince: 0, next: "Sedang berjalan, selesai pukul 15.20", status: "CIP berjalan", tone: "warn" },
   { asset: "Bay 3", last: "08.40", hoursSince: 6, next: "20.10", status: "Siap", tone: "ok" },
-  { asset: "RMT-1", last: "13 Okt 22.05", hoursSince: 16.6, next: "Setelah kosong, perkiraan 19.40", status: "Siap", tone: "ok" },
-  { asset: "RMT-2", last: "13 Okt 20.30", hoursSince: 18.2, next: "Setelah kosong, perkiraan 21.15", status: "Mendekati batas 24 jam [asumsi]", tone: "warn" },
+  { asset: "RMT-1", last: "13 Okt 22.05", hoursSince: 16.6, next: "Setelah tangki kosong, perkiraan pukul 19.40", status: "Siap", tone: "ok" },
+  { asset: "RMT-2", last: "13 Okt 20.30", hoursSince: 18.2, next: "Setelah tangki kosong, perkiraan pukul 21.15", status: "Mendekati batas 24 jam [asumsi]", tone: "warn" },
   { asset: "RMT-3", last: "14 Okt 09.20", hoursSince: 5.4, next: "Setelah kosong", status: "Siap", tone: "ok" },
 ];
 
@@ -131,6 +131,11 @@ export const labResults: LabResult[] = [
     { name: "Inkubasi 7 hari 30 °C", value: "Belum selesai", limit: "Steril", ok: null },
     { name: "pH", value: "6,74", limit: "6,6 - 6,9", ok: true },
   ], source: "LAB-8812" },
+  { id: "LAB-8806", kind: "qc-fg", subject: "FG-1012-11", detail: "UHT Stroberi 200 ml · Filling F2", sampled: "12 Okt 16.20", status: "lulus", params: [
+    { name: "Residu antibiotik beta-laktam", value: "Negatif", limit: "Negatif", ok: true },
+    { name: "Inkubasi 7 hari 30 °C", value: "Belum selesai", limit: "Steril", ok: null },
+    { name: "pH", value: "6,78", limit: "6,6 - 6,9", ok: true },
+  ], source: "TR-FILL" },
   { id: "LAB-8809", kind: "qc-fg", subject: "FG-1013-04", detail: "UHT Full Cream 1 L · Filling F1", sampled: "13 Okt 19.40", status: "lulus", params: [
     { name: "Residu antibiotik beta-laktam", value: "Negatif", limit: "Negatif", ok: true },
     { name: "Inkubasi 7 hari 30 °C", value: "Belum selesai", limit: "Steril", ok: null },
@@ -150,11 +155,11 @@ export const dataSources: DataSource[] = [
 
 /** Riwayat sebelum sesi demo (13 Okt), supaya Riwayat Persetujuan dan Daftar Hold tidak kosong. */
 export const pastLog: LogEntry[] = [
-  { id: 4, kind: "hold", title: "Hold dilepas", detail: "HOLD-2610 · FG-1012-03", note: "Uji ulang sampel retensi negatif, lot dilepas ke gudang kirim.", by: "Sri Lestari", role: "QA/Lab", at: "13 Okt 16.20", tone: "ok" },
+  { id: 4, kind: "hold", title: "Hold dilepas", detail: "HOLD-2610 · FG-1012-03", note: "Hasil uji ulang sampel retensi negatif, jadi lot dilepas ke gudang kirim.", by: "Sri Lestari", role: "QA/Lab", at: "13 Okt 16.20", tone: "ok" },
   { id: 3, kind: "rencana", title: "Rekomendasi disetujui", detail: "Rencana shift pagi: RT-11 dipindah ke Bay 3", note: "Bay 1 maintenance seal pompa, koordinasi dengan receiving.", by: "Rino Akbar Hanif", role: "Planner PPIC", at: "13 Okt 07.15", tone: "ok" },
   { id: 2, kind: "lab", title: "Hasil lab RT-09 dirilis", detail: "LAB-8790", note: "", by: "Sri Lestari", role: "QA/Lab", at: "13 Okt 06.32", tone: "ok" },
   { id: 1, kind: "lab", title: "Hasil lab RT-07 ditolak", detail: "LAB-8786", note: "Alcohol test positif dua kali, RT dikembalikan ke farm.", by: "Sri Lestari", role: "QA/Lab", at: "13 Okt 05.48", tone: "crit" },
 ];
 export const pastHolds: Hold[] = [
-  { id: "HOLD-2610", trigger: "FG-1012-03", rt: "RT-17", lots: [{ id: "FG-1012-03", product: "UHT Full Cream 1 L", percent: 22, packs: 9_840 }, { id: "FG-1012-04", product: "UHT Full Cream 1 L", percent: 9, packs: 9_610 }], note: "TPC FG di atas batas pada inkubasi hari ke-3.", status: "dilepas", by: "Hendra Kusuma", at: "12 Okt 21.10", review: { note: "Uji ulang sampel retensi negatif, lot dilepas ke gudang kirim.", by: "Sri Lestari", at: "13 Okt 16.20" } },
+  { id: "HOLD-2610", trigger: "FG-1012-03", rt: "RT-17", lots: [{ id: "FG-1012-03", product: "UHT Full Cream 1 L", percent: 22, packs: 9_840 }, { id: "FG-1012-04", product: "UHT Full Cream 1 L", percent: 9, packs: 9_610 }], note: "TPC FG di atas batas pada inkubasi hari ke-3.", status: "dilepas", by: "Hendra Kusuma", at: "12 Okt 21.10", review: { note: "Hasil uji ulang sampel retensi negatif, jadi lot dilepas ke gudang kirim.", by: "Sri Lestari", at: "13 Okt 16.20" } },
 ];

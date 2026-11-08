@@ -34,7 +34,7 @@ const strawberry: Handoff[] = [
 ];
 
 export const OUTPUTS: Output[] = [
-  { id: "FG-1012-11", product: "UHT Stroberi 200 ml", line: "F2", date: "2026-10-12", end: "16.00", packs: 7400, farm: "Farm Sumberejo", chain: strawberry, qc: { status: "lulus", lab: "", note: "QC barang jadi lulus semua parameter." } },
+  { id: "FG-1012-11", product: "UHT Stroberi 200 ml", line: "F2", date: "2026-10-12", end: "16.00", packs: 7400, farm: "Farm Sumberejo", chain: strawberry, qc: { status: "lulus", lab: "", note: "QC barang jadi lulus (LAB-8806, 12 Okt 16.20). Inkubasi 7 hari masih berjalan." } },
   ...cocoaLots.map(([id, packs]) => ({
     id, product: "UHT Cokelat 200 ml", line: "F2", date: "2026-10-13", end: null, packs, farm: "Farm Ngadirejo", chain: cocoa,
     qc: id === "FG-1013-07" ? { status: "out-of-spec" as const, lab: "LAB-8812", note: "Residu antibiotik beta-laktam positif, di atas batas (13 Okt 22.40)." } : null,

@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Bell, Check, ChevronDown, ChevronsLeft, ChevronsRight, Menu, X, CircleHelp, ArrowUpRight, Clock3, RotateCcw } from "lucide-react";
-import { findNav } from "@/lib/nav";
+import { Bell, Check, ChevronDown, ChevronsLeft, ChevronsRight, Menu, X, CircleHelp, ArrowUpRight, Clock3, RotateCcw, ArrowLeft } from "lucide-react";
+import { findNav, isDetail, pageTitle } from "@/lib/nav";
 import { BranchedNav } from "@/components/shell/branched-nav";
 import { scenario } from "@/lib/data";
 import { Badge, Icon, Modal, SourceModal } from "@/components/ui";
@@ -53,6 +53,15 @@ interface RolesPayload {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  // Riwayat pindah halaman di dalam aplikasi, untuk tombol Kembali. Pindah lewat sidebar atau breadcrumb mengosongkannya.
+  const [trail, setTrail] = useState<{ at: string; stack: string[]; viaMenu: boolean }>({ at: pathname, stack: [], viaMenu: false });
+  if (trail.at !== pathname) {
+    const { at, stack, viaMenu } = trail;
+    setTrail({ at: pathname, viaMenu: false, stack: viaMenu ? [] : stack.at(-1) === pathname ? stack.slice(0, -1) : [...stack, at] });
+  }
+  const fromMenu = () => setTrail(t => ({ ...t, viaMenu: true }));
+  const prev = trail.stack.at(-1);
   const [collapsed, setCollapsed] = useState<boolean | null>(null);
   const [drawer, setDrawer] = useState(false);
   const [panel, setPanel] = useState<"shift" | "notifications" | "profile" | "help" | null>(null);
@@ -136,8 +145,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   function renderNavigation(mobile = false) {
     return <>
-      <div className="brand-row"><Link href="/" className="brand" aria-label="MilkGraph, Beranda" onClick={() => setDrawer(false)}><svg className="brand-symbol" viewBox="44 60 184 136" aria-hidden="true"><path fill="var(--color-surface-inverse)" d="M44 116A56 56 0 0 1 156 116V196H116V116A16 16 0 0 0 84 116H44ZM116 196V116A56 56 0 0 1 228 116V196H188V116A16 16 0 0 0 156 116V196Z" /><circle fill="var(--color-accent-fill)" cx="64" cy="176" r="20" /></svg><span className="nav-label">MilkGraph<span className="brand-caption">Dairy operations</span></span></Link>{mobile && <button className="icon-button" aria-label="Tutup menu" onClick={() => setDrawer(false)}><Icon icon={X} /></button>}</div>
-      <BranchedNav pathname={pathname} onNavigate={() => setDrawer(false)} />
+      <div className="brand-row"><Link href="/" className="brand" aria-label="MilkGraph, Beranda" onClick={() => { setDrawer(false); fromMenu(); }}><svg className="brand-symbol" viewBox="44 60 184 136" aria-hidden="true"><path fill="var(--color-surface-inverse)" d="M44 116A56 56 0 0 1 156 116V196H116V116A16 16 0 0 0 84 116H44ZM116 196V116A56 56 0 0 1 228 116V196H188V116A16 16 0 0 0 156 116V196Z" /><circle fill="var(--color-accent-fill)" cx="64" cy="176" r="20" /></svg><span className="nav-label">MilkGraph<span className="brand-caption">Dairy operations</span></span></Link>{mobile && <button className="icon-button" aria-label="Tutup menu" onClick={() => setDrawer(false)}><Icon icon={X} /></button>}</div>
+      <BranchedNav pathname={pathname} onNavigate={() => { setDrawer(false); fromMenu(); }} />
       <div className="sidebar-bottom"><button className="nav-item help" onClick={() => { setDrawer(false); setPanel("help"); }} aria-label="Panduan demo"><span className="nav-icon"><Icon icon={CircleHelp} size={22} /></span><span className="nav-label">Panduan demo</span></button><button className="account" onClick={() => { setDrawer(false); setPanel("profile"); }} aria-label={`Lihat akun ${me.user}, ganti peran`}><span className="avatar">{me.initials}</span><span className="account-copy nav-label"><strong>{me.user}</strong><span>{me.label}</span></span><Icon icon={ChevronDown} size={15} className="nav-label" /></button></div>
     </>;
   }
@@ -150,7 +159,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="topbar-start">
           <button className="icon-button desktop-toggle" aria-label="Buka atau ciutkan sidebar" aria-expanded={collapsed === null ? undefined : !collapsed} aria-controls="desktop-navigation" onClick={() => setCollapsed(collapsed === null ? window.innerWidth >= 1200 : !collapsed)}><Icon icon={collapsed === false ? ChevronsLeft : ChevronsRight} /></button>
           <button ref={menuButton} className="icon-button mobile-menu" aria-label="Buka menu" aria-expanded={drawer} aria-controls="mobile-navigation" onClick={() => setDrawer(true)}><Icon icon={Menu} /></button>
-          <span className="breadcrumb">{current.item.tabs.length > 1 && <>{current.item.label}<span>/</span></>}{pathname === current.tab.href ? <strong>{current.tab.label}</strong> : <Link href={current.tab.href}>{current.tab.label}</Link>}</span>
+          <span className="breadcrumb">{current.item.tabs.length > 1 && <>{current.item.label}<span>/</span></>}{pathname === current.tab.href ? <strong>{current.tab.label}</strong> : <Link href={current.tab.href} onClick={fromMenu}>{current.tab.label}</Link>}</span>
         </div>
         <div className="topbar-actions">
           <Badge>Data simulasi</Badge>
@@ -163,7 +172,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main id="main-content" tabIndex={-1}>
-        {current.item.tabs.length > 1 && <nav className="section-tabs sub-tabs" aria-label={`Bagian ${current.item.label}`}>{current.item.tabs.map(tab => <Link key={tab.href} href={tab.href} className={tab === current.tab ? "selected" : ""} aria-current={tab === current.tab ? "page" : undefined}>{tab.label}</Link>)}</nav>}
+        {prev ? <button type="button" className="back-link" onClick={() => router.back()}><Icon icon={ArrowLeft} size={16} />Kembali ke {pageTitle(prev)}</button>
+          : isDetail(pathname) && <Link className="back-link" href={current.tab.href} onClick={fromMenu}><Icon icon={ArrowLeft} size={16} />Kembali ke {current.tab.label}</Link>}
         {children}
       </main>
       <footer className="workspace-footer"><span>MilkGraph <span className="footer-divider">/</span> Context graph operasional pabrik susu</span><span>{snapshotFooter} <span className="status-dot" /></span></footer>
@@ -193,7 +203,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           ) : (
             <button className="shift-choice" onClick={() => setPanel(null)}>
               <strong>Shift Siang</strong>
-              <span>14.00 - 22.00 · Snapshot 14.42</span>
+              <span>Pukul 14.00 - 22.00, snapshot pukul 14.42</span>
               <Badge tone="ok">Dipilih</Badge>
             </button>
           )}
@@ -223,9 +233,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           ) : (
             <div className="notification-list">
               {[
-                { title: "Rencana shift tidak layak", subtitle: `${broken} constraint dilanggar · cek rekomendasi solver`, id: "PLAN-FIFO" },
-                { title: "RT-26 mendekati batas holding time", subtitle: "Tersisa 1j 10m · menunggu bay", id: "HOLD-RT26" },
-                { title: "QC FG out-of-spec FG-1013-07", subtitle: "Residu antibiotik · jalankan trace", id: "LAB-8812" },
+                { title: "Rencana shift tidak layak", subtitle: `${broken} constraint dilanggar, cek rekomendasi solver`, id: "PLAN-FIFO" },
+                { title: "RT-26 mendekati batas holding time", subtitle: "Sisa 1 jam 10 menit dan masih menunggu bay", id: "HOLD-RT26" },
+                { title: "QC FG out-of-spec FG-1013-07", subtitle: "Residu antibiotik terdeteksi, jalankan trace", id: "LAB-8812" },
               ].map(n => (
                 <button key={n.id} onClick={() => { setPanel(null); setSource(n.id); }}>
                   <span><strong>{n.title}</strong><span>{n.subtitle}</span></span>
@@ -237,7 +247,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </>
       )}
       {panel === "profile" && <>
-        <p className="muted">Peran menentukan tombol yang aktif. Planner menyetujui rencana, QA/Lab menyetujui hold dan hasil lab.</p>
+        <p className="muted">Peran menentukan tombol mana yang aktif. Planner menyetujui rencana, sedangkan QA/Lab menyetujui hold dan hasil lab.</p>
         {roleError && <p className="small crit-text" role="alert" style={{ marginBottom: "0.5rem" }}>{roleError}</p>}
         <div className="role-list">
           {roleIds.map(id => {
@@ -260,9 +270,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             );
           })}
         </div>
-        <p className="small muted">Persetujuan hanya berlaku dalam simulasi. Aplikasi tidak mengendalikan bay, mesin, atau stok nyata. <Link className="inline-link" href="/pengguna" onClick={() => setPanel(null)}>Lihat hak akses per peran</Link></p>
+        <p className="small muted">Persetujuan hanya berlaku dalam simulasi. Aplikasi tidak mengendalikan bay, mesin, atau stok yang sebenarnya. <Link className="inline-link" href="/pengguna" onClick={() => setPanel(null)}>Lihat hak akses per peran</Link></p>
       </>}
-      {panel === "help" && <><p>Dua skenario demo dari proposal, dari temuan sampai keputusan.</p><ol className="guide-list"><li><strong>Antrean Truk</strong><p>Lihat antrean RT menumpuk di lab test dan Bay 2 yang sedang CIP.</p></li><li><strong>Rencana & What-if</strong><p>Rencana FIFO ditandai tidak layak. Bandingkan rekomendasi solver, lalu setujui atau tolak.</p></li><li><strong>Simulasi 3D</strong><p>Bandingkan lokasi bottleneck sebelum dan sesudah rekomendasi.</p></li><li><strong>Traceability</strong><p>Dari QC FG out-of-spec, trace mundur ke RT dan farm, lalu trace maju untuk daftar hold.</p></li></ol><Badge>Semua data adalah simulasi</Badge><button className="button secondary wide reset-demo" disabled={resetting} onClick={() => void handleResetDemo()}><Icon icon={RotateCcw} size={16} />{resetting ? "Mengatur ulang demo…" : "Atur ulang demo"}</button>{resetError && <p className="small crit-text" role="alert">{resetError}</p>}<p className="small muted">Menghapus keputusan, hold, konfirmasi, dan perubahan constraint yang tersimpan di browser ini.</p></>}
+      {panel === "help" && <><p>Ada dua skenario demo dari proposal, mulai dari temuan sampai keputusan.</p><ol className="guide-list"><li><strong>Antrean Truk</strong><p>Lihat antrean RT menumpuk di lab test dan Bay 2 yang sedang CIP.</p></li><li><strong>Rencana & What-if</strong><p>Rencana FIFO ditandai tidak layak. Bandingkan rekomendasi solver, lalu setujui atau tolak.</p></li><li><strong>Simulasi 3D</strong><p>Bandingkan lokasi bottleneck sebelum dan sesudah rekomendasi.</p></li><li><strong>Traceability</strong><p>Di Riwayat Produksi, pilih lot FG-1013-07 yang out-of-spec. Dari sana, telusuri mundur ke RT dan farm, lalu maju ke lot lain untuk daftar hold.</p></li></ol><Badge>Semua data adalah simulasi</Badge><button className="button secondary wide reset-demo" disabled={resetting} onClick={() => void handleResetDemo()}><Icon icon={RotateCcw} size={16} />{resetting ? "Mengatur ulang demo…" : "Atur ulang demo"}</button>{resetError && <p className="small crit-text" role="alert">{resetError}</p>}<p className="small muted">Menghapus keputusan, hold, konfirmasi, dan perubahan constraint yang tersimpan di browser ini.</p></>}
     </Modal>}
     <SourceModal id={source} onClose={() => setSource(null)} />
   </div>;

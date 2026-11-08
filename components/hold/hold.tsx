@@ -17,8 +17,8 @@ import { GenealogyReport, lotAction } from "@/components/trace/genealogy";
 const STATUS: Record<HoldStatus, { label: string; tone: Tone }> = { diajukan: { label: "Menunggu QA", tone: "warn" }, aktif: { label: "Hold aktif", tone: "crit" }, ditolak: { label: "Ditolak QA", tone: "neutral" }, dilepas: { label: "Dilepas", tone: "ok" } };
 const ACTION: Record<Exclude<HoldStatus, "diajukan">, { title: string; button: string; text: string; noteRequired: boolean }> = {
   aktif: { title: "Setujui hold dan recall?", button: "Konfirmasi", text: "Lot di gudang ditahan dan lot yang sudah dikirim ditarik kembali, sampai QA melepasnya.", noteRequired: false },
-  ditolak: { title: "Tolak pengajuan hold?", button: "Konfirmasi penolakan", text: "Lot tetap boleh dikirim. Alasan diperlukan agar keputusan dapat ditelusuri.", noteRequired: true },
-  dilepas: { title: "Lepas hold?", button: "Konfirmasi pelepasan", text: "Lot kembali boleh dikirim. Cantumkan hasil uji ulang sebagai dasar.", noteRequired: true },
+  ditolak: { title: "Tolak pengajuan hold?", button: "Konfirmasi penolakan", text: "Lot tetap boleh dikirim. Tulis alasannya supaya keputusan ini bisa ditelusuri nanti.", noteRequired: true },
+  dilepas: { title: "Lepas hold?", button: "Konfirmasi pelepasan", text: "Lot boleh dikirim lagi. Cantumkan hasil uji ulang sebagai dasarnya.", noteRequired: true },
 };
 const packsOf = (h: Hold) => h.lots.reduce((sum, l) => sum + l.packs, 0);
 
@@ -88,7 +88,7 @@ export function HoldList() {
   const hasDemoHolds = API_MODE ? holds.some(h => !pastHolds.some(p => p.id === h.id)) : demo.holds.length > 0;
 
   return <div className="page-enter">
-    <PageHeading title="Daftar Hold" subtitle="Lot yang diajukan hold atau recall dari hasil trace, beserta keputusan QA. Sistem tidak menahan atau menarik produk otomatis." />
+    <PageHeading title="Daftar Hold" subtitle="Lot yang diajukan hold atau recall dari hasil trace, beserta keputusan QA. Sistem tidak menahan atau menarik produk secara otomatis." />
     <div className="metrics-grid">
       <Card className="metric-card"><span className="metric-label"><Icon icon={ShieldAlert} size={15} />Menunggu QA</span><p className="metric-value">{holds.filter(h => h.status === "diajukan").length}<span>pengajuan</span></p></Card>
       <Card className="metric-card"><span className="metric-label"><Icon icon={PackageX} size={15} />Hold aktif</span><p className="metric-value">{active.reduce((s, h) => s + h.lots.length, 0)}<span>lot · {number(active.reduce((s, h) => s + packsOf(h), 0))} pak</span></p></Card>
@@ -107,7 +107,7 @@ export function HoldList() {
         {editable && open.status === "diajukan" && <div className="page-actions"><button className="button secondary" disabled={!allowed || submitting} onClick={() => { setNote(""); setSubmitError(null); setDialog("ditolak"); }}><Icon icon={X} size={16} />Tolak</button><button className="button primary" disabled={!allowed || submitting} onClick={() => { setNote(""); setSubmitError(null); setDialog("aktif"); }}><Icon icon={Check} size={16} />Setujui hold</button></div>}
         {editable && open.status === "aktif" && <button className="button secondary" disabled={!allowed || submitting} onClick={() => { setNote(""); setSubmitError(null); setDialog("dilepas"); }}><Icon icon={PackageCheck} size={16} />Lepas hold</button>}
         {editable && (open.status === "diajukan" || open.status === "aktif") && <RoleNote permission="hold.review" />}
-        {!editable && <p className="small muted">Riwayat sebelum demo, hanya bisa dibaca.</p>}
+        {!editable && <p className="small muted">Ini riwayat dari sebelum demo dan hanya bisa dibaca.</p>}
       </>}</aside>
     </div>
     {report && open && <GenealogyReport hold={open} onClose={() => setReport(false)} />}

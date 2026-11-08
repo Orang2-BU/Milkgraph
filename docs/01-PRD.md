@@ -112,12 +112,19 @@ Pengguna demo: Rino Akbar Hanif (Planner PPIC), Dimas Prasetyo (Koordinator rece
 - Konfigurasi 5 UHT → 5 AT → 10 filler dengan status unit (jalan, CIP, siaga, breakdown, ganti format).
 - Gantt F1, F2, F4; matriks changeover SOP.
 
+**Kondisi Alat (`/kondisi-alat`)** (revisi 7 Nov 2026, poin 2 dan 12)
+- Menu Operasional. Tab "Semua" menampilkan semua alat (38) sesuai urutan alur produksi, dengan kondisi, keterangan, dan tautan ke detailnya di Bay & Tangki atau Lini Filling. Ada pencarian nama, kode, atau kondisi.
+- Tab "Perlu diperhatikan" mengelompokkan alat yang bermasalah menurut jenisnya, dari yang paling mendesak: Rusak, perlu perbaikan (F10); Isi tangki di batas (AT-2, RMT-2); Tertahan menunggu uji (ST-6); Berhenti sementara karena CIP atau ganti format (Bay 2, ST-2, CT-3, UHT-3, F5, F6, F8). Di dalam grup, yang kritis tampil dulu [simulasi, snapshot 14.42].
+
 **Rencana & What-if (`/rencana`)**
 - Skenario rencana shift (FIFO) dan what-if "CIP Bay 2 molor 40 menit".
 - Kartu sorotan rekomendasi solver: CP-SAT + waktu solve `[simulasi]`; constraint dilanggar, waktu putar RT, starvation filling, RT antre (sebelum → sesudah).
 - Tabel 6 constraint (flow rate, maintenance, holding time, downtime & CIP, kapasitas tangki, changeover SOP) untuk rencana awal vs rekomendasi, dihitung dari batas tersimpan.
 - Gantt Lab test, Bay 1-3, Filling F1/F2/F4; toggle rencana awal / rekomendasi; alasan perubahan bersumber.
 - Setujui (catatan opsional) atau tolak (catatan wajib); hanya Planner PPIC.
+- Sejak revisi 7 Nov 2026 (poin 9 dan 10), halaman ini punya tiga tab berurutan: 1. Rekomendasi upgrade (tampilan awal), 2. Alur rencana, 3. Kelayakan & keputusan. Tab "Alur rencana": konsep alur yang sama dengan Operasional > Alur (komponen bersama `FlowCanvas`), tetapi status tiap alat mengikuti jadwal rencana pada jam yang dipilih lewat slider (13.00-20.00). Pilih versi rencana awal atau rekomendasi solver; kejadian penting (bongkar bentrok, filling berhenti, maintenance) bisa diklik untuk melompat ke jamnya. Klik alat untuk mengatur upgrade kapasitas (sebesar kebutuhan jalurnya, lihat tab Rekomendasi upgrade) atau maintenance (mulai, durasi), dan efeknya langsung terlihat di alur serta jumlah constraint yang dilanggar: upgrade UHT-2 yang cukup menghapus jeda F2/F4, maintenance pada Bay 1-3 atau F1/F2/F4 masuk ke jadwal sehingga bongkar yang terkena jadi bentrok. Alat lain hanya berubah status saat maintenance, dengan label "efek lanjutan belum dimodelkan". Pengaturan ini pratinjau dan tidak mengubah batas di halaman Constraint.
+- Tab "Rekomendasi upgrade" (poin 10) mengurutkan alat yang paling menambah produksi bila di-upgrade. Dasarnya pasokan aseptic tank dan kebutuhan mesin filling yang jalan (L/jam, data Lini Filling), tanpa persen karangan: bila pasokan kurang, UHT-nya perlu naik sebesar kekurangannya; bila pasokan lebih, mesin filling-nya bisa naik sampai sisa pasokan habis. Hasil: UHT-2 +1.300 L/jam (6.990 ke 8.290, naik 19%), F1 +350, F7 +140. Alat yang tidak menambah produksi masuk daftar "Tidak disarankan" beserta alasannya. Tombol "Coba di Alur rencana" memasang upgrade itu dan membuka tab Alur rencana. Di bawah alur ada tombol "Lanjut ke Kelayakan & keputusan". Panel atur alat di Alur rencana memakai angka yang sama; alat tanpa dasar data hanya menampilkan alasannya. Batas kapasitas mesin dari pabrikan belum ada di data [asumsi], snapshot 14.42 [simulasi].
+- Tab "Kelayakan & keputusan" berisi kartu rekomendasi solver, tabel 6 constraint, Gantt, alasan perubahan, dan keputusan seperti sebelumnya. Tombol Setujui/Tolak tetap di judul halaman, jadi alur demo langkah 2 tetap jalan.
 
 **Pasokan & Permintaan (`/pasokan`)**
 - Alur Farms ↔ PPIC ↔ Produksi dengan nilai saat ini.
@@ -147,7 +154,7 @@ Pengguna demo: Rino Akbar Hanif (Planner PPIC), Dimas Prasetyo (Koordinator rece
 
 **Hasil Lab (`/lab`)**
 - Lab test penerimaan RT dan QC barang jadi dengan parameter dan batasnya; QA merilis RT ke receiving atau menolak (alasan wajib); rilis menunggu uji ulang bila status uji ulang; tautan trace untuk QC out-of-spec.
-- Sejak revisi 7 Nov 2026 dipecah dua: Tes Lab (`/lab`, menu Penerimaan) untuk lab test RT beserta grafik tunggu lab per jam yang dipindah dari Antrean Truk, dan QC Barang Jadi (`/qc-produk`, menu Operasional).
+- Sejak revisi 7 Nov 2026 dipecah dua: Tes Lab (`/lab`, menu Penerimaan) untuk lab test RT beserta grafik tunggu lab per jam yang dipindah dari Antrean Truk, dan QC Barang Jadi (`/qc-produk`, menu Operasional). Poin 11: QC Barang Jadi dan Riwayat Produksi saling bertaut lewat `?lot=` (kartu "Mutu & tindak lanjut" membuka sampel lot itu di QC, dan sampel QC membuka riwayat produksi lotnya). Lot stroberi FG-1012-11 punya sampel QC LAB-8806 (lulus, inkubasi masih berjalan) [simulasi].
 
 **Daftar Hold (`/hold`)**
 - Pengajuan dari Traceability; metrik menunggu QA, hold aktif, perlu recall, cakupan tanpa genealogi.
@@ -318,7 +325,7 @@ Model graph, tabel relasional, dan aturan waktu ada di `03-ARCHITECTURE.md` §4.
 ## 7. Alur demo
 
 1. **Receiving Flow:** antrean RT menumpuk karena lab test 52 menit, Bay 2 sedang CIP, RT-26 mendekati batas holding time.
-2. **Rencana & What-if:** rencana FIFO tidak layak (3 constraint dilanggar); rekomendasi memindahkan RT-26 ke Bay 1 dan menjaga F2/F4; planner menyetujui. Coba what-if CIP molor.
+2. **Rencana & What-if:** (buka tab Kelayakan & keputusan) rencana FIFO tidak layak (3 constraint dilanggar); rekomendasi memindahkan RT-26 ke Bay 1 dan menjaga F2/F4; planner menyetujui. Coba what-if CIP molor.
 3. **Bay & Tangki / Lini Filling:** instruksi muncul; koordinator receiving dan supervisor mengonfirmasi.
 4. **Simulasi 3D:** bandingkan lokasi bottleneck sebelum dan sesudah rekomendasi di tata letak nyata.
 5. **Traceability:** Riwayat Produksi (FG-1013-07 terpilih, jalur produksinya tampil) → Mutu & tindak lanjut → QC FG out-of-spec → trace mundur ke RT-04 dan Farm Ngadirejo (12%) → trace maju ke 5 lot (1 recall) → rantai serah-terima batch → ajukan hold.
