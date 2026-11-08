@@ -6,6 +6,7 @@ import { Badge, Card, Icon, PageHeading, SectionTitle, Toggle } from "@/componen
 import { API_MODE, apiSend } from "@/lib/api/client";
 import { useResource } from "@/lib/api/resource";
 import { useDemo } from "@/lib/demo";
+import { skuName, skuOption } from "./sku-label";
 
 interface MasterSummary {
   version: string;
@@ -389,7 +390,7 @@ export function MasterDataView() {
                 {finishedSkus.map(s => (
                   <tr key={s.finished_sku_id}>
                     <td><span className="mono"><strong>{s.finished_sku_id}</strong></span></td>
-                    <td>{s.sku_name}</td>
+                    <td>{skuName(s)}</td>
                     <td><Badge tone="neutral">{s.liquid_sku_id}</Badge></td>
                     <td><span className="mono">{s.pack_size_code}</span></td>
                     <td><Badge tone={s.market_variant === "LOCAL" ? "ok" : "warn"}>{s.market_variant}</Badge></td>
@@ -464,7 +465,7 @@ export function MasterDataView() {
                 >
                   {finishedSkus.map(s => (
                     <option key={s.finished_sku_id} value={s.finished_sku_id}>
-                      {s.finished_sku_id} ({s.sku_name})
+                      {skuOption(s)}
                     </option>
                   ))}
                 </select>
@@ -481,7 +482,7 @@ export function MasterDataView() {
                 >
                   {finishedSkus.map(s => (
                     <option key={s.finished_sku_id} value={s.finished_sku_id}>
-                      {s.finished_sku_id} ({s.sku_name})
+                      {skuOption(s)}
                     </option>
                   ))}
                 </select>
