@@ -1301,7 +1301,8 @@ button.plan-metric.selected { box-shadow: var(--glass-rim), 0 0 0 2px var(--colo
   .upgrade-item .button { grid-column: 1 / -1; justify-self: stretch; }
 }
 .plan-next { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-top: 16px; padding: 14px 18px; }
-.plan-next span { color: var(--color-on-surface-muted); font-size: 14px; }
+.plan-next > span:first-child { color: var(--color-on-surface-muted); font-size: 14px; }
+.plan-next-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
 
 /* Kondisi Alat: grup di tab Perlu diperhatikan (poin 12) */
 .asset-group + .asset-group { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--color-border); }
