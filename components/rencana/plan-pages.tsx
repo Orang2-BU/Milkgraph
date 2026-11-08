@@ -6,7 +6,7 @@ import { Icon } from "@/components/ui";
 import type { Plan } from "@/mock/types";
 import { PlanFlow } from "./plan-flow";
 import { UpgradePicks } from "./upgrade-picks";
-import { ScenarioBar, useRencana } from "./rencana-state";
+import { BASE_PLAN, ScenarioBar, useRencana } from "./rencana-state";
 
 /**
  * Sub halaman Rencana berurutan (poin 9 dan 10): 1. Alur rencana (tampilan awal, sama dengan operasi),
@@ -24,12 +24,13 @@ function NextStep({ text, href, label, skip }: { text: string; href: string; lab
 
 /** Langkah 1: Alur rencana (poin 9, 14-17). */
 export function RencanaAlur() {
-  const { plans, plansError, planId, adj, setAdj, view, setView, mode } = useRencana();
-  const plan = plans?.find(p => p.id === planId) ?? plans?.[0];
+  const { plans, plansError, adj, setAdj, view, setView, mode } = useRencana();
+  // Revisi 8 Nov poin 6: tanpa skenario what-if bawaan, simulasinya diatur sendiri lewat atur alat.
+  const plan = plans?.find(p => p.id === BASE_PLAN) ?? plans?.[0];
   return <div className="page-enter">
     <div className="page-heading"><div><h1>Alur rencana</h1><p>Alur produksi mengikuti jadwal rencana, mulai dari kondisi operasi sekarang. Atur kapasitas atau maintenance alat, lalu lihat efeknya.</p></div></div>
     {!plan ? <p role="status">{plansError ? `Gagal memuat rencana: ${plansError.message}` : "Memuat rencana…"}</p> : <>
-      <ScenarioBar withMode />
+      <ScenarioBar withMode withScenario={false} />
       <PlanFlow plan={plan as unknown as Plan} adj={adj} setAdj={setAdj} view={view} setView={setView} mode={mode} />
       <NextStep text="Sudah melihat masalahnya di alur? Berikutnya, lihat upgrade alat yang paling menambah produksi." href="/rencana/upgrade" label="Lanjut ke Rekomendasi upgrade" skip={{ href: "/rencana", label: "Langsung ke Kelayakan & keputusan" }} />
     </>}

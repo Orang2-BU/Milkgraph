@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, MessageSquareText, SendHorizontal, Sparkles } from "lucide-react";
 import { Icon } from "@/components/ui";
+import { Select } from "@/components/ui/fields";
 import { ASSETS, STAGES } from "@/lib/assets";
 import { badgeOf, type Adjust } from "./adjust";
 import type { Proposal, Reply } from "./plan-answer";
@@ -48,10 +49,8 @@ export function PlanChat({ onAsk, onApply }: {
     </header>
 
     <div className="plan-chat-pick">
-      <label><span>Alat</span><select value={alat} onChange={e => setAlat(e.target.value)}>
-        {STAGES.map(st => <optgroup key={st} label={st}>{ASSETS.filter(a => a.stage === st).map(a => <option key={a.id}>{a.id}</option>)}</optgroup>)}
-      </select></label>
-      <label><span>Durasi</span><select value={durasi} onChange={e => setDurasi(Number(e.target.value))}>{DURATIONS.map(d => <option key={d} value={d}>{d} menit</option>)}</select></label>
+      <label><span>Alat</span><Select label="Alat" value={alat} onChange={setAlat} options={STAGES.flatMap(st => ASSETS.filter(a => a.stage === st).map(a => ({ value: a.id, label: a.id, group: st })))} /></label>
+      <label><span>Durasi</span><Select label="Durasi" value={durasi} onChange={setDurasi} options={DURATIONS.map(d => ({ value: d, label: `${d} menit` }))} /></label>
     </div>
 
     <ol className="plan-chat-log" ref={list} aria-live="polite">

@@ -210,12 +210,12 @@ export function Tangki() {
 
   if (API_MODE) {
     if (
-      assetsRes.loading ||
-      cipLogRes.loading ||
-      cipPolicyRes.loading ||
-      midTanksRes.loading ||
-      metaRes.loading ||
-      planRes.loading ||
+      (assetsRes.loading && !assetsRes.data && !assetsRes.error) ||
+      (cipLogRes.loading && !cipLogRes.data && !cipLogRes.error) ||
+      (cipPolicyRes.loading && !cipPolicyRes.data && !cipPolicyRes.error) ||
+      (midTanksRes.loading && !midTanksRes.data && !midTanksRes.error) ||
+      (metaRes.loading && !metaRes.data && !metaRes.error) ||
+      (planRes.loading && !planRes.data && !planRes.error) ||
       (!assetsRes.data && !assetsRes.error) ||
       (!cipLogRes.data && !cipLogRes.error) ||
       (!planRes.data && !planRes.error)

@@ -30,7 +30,8 @@ try {
   assert.equal(await page.locator(".module-card").count(), 5);
   assert.equal(await page.locator(".metric-card").count(), 4);
   await page.goto(root + "/receiving");
-  await page.getByLabel("Filter tahap RT").selectOption("Lab test");
+  await page.getByRole("button", { name: "Filter tahap RT" }).click();
+  await page.getByRole("option", { name: "Lab test" }).click();
   assert.equal(await page.locator("#antrean-rt tbody tr").count(), 3);
   await page.getByRole("link", { name: "Periksa kelayakan rencana" }).click();
   await page.getByRole("heading", { name: "Rekomendasi solver: rencana layak" }).waitFor();

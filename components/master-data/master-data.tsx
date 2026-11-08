@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CheckCircle2, GitBranch, RefreshCw, ShieldAlert, Sliders } from "lucide-react";
 import { Badge, Card, Icon, PageHeading, SectionTitle, Toggle } from "@/components/ui";
+import { Select } from "@/components/ui/fields";
 import { API_MODE, apiSend } from "@/lib/api/client";
 import { useResource } from "@/lib/api/resource";
 import { useDemo } from "@/lib/demo";
@@ -278,16 +279,13 @@ export function MasterDataView() {
               action={
                 <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <label htmlFor="asset-type-select" className="small muted">Filter Tipe:</label>
-                  <select
+                  <Select
                     id="asset-type-select"
-                    className="button secondary"
+                    compact
                     value={assetFilter}
-                    onChange={e => setAssetFilter(e.target.value)}
-                  >
-                    {assetTypes.map(t => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
+                    onChange={setAssetFilter}
+                    options={assetTypes.map(t => ({ value: t, label: t }))}
+                  />
                 </div>
               }
             />
@@ -456,36 +454,22 @@ export function MasterDataView() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px", marginTop: "16px" }}>
               <div>
                 <label htmlFor="sku-from-select" className="small" style={{ display: "block", marginBottom: "6px" }}><strong>SKU Saat Ini (From):</strong></label>
-                <select
+                <Select
                   id="sku-from-select"
-                  className="button secondary"
-                  style={{ width: "100%" }}
                   value={fromSku}
-                  onChange={e => setFromSku(e.target.value)}
-                >
-                  {finishedSkus.map(s => (
-                    <option key={s.finished_sku_id} value={s.finished_sku_id}>
-                      {skuOption(s)}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setFromSku}
+                  options={finishedSkus.map(s => ({ value: s.finished_sku_id, label: skuOption(s) }))}
+                />
               </div>
 
               <div>
                 <label htmlFor="sku-to-select" className="small" style={{ display: "block", marginBottom: "6px" }}><strong>SKU Rencana Berikutnya (To):</strong></label>
-                <select
+                <Select
                   id="sku-to-select"
-                  className="button secondary"
-                  style={{ width: "100%" }}
                   value={toSku}
-                  onChange={e => setToSku(e.target.value)}
-                >
-                  {finishedSkus.map(s => (
-                    <option key={s.finished_sku_id} value={s.finished_sku_id}>
-                      {skuOption(s)}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setToSku}
+                  options={finishedSkus.map(s => ({ value: s.finished_sku_id, label: skuOption(s) }))}
+                />
               </div>
             </div>
 

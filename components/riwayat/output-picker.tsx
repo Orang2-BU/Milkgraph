@@ -2,6 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import { Card, Icon, SectionTitle } from "@/components/ui";
+import { DateField, Select, TimeField } from "@/components/ui/fields";
 import type { Output } from "@/mock/outputs";
 
 export type Filters = { product: string; date: string; time: string; code: string };
@@ -23,19 +24,17 @@ export function OutputPicker({ outputs, filters, setFilters, selected, onSelect,
 }) {
   const all = outputs;
   const list = matchOutputs(all, filters);
-  const set = (k: keyof Filters) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setFilters({ ...filters, [k]: e.target.value });
+  const set = (k: keyof Filters) => (e: React.ChangeEvent<HTMLInputElement>) => setFilters({ ...filters, [k]: e.target.value });
+  const put = (k: keyof Filters) => (value: string) => setFilters({ ...filters, [k]: value });
   return <Card className="rp-picker">
     <SectionTitle title="Pilih output produksi" subtitle="Tentukan hasil produksi untuk melihat seluruh riwayatnya." action={<button type="button" className="inline-link" onClick={() => setFilters(EMPTY)}>Reset pilihan</button>} />
     <label className="rp-field rp-main"><span>Output yang dilacak</span>
-      <select value={list.some(o => o.id === selected) ? selected : ""} onChange={e => onSelect(e.target.value)} disabled={!list.length}>
-        {!list.length && <option value="">Tidak ada output yang cocok</option>}
-        {list.map(o => <option key={o.id} value={o.id}>{o.id} · {o.product}</option>)}
-      </select>
+      <Select label="Output yang dilacak" value={list.some(o => o.id === selected) ? selected : ""} onChange={onSelect} disabled={!list.length} placeholder="Tidak ada output yang cocok" options={list.map(o => ({ value: o.id, label: `${o.id} · ${o.product}` }))} />
     </label>
     <div className="rp-filters">
-      <label className="rp-field"><span>Produk</span><select value={filters.product} onChange={set("product")}><option value="">Semua produk</option>{[...new Set(all.map(o => o.product))].map(p => <option key={p}>{p}</option>)}</select></label>
-      <label className="rp-field"><span>Tanggal produksi</span><input type="date" value={filters.date} onChange={set("date")} /></label>
-      <label className="rp-field"><span>Selesai pukul</span><input type="time" value={filters.time} onChange={set("time")} /></label>
+      <label className="rp-field"><span>Produk</span><Select label="Produk" value={filters.product} onChange={put("product")} options={[{ value: "", label: "Semua produk" }, ...[...new Set(all.map(o => o.product))].map(p => ({ value: p, label: p }))]} /></label>
+      <label className="rp-field"><span>Tanggal produksi</span><DateField label="Tanggal produksi" value={filters.date} onChange={put("date")} initialMonth={all[0]?.date} /></label>
+      <label className="rp-field"><span>Selesai pukul</span><TimeField label="Selesai pukul" value={filters.time} onChange={put("time")} /></label>
       <label className="rp-field"><span>Kode lot / produk</span><input type="search" value={filters.code} onChange={set("code")} placeholder="Cari kode..." autoComplete="off" /></label>
     </div>
     <div className="rp-picker-foot">

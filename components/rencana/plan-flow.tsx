@@ -3,6 +3,7 @@
 import { createContext, useContext, useState } from "react";
 import { Clock3, RotateCcw, Trash2, TriangleAlert, Wrench, X, Zap } from "lucide-react";
 import { Badge, Icon } from "@/components/ui";
+import { Select } from "@/components/ui/fields";
 import { Equipment, KIND_LABEL } from "@/components/trace/equipment";
 import { FlowCanvas, type AsideProps } from "@/components/alur/flow-canvas";
 import { useDemo } from "@/lib/demo";
@@ -68,8 +69,8 @@ function PlanEditor({ asset, onClose }: AsideProps) {
       <label className="check-row"><input type="checkbox" checked={!!a.maintenance} onChange={e => setMaint(e.target.checked ? { start: "15.00", minutes: 30 } : undefined)} />Jadwalkan maintenance di shift ini</label>
       {a.maintenance && <>
         <div className="plan-row">
-          <label><span>Mulai pukul</span><select value={a.maintenance.start} onChange={e => setMaint({ ...a.maintenance!, start: e.target.value })}>{STARTS.map(s => <option key={s}>{s}</option>)}</select></label>
-          <label><span>Selama</span><select value={a.maintenance.minutes} onChange={e => setMaint({ ...a.maintenance!, minutes: Number(e.target.value) })}>{DURATIONS.map(d => <option key={d} value={d}>{d} menit</option>)}</select></label>
+          <label><span>Mulai pukul</span><Select label="Mulai pukul" value={a.maintenance.start} onChange={start => setMaint({ ...a.maintenance!, start })} options={STARTS.map(s => ({ value: s, label: s }))} /></label>
+          <label><span>Selama</span><Select label="Lama maintenance" value={a.maintenance.minutes} onChange={minutes => setMaint({ ...a.maintenance!, minutes })} options={DURATIONS.map(d => ({ value: d, label: `${d} menit` }))} /></label>
         </div>
         <p className="small muted">{mt ?? "Status alat ini berubah jadi Maintenance pada jam itu. Efeknya ke alat lain belum dimodelkan [simulasi]."}</p>
       </>}
@@ -109,10 +110,7 @@ export function PlanFlow({ plan, adj, setAdj, view, setView, mode = "2d" }: { pl
   const unmodelled = ids.filter(id => !isModelled(id, adj[id]));
 
   const toolbar = <div className="plan-controls">
-    <label className="plan-pick"><span>Alat</span><select value={picked ?? ""} onChange={e => setPicked(e.target.value || null)}>
-      <option value="">Pilih alat untuk diatur...</option>
-      {STAGES.map(st => <optgroup key={st} label={st}>{ASSETS.filter(x => x.stage === st).map(x => <option key={x.id} value={x.id}>{x.id}{adj[x.id] ? " (diatur)" : ""}</option>)}</optgroup>)}
-    </select></label>
+    <label className="plan-pick"><span>Alat</span><Select label="Alat yang diatur" value={picked ?? ""} onChange={setPicked} placeholder="Pilih alat untuk diatur..." options={STAGES.flatMap(st => ASSETS.filter(x => x.stage === st).map(x => ({ value: x.id, label: x.id, group: st, hint: adj[x.id] ? "Diatur" : undefined })))} /></label>
     <div className="plan-time">
       <label htmlFor="plan-time"><Icon icon={Clock3} size={15} />Jam <strong>{clock(t)}</strong>{t === NOW ? <span className="muted">sama dengan operasi sekarang</span> : <button type="button" className="inline-link" onClick={() => setT(NOW)}>Kembali ke {clock(NOW)}</button>}</label>
       <input id="plan-time" type="range" min={0} max={HORIZON} step={5} value={t} onChange={e => setT(Number(e.target.value))} aria-valuetext={`Pukul ${clock(t)}`} />

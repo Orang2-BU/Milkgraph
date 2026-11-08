@@ -97,10 +97,10 @@ export function Filling() {
 
   if (API_MODE) {
     if (
-      asepticTanksRes.loading ||
-      fillersRes.loading ||
-      planRes.loading ||
-      metaRes.loading ||
+      (asepticTanksRes.loading && !asepticTanksRes.data && !asepticTanksRes.error) ||
+      (fillersRes.loading && !fillersRes.data && !fillersRes.error) ||
+      (planRes.loading && !planRes.data && !planRes.error) ||
+      (metaRes.loading && !metaRes.data && !metaRes.error) ||
       (!asepticTanksRes.data && !asepticTanksRes.error) ||
       (!fillersRes.data && !fillersRes.error) ||
       (!planRes.data && !planRes.error)
