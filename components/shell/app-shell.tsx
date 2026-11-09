@@ -14,6 +14,7 @@ import { violations } from "@/lib/rules";
 import { API_MODE } from "@/lib/api/client";
 import { useResource } from "@/lib/api/resource";
 import type { Tone } from "@/mock/types";
+import { AssistantChat } from "@/components/assistant/assistant-chat";
 
 interface Meta {
   schemaVersion: "1";
@@ -178,6 +179,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </main>
       <footer className="workspace-footer"><span>MilkGraph <span className="footer-divider">/</span> Context graph operasional pabrik susu</span><span>{snapshotFooter} <span className="status-dot" /></span></footer>
     </div>
+    <AssistantChat />
     {drawer && <dialog ref={drawerRef} id="mobile-navigation" aria-label="Menu navigasi" className="mobile-drawer" onCancel={() => setDrawer(false)} onClick={e => { if (e.target === e.currentTarget) setDrawer(false); }}><div className="drawer-content">{renderNavigation(true)}</div></dialog>}
     {panel && <Modal title={{ shift: "Pilih shift", notifications: "Notifikasi operasional", profile: "Masuk sebagai", help: "Panduan demo" }[panel]} onClose={() => setPanel(null)}>
       {panel === "shift" && (
