@@ -10,7 +10,7 @@ import type { Adjustments } from "./adjust";
 
 /**
  * State bersama sub halaman Rencana (Rekomendasi upgrade, Alur rencana, Kelayakan & keputusan).
- * Dipasang di app/rencana/layout.tsx, jadi upgrade yang dicoba dan skenario yang dipilih tetap ada saat pindah sub halaman.
+ * Dipasang di app/layout.tsx, jadi upgrade yang dicoba dan skenario yang dipilih tetap ada saat pindah sub halaman.
  */
 export type PlanItem = (typeof scenario.plans)[number] & { resources?: string[]; horizon?: { start: string; end: string }; queueLabel?: string };
 
